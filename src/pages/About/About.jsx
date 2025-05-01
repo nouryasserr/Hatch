@@ -1,5 +1,5 @@
 function About() {
-  return <>jbuisefnajwefjkawejk</>;
+  return <>fnajwefjkawejk</>;
 }
 
 export default About;
