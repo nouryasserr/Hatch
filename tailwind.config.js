@@ -4,8 +4,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: "#7aab48",
+        primary: "#5632C9",
       },
+    },
+    screens: {
+      xs: "480px",
+      sm: "640px",
+      md: "768px",
+      lg: "1025px",
+      xl: "1280px",
+      "2xl": "1536px",
     },
   },
   plugins: [],
