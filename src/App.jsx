@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import './assets/fonts/fonts.css';
 import About from "./pages/About/About";
 import BestSales from "./pages/BestSales/BestSales";
 import Cart from "./pages/Cart/Cart";
