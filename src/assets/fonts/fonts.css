@@ -1,0 +1,126 @@
+/* Thin */
+@font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Thin.ttf') format('truetype');
+    font-weight: 100;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Thin_Italic.ttf') format('truetype');
+    font-weight: 100;
+    font-style: italic;
+  }
+  
+  /* ExtraLight */
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-ExtraLight_Italic.ttf') format('truetype');
+    font-weight: 200;
+    font-style: italic;
+  }
+  
+  /* Light */
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Light_Italic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+  }
+  
+  /* Regular */
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Regular_Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+  }
+  
+  /* Medium */
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Medium_Italic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+  }
+  
+  /* SemiBold */
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-SemiBold_Italic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+  }
+  
+  /* Bold */
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Bold_Italic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+  }
+  
+  /* ExtraBold */
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-ExtraBold.ttf') format('truetype');
+    font-weight: 800;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-ExtraBold_Italic.ttf') format('truetype');
+    font-weight: 800;
+    font-style: italic;
+  }
+  
+  /* Heavy */
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Heavy.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'BlauerNue';
+    src: url('./BlauerNue-Heavy_Italic.ttf') format('truetype');
+    font-weight: 900;
+    font-style: italic;
+  }
+  
