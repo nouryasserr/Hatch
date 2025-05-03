@@ -8,7 +8,7 @@ function Navbar() {
   return (
     <nav className="py-6 px-6 lg:px-12">
       <div className="flex justify-between items-center">
-        <NavLink to="/Home">
+        <NavLink to="/">
           <img src={logo} alt="logo" className="w-20 lg:w-24" />
         </NavLink>
         <div className="lg:hidden">

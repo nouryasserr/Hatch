@@ -32,7 +32,7 @@ function App() {
         { path: "/Checkout", element: <Checkout /> },
         { path: "/Contact", element: <Contact /> },
         { path: "/FreshDrops", element: <FreshDrops /> },
-        { path: "/Home", element: <Home /> },
+        { index: true, element: <Home /> },
         { path: "/Otp", element: <Otp /> },
         { path: "/ProductDetails", element: <ProductDetails /> },
         { path: "/ResetPass1", element: <ResetPass1 /> },

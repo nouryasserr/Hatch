@@ -41,10 +41,9 @@ function Signup() {
 
   async function sendDataToApi(values) {
     const loadingToastId = toast.loading("creating account...");
-    console.log("registeration function start");
     try {
       const options = {
-        url: "https://03d6-102-43-183-95.ngrok-free.app/api/register",
+        url: "https://35ad-197-56-17-99.ngrok-free.app/api/register",
         method: "POST",
         data: values,
       };
@@ -62,7 +61,7 @@ function Signup() {
       }
     } catch (error) {
       console.log("error in registeration", error);
-      const msg = error?.response?.data?.message || "Something went wrong";
+      const msg = error?.response?.data?.message;
       setAccountExistsError(msg);
       toast.dismiss(loadingToastId);
       toast.error(msg);
@@ -205,10 +204,10 @@ function Signup() {
                   *{formik.errors.password_confirmation}
                 </p>
               )}
+            {accountExistsError && (
+              <p className="text-red-500">*{accountExistsError}</p>
+            )}
           </div>
-          {accountExistsError && (
-            <p className="text-red-500">*{accountExistsError}</p>
-          )}
           <button
             type="submit"
             className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
@@ -216,7 +215,7 @@ function Signup() {
             create account
           </button>
           <p className="text-center text-slate-600 text-sm">
-            already created?
+            already created?{""}
             <span
               className="text-black underline cursor-pointer text-base"
               onClick={() => navigate("/Signin")}
