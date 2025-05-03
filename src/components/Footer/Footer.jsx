@@ -69,9 +69,9 @@ function Footer() {
               from hatch.
             </h2>
             <div className="flex md:justify-end items-center gap-4 text-xl">
-              <i className="fa-brands fa-facebook-f bg-black text-white py-2.5 px-4 rounded-sm"></i>
-              <i className="fa-brands fa-twitter bg-black text-white py-2.5 px-3 rounded-sm"></i>
-              <i className="fa-brands fa-instagram bg-black text-white py-2.5 px-3 rounded-sm"></i>
+              <i className="fa-brands fa-facebook-f bg-black border border-black text-white py-2.5 px-4 rounded-sm cursor-pointer hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"></i>
+              <i className="fa-brands fa-twitter bg-black border border-black text-white py-2.5 px-3 rounded-sm cursor-pointer hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"></i>
+              <i className="fa-brands fa-instagram bg-black border border-black text-white py-2.5 px-3 rounded-sm cursor-pointer hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"></i>
             </div>
           </div>
         </div>
