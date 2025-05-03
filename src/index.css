@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  font-family: "BlauerNue", sans-serif;
+  box-sizing: border-box;
+}
+
 .title {
   font-family: "Archivo Variable", sans-serif;
 }
@@ -9,10 +14,7 @@
 .price {
   font-family: "Inter Variable", sans-serif;
 }
-*{
-  font-family: 'BlauerNue', sans-serif;
-  box-sizing: border-box;
-}
+
 .hoverable:hover {
   cursor: none;
 }

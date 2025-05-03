@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import './assets/fonts/fonts.css';
+import "./assets/fonts/fonts.css";
 import About from "./pages/About/About";
 import BestSales from "./pages/BestSales/BestSales";
 import Cart from "./pages/Cart/Cart";
@@ -17,7 +17,6 @@ import Signin from "./pages/Signin/Signin";
 import Signup from "./pages/Signup/Signup";
 import Wishlist from "./pages/Wishlist/Wishlist";
 import Layout from "./components/Layout/Layout";
-// import { Children } from "react";
 import { Toaster } from "react-hot-toast";
 import CustomCursor from "./components/CustomCursor/CustomCursor";
 function App() {
@@ -47,9 +46,9 @@ function App() {
   ]);
   return (
     <>
-    <CustomCursor/>
-    <RouterProvider router={router} />
-    <Toaster />
+      <CustomCursor />
+      <RouterProvider router={router} />
+      <Toaster />
     </>
   );
 }

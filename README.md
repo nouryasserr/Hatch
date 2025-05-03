@@ -1,12 +1,31 @@
-# React + Vite
+# Hatch
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Hatch** is a platform that gathers local brands and connects them with the resources they need to successfully start and grow their businesses. It helps small entrepreneurs find places to manufacture their products and platforms to sell them — all in one ecosystem.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Purpose
 
-## Expanding the ESLint configuration
+Many local brands struggle to take off due to a lack of access to manufacturing facilities and limited reach to customers. Hatch solves this by:
 
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Providing visibility for local brands
+- Connecting them with suitable factories and workshops
+- Offering a space to promote and sell their products
+
+---
+
+## ✨ Features
+
+- 🏪 Explore local brands and their products
+- 🛠️ Discover factories and workshops to start production
+- 📩 Contact service providers and potential partners
+- 📝 Submit your brand to join the platform
+- 🔍 Search and filter based on category or service type
+
+---
+
+## 🛠️ Tech Stack
+
+- React JS (with Vite)
+
+---
