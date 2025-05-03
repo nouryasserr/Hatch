@@ -4,31 +4,22 @@ import { motion } from "framer-motion";
 const CustomCursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
-
   useEffect(() => {
     const moveCursor = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
-
     const handleMouseEnter = () => {
       setIsHovering(true);
     };
-
     const handleMouseLeave = () => {
       setIsHovering(false);
     };
-
-    // Track mouse movement always
     window.addEventListener("mousemove", moveCursor);
-
-    // Add event listeners to all elements with the hoverable class
     const hoverableElements = document.querySelectorAll(".hoverable");
     hoverableElements.forEach((el) => {
       el.addEventListener("mouseenter", handleMouseEnter);
       el.addEventListener("mouseleave", handleMouseLeave);
     });
-
-    // Cleanup event listeners
     return () => {
       window.removeEventListener("mousemove", moveCursor);
       hoverableElements.forEach((el) => {
@@ -55,17 +46,17 @@ const CustomCursor = () => {
         opacity: 0,
       }}
       animate={{
-        x: position.x - 10, // Center the cursor
+        x: position.x - 10,
         y: position.y - 10,
-        opacity: isHovering ? 1 : 0, // Show/hide on hover
-        scale: isHovering ? 1.2 : 1, // Slight scale effect
+        opacity: isHovering ? 1 : 0,
+        scale: isHovering ? 1.2 : 1,
       }}
       transition={{
         type: "tween",
         ease: "easeOut",
-        duration: 0.1, // Fast movement
-        opacity: { duration: 0.1 }, // Smooth fade
-        scale: { duration: 0.1 }, // Smooth scale
+        duration: 0.1,
+        opacity: { duration: 0.1 },
+        scale: { duration: 0.1 },
       }}
     />
   );
