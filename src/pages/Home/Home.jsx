@@ -1,5 +1,11 @@
+import Loader from "../../components/Loader/Loader";
+
 function Home() {
-  return <>Display Home Page</>;
+  return (
+    <>
+      <Loader />
+    </>
+  );
 }
 
 export default Home;
