@@ -1,0 +1,54 @@
+.portrait {
+    position: relative;
+    width: 100%;
+    padding-top: 125%; /* 5 / 4 = 1.25 → 125% */
+    overflow: hidden;
+  }
+  
+  .portrait img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+.blackMuted70{
+    color: #404040;
+}
+.blackMuted50{
+    color: #757575;
+}
+.red{
+    color: #FF0000;
+}
+
+.bordercolor{
+    border: solid #757575 0.1rem ;
+    color: #757575;
+}
+.favorite{
+    border: solid #FF0000 0.1rem ;
+    background: #FF0000;
+}
+.borderBlack{
+    border: solid #000000 0.1rem ;
+    color: #000000; 
+    
+}
+.borderTransparent {
+    border: 0.1rem solid transparent;
+  }
+
+.dehsorabs:hover {
+    cursor: none;
+}
+
+.imgExample{
+    transition: filter 0.3s ease;
+}
+
+.imgExample:hover{
+    filter: contrast(1.2);
+}
