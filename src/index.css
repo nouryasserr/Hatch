@@ -11,4 +11,8 @@
 }
 *{
   font-family: 'BlauerNue', sans-serif;
+  box-sizing: border-box;
+}
+.hoverable:hover {
+  cursor: none;
 }

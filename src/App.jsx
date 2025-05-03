@@ -19,6 +19,7 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import Layout from "./components/Layout/Layout";
 // import { Children } from "react";
 import { Toaster } from "react-hot-toast";
+import CustomCursor from "./components/CustomCursor/CustomCursor";
 function App() {
   const router = createBrowserRouter([
     {
@@ -46,8 +47,9 @@ function App() {
   ]);
   return (
     <>
-      <RouterProvider router={router} />
-      <Toaster />
+    <CustomCursor/>
+    <RouterProvider router={router} />
+    <Toaster />
     </>
   );
 }
