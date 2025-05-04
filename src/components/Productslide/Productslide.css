@@ -118,3 +118,122 @@
   right: 0;
 }
 
+
+.button3{
+    --secondary-color: #000000;
+    --arrow-width: 12px;
+    --arrow-stroke: 2px;
+    box-sizing: border-box;
+    border: 0px ;
+    color: var(--secondary-color);
+    display: flex;
+    transition: 0.2s background;
+    align-items: end;
+    gap: 0.6em;
+    font-weight: bold;
+  }
+  
+  
+  .button3 .arrow-wrapper-three {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .button3 .arrow-three {
+    margin-top: 1px;
+    width: var(--arrow-width);
+    background: var(--primary-color);
+    height: var(--arrow-stroke);
+    position: relative;
+    transition: 0.2s;
+    transform: rotate(180deg);
+  }
+  
+  .button3 .arrow-three::before {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    border: solid var(--secondary-color);
+    border-width: 0 var(--arrow-stroke) var(--arrow-stroke) 0;
+    display: inline-block;
+    top: -3px;
+    right: 3px;
+    transition: 0.2s;
+    padding: 3px;
+    transform: rotate(-45deg);
+  }
+  
+  .button3:hover {
+    background-color: var(--hover-color);
+  }
+  
+  .button3:hover .arrow-three {
+    background: var(--secondary-color);
+  }
+  
+  .button3:hover .arrow-three:before {
+    right: 0;
+  }
+  
+  
+
+.button4{
+    --secondary-color: #000000;
+    --arrow-width: 12px;
+    --arrow-stroke: 2px;
+    box-sizing: border-box;
+    border: 0px ;
+    color: var(--secondary-color);
+    display: flex;
+    transition: 0.2s background;
+    align-items: end;
+    gap: 0.6em;
+    font-weight: bold;
+  }
+  
+  
+  .button4 .arrow-wrapper-four {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .button4 .arrow-four {
+    margin-top: 1px;
+    width: var(--arrow-width);
+    background: var(--primary-color);
+    height: var(--arrow-stroke);
+    position: relative;
+    transition: 0.2s;
+  }
+  
+  .button4 .arrow-four::before {
+    content: "";
+    box-sizing: border-box;
+    position: absolute;
+    border: solid var(--secondary-color);
+    border-width: 0 var(--arrow-stroke) var(--arrow-stroke) 0;
+    display: inline-block;
+    top: -3px;
+    right: 3px;
+    transition: 0.2s;
+    padding: 3px;
+    transform: rotate(-45deg);
+  }
+  
+  .button4:hover {
+    background-color: var(--hover-color);
+  }
+  
+  .button4:hover .arrow-four {
+    background: var(--secondary-color);
+  }
+  
+  .button4:hover .arrow-four:before {
+    right: 0;
+  }
+  
+  

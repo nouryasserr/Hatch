@@ -4,28 +4,42 @@ import { motion } from "framer-motion";
 const CustomCursor = () => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
+
   useEffect(() => {
     const moveCursor = (e) => {
       setPosition({ x: e.clientX, y: e.clientY });
     };
-    const handleMouseEnter = () => {
-      setIsHovering(true);
-    };
-    const handleMouseLeave = () => {
-      setIsHovering(false);
-    };
+
+    const handleMouseEnter = () => setIsHovering(true);
+    const handleMouseLeave = () => setIsHovering(false);
+
     window.addEventListener("mousemove", moveCursor);
-    const hoverableElements = document.querySelectorAll(".hoverable");
-    hoverableElements.forEach((el) => {
-      el.addEventListener("mouseenter", handleMouseEnter);
-      el.addEventListener("mouseleave", handleMouseLeave);
-    });
-    return () => {
-      window.removeEventListener("mousemove", moveCursor);
+
+    const attachHoverEvents = () => {
+      const hoverableElements = document.querySelectorAll(".hoverable");
       hoverableElements.forEach((el) => {
         el.removeEventListener("mouseenter", handleMouseEnter);
         el.removeEventListener("mouseleave", handleMouseLeave);
+        el.addEventListener("mouseenter", handleMouseEnter);
+        el.addEventListener("mouseleave", handleMouseLeave);
       });
+    };
+
+    attachHoverEvents();
+
+    // Observe DOM changes to reattach hover events
+    const observer = new MutationObserver(() => {
+      attachHoverEvents();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
+
+    return () => {
+      window.removeEventListener("mousemove", moveCursor);
+      observer.disconnect();
     };
   }, []);
 

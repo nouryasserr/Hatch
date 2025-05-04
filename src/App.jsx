@@ -19,7 +19,10 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import Layout from "./components/Layout/Layout";
 import { Toaster } from "react-hot-toast";
 import CustomCursor from "./components/CustomCursor/CustomCursor";
+import Error404 from "./pages/Error404/Error404";
+import Nonetwork from "./pages/Offline/Nonetwork";
 function App() {
+
   const router = createBrowserRouter([
     {
       path: "/",
@@ -41,15 +44,17 @@ function App() {
         { path: "/Signin", element: <Signin /> },
         { path: "/Signup", element: <Signup /> },
         { path: "/Wishlist", element: <Wishlist /> },
+        {path: "*", element: <Error404/>}
       ],
     },
   ]);
+ 
   return (
     <>
-      <CustomCursor />
-      <RouterProvider router={router} />
-      <Toaster />
-    </>
+    <CustomCursor />
+    <RouterProvider router={router} />
+    <Toaster />
+  </>
   );
 }
 
