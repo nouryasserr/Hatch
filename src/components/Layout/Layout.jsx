@@ -6,8 +6,6 @@ import Nonetwork from "../../pages/Offline/Nonetwork";
 
 function Layout() {
   const isOnline = useNetworkStatus();
-
-
   return (
     <>
       <Navbar />

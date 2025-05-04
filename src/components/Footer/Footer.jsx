@@ -15,53 +15,64 @@ function Footer() {
                 placeholder="ENTER YOUR E-MAIL"
                 className="placeholder:text-black focus:outline-none w-full"
               />
-              <div to='/' className=" button4 relative flex justify-end justify-items-end cursor-pointer">
-
-                <div class="arrow-wrapper-four  ">
-                  <div class="arrow-four"></div>
-
-                </div>
-
-              </div>
+              <i className="fa-solid fa-arrow-right cursor-pointer"></i>
             </div>
             <div className="flex flex-col xs:flex-row justify-between gap-6 xs:gap-10 text-lg xs:text-xl">
               <ul className="space-y-6 grow">
                 <li>
-                  <NavLink className={"flex items-center justify-between"}>
+                  <NavLink
+                    to="/FreshDrops"
+                    className={"flex items-center justify-between"}
+                  >
                     new arrivals
-                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 duration-200"></i>
+                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink className={"flex items-center justify-between"}>
+                  <NavLink
+                    to="/BestSales"
+                    className={"flex items-center justify-between"}
+                  >
                     best sales
-                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 duration-200"></i>
+                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink className={"flex items-center justify-between"}>
+                  <NavLink
+                    to="/Categories"
+                    className={"flex items-center justify-between"}
+                  >
                     categories
-                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 duration-200"></i>
+                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
               </ul>
               <ul className="space-y-6 grow">
                 <li>
-                  <NavLink className={"flex items-center justify-between"}>
+                  <NavLink
+                    to="/About"
+                    className={"flex items-center justify-between"}
+                  >
                     about us
-                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 duration-200"></i>
+                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink className={"flex items-center justify-between"}>
+                  <NavLink
+                    to="/Contact"
+                    className={"flex items-center justify-between"}
+                  >
                     contact us
-                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 duration-200"></i>
+                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink className={"flex items-center justify-between"}>
+                  <NavLink
+                    to="/Sale"
+                    className={"flex items-center justify-between"}
+                  >
                     sale
-                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 duration-200"></i>
+                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
               </ul>

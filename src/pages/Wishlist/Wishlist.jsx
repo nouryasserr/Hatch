@@ -1,13 +1,11 @@
-import React from 'react'
-import EmptyWishlist from './EmptyWishlist.jsx'
+import EmptyWishlist from "../../components/EmptyWishlist/EmptyWishlist";
 
 function Wishlist() {
   return (
     <>
-    <EmptyWishlist/>
+      <EmptyWishlist />
     </>
-    
-  )
+  );
 }
 
-export default Wishlist
+export default Wishlist;

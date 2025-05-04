@@ -20,14 +20,14 @@ import Layout from "./components/Layout/Layout";
 import { Toaster } from "react-hot-toast";
 import CustomCursor from "./components/CustomCursor/CustomCursor";
 import Error404 from "./pages/Error404/Error404";
-import Nonetwork from "./pages/Offline/Nonetwork";
+import Sale from "./pages/Sale/Sale";
 function App() {
-
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Layout />,
       children: [
+        { index: true, element: <Home /> },
         { path: "/About", element: <About /> },
         { path: "/BestSales", element: <BestSales /> },
         { path: "/Cart", element: <Cart /> },
@@ -35,26 +35,26 @@ function App() {
         { path: "/Checkout", element: <Checkout /> },
         { path: "/Contact", element: <Contact /> },
         { path: "/FreshDrops", element: <FreshDrops /> },
-        { index: true, element: <Home /> },
         { path: "/Otp", element: <Otp /> },
         { path: "/ProductDetails", element: <ProductDetails /> },
         { path: "/ResetPass1", element: <ResetPass1 /> },
         { path: "/ResetPass2", element: <ResetPass2 /> },
         { path: "/ResetPass3", element: <ResetPass3 /> },
+        { path: "/Sale", element: <Sale /> },
         { path: "/Signin", element: <Signin /> },
         { path: "/Signup", element: <Signup /> },
         { path: "/Wishlist", element: <Wishlist /> },
-        {path: "*", element: <Error404/>}
+        { path: "*", element: <Error404 /> },
       ],
     },
   ]);
- 
+
   return (
     <>
-    <CustomCursor />
-    <RouterProvider router={router} />
-    <Toaster />
-  </>
+      <CustomCursor />
+      <RouterProvider router={router} />
+      <Toaster />
+    </>
   );
 }
 

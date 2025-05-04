@@ -18,3 +18,7 @@
 .hoverable:hover {
   cursor: none;
 }
+
+.blackMuted70 {
+  color: #404040;
+}

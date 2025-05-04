@@ -1,4 +1,4 @@
-import logo from "../../assets/imgs/logo.png";
+import logo from "../../assets/imgs/logo.jpeg";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
 
@@ -22,7 +22,7 @@ function Navbar() {
             { name: "best sales", to: "/BestSales" },
             { name: "categories", to: "/Categories" },
             { name: "about us", to: "/About" },
-            { name: "sale", to: "#", className: "text-red-500" },
+            { name: "sale", to: "/Sale", className: "text-red-500" },
           ].map(({ name, to, className = "" }) => (
             <li key={name} className={className}>
               <NavLink
@@ -67,7 +67,7 @@ function Navbar() {
               { name: "best sales", to: "/BestSales" },
               { name: "categories", to: "/Categories" },
               { name: "about us", to: "/About" },
-              { name: "sale", to: "#", className: "text-red-500" },
+              { name: "sale", to: "/Sale", className: "text-red-500" },
             ].map(({ name, to, className = "" }) => (
               <li key={name} className={className}>
                 <NavLink
