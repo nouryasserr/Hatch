@@ -1,7 +1,33 @@
+import { useState } from "react";
 import Category from "../../components/Category/Category";
+import ProductCard from "../../components/ProductCard/ProductCard";
 import ProductSlide from "../../components/Productslide/Productslide";
+import { useEffect } from "react";
 
 function Home() {
+  const [columnCount, setColumnCount] = useState(1);
+
+  useEffect(() => {
+    const getColumnCount = () => {
+      const width = window.innerWidth;
+      if (width >= 1280) return 5;
+      if (width >= 1025) return 4;
+      if (width >= 769) return 3;
+      if (width >= 640) return 2;
+      return 1;
+    };
+
+    const updateColumnCount = () => {
+      setColumnCount(getColumnCount());
+    };
+
+    updateColumnCount();
+    window.addEventListener("resize", updateColumnCount);
+    return () => window.removeEventListener("resize", updateColumnCount);
+  }, []);
+
+  const products = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+
   return (
     <>
       {/* slider */}
@@ -280,8 +306,15 @@ function Home() {
           </div>
         </div>
       </div>
+      <div className="px-6 lg:px-12 flex justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-hidden">
+          {products.slice(0, columnCount).map((_, index) => (
+            <ProductCard key={index} />
+          ))}
+        </div>
+      </div>
       {/* end-new-arrivals */}
-      <ProductSlide />
+      {/* <ProductSlide /> */}
       {/* categories */}
       <div className="mt-16 py-16 md:py-20 px-6 lg:px-12 bg-black flex flex-col">
         <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl text-white mb-10 md:mb-0">
