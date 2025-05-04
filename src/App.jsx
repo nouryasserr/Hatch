@@ -18,7 +18,6 @@ import Signup from "./pages/Signup/Signup";
 import Wishlist from "./pages/Wishlist/Wishlist";
 import Layout from "./components/Layout/Layout";
 import { Toaster } from "react-hot-toast";
-import CustomCursor from "./components/CustomCursor/CustomCursor";
 import Error404 from "./pages/Error404/Error404";
 import Sale from "./pages/Sale/Sale";
 function App() {
@@ -51,7 +50,6 @@ function App() {
 
   return (
     <>
-      <CustomCursor />
       <RouterProvider router={router} />
       <Toaster />
     </>
