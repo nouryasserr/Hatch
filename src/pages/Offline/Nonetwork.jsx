@@ -1,23 +1,21 @@
-import React from 'react'
-import connectionLost from '../../assets/imgs/visuals/Connection Lost.png'
-
+import connectionLost from "../../assets/imgs/visuals/ConnectionLost.png";
 
 function Nonetwork() {
-    return (
-        <>
-            <div className=" m-6 p-6">
-
-                <div className=' justify-items-center'>
-                    <img src={connectionLost} className=' w-80 ' />
-                    <h2 className=' text-2xl mb-4'>connection lost – style paused</h2>
-                    <h2 className=' font-normal text-xl blackMuted70 mb-4'>
-                    you’re offline right now, but we’ll be right here when you're back
-                    </h2>
-                </div>
-
-            </div>
-        </> 
-    )
+  return (
+    <>
+      <div className="px-6 lg:px-12 pb-6 sm:py-6 md:py-10">
+        <div className="flex justify-content-center items-center flex-col gap-2 sm:gap-6">
+          <img src={connectionLost} className=" w-80 mb-4" />
+          <h4 className="text-xl sm:text-2xl text-center">
+            connection lost – style paused
+          </h4>
+          <p className="blackMuted70 text-center text-xs sm:text-base">
+            you’re offline right now, but we’ll be right here when you're back
+          </p>
+        </div>
+      </div>
+    </>
+  );
 }
 
-export default Nonetwork
+export default Nonetwork;
