@@ -1,5 +1,12 @@
+import CartProducts from "./CartProducts";
+import Emptycart from "./emptycart";
+
 function Cart() {
-  return <></>;
+
+  return <>
+  <CartProducts/>
+  
+  </>;
 }
 
 export default Cart;
