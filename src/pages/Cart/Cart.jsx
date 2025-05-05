@@ -1,12 +1,35 @@
+import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import ProductCard from "../../components/ProductCard/ProductCard";
 import CartProduct from "../../components/CartProduct/CartProduct";
-import Slide from "../../components/Slide/Slide";
-import OrderSummary from "../../components/orderSummary/OrderSummary";
+import OrderSummary from "../../components/OrderSummary/OrderSummary";
 
 function Cart() {
+  const [columnCount, setColumnCount] = useState(1);
+
+  useEffect(() => {
+    const getColumnCount = () => {
+      const width = window.innerWidth;
+      if (width >= 1280) return 5;
+      if (width >= 1025) return 4;
+      if (width >= 769) return 3;
+      if (width >= 640) return 2;
+      return 1;
+    };
+
+    const updateColumnCount = () => {
+      setColumnCount(getColumnCount());
+    };
+
+    updateColumnCount();
+    window.addEventListener("resize", updateColumnCount);
+    return () => window.removeEventListener("resize", updateColumnCount);
+  }, []);
+
+  const products = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
   return (
     <>
-      <div className="px-6 md:pl-6 lg:pl-12 pt-16 w-full md:w-3/5">
+      <div className="px-6 md:pl-6 lg:pl-12 pt-2 md:pt-16 w-full md:w-3/5">
         <h3 className="text-3xl mb-2">shopping cart</h3>
         <p className="text-zinc-500 text-sm font-extralight mb-8">
           showing <span>2</span> products you added
@@ -31,18 +54,26 @@ function Cart() {
           <CartProduct />
           <CartProduct />
         </div>
-        <div className="w-full md:w-2/5">
+        <div className="w-full md:w-2/5 mt-16 md:mt-0">
           <OrderSummary />
         </div>
       </div>
-
-      <div className="px-6 lg:px-12 pt-16 flex justify-between">
+      <div className="px-6 lg:px-12 py-16 flex justify-between">
         <h4 className="text-3xl">similar products</h4>
-        <NavLink to="/NewArrivals" className={"underline hover:no-underline"}>
+        <NavLink
+          to="/NewArrivals"
+          className={"underline hover:no-underline text-nowrap"}
+        >
           view all
         </NavLink>
       </div>
-      <Slide />
+      <div className="px-6 lg:px-12 pb-16 flex justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-hidden md:justify-between">
+          {products.slice(0, columnCount).map((_, index) => (
+            <ProductCard key={index} />
+          ))}
+        </div>
+      </div>
     </>
   );
 }

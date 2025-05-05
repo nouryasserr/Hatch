@@ -6,6 +6,7 @@ export default {
       colors: {
         primary: "#5632C9",
         secondary: "#ff0000",
+        blackmuted: "#404040",
       },
     },
     screens: {

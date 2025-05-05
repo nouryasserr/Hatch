@@ -14,11 +14,3 @@
 .price {
   font-family: "Inter Variable", sans-serif;
 }
-
-.hoverable:hover {
-  cursor: none;
-}
-
-.blackMuted70 {
-  color: #404040;
-}

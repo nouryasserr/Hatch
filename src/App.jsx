@@ -20,6 +20,7 @@ import Layout from "./components/Layout/Layout";
 import { Toaster } from "react-hot-toast";
 import Error404 from "./pages/Error404/Error404";
 import Sale from "./pages/Sale/Sale";
+import UserAccount from "./pages/userAccount/userAccount";
 function App() {
   const router = createBrowserRouter([
     {
@@ -42,6 +43,7 @@ function App() {
         { path: "/Sale", element: <Sale /> },
         { path: "/Signin", element: <Signin /> },
         { path: "/Signup", element: <Signup /> },
+        { path: "/UserAccount", element: <UserAccount /> },
         { path: "/Wishlist", element: <Wishlist /> },
         { path: "*", element: <Error404 /> },
       ],

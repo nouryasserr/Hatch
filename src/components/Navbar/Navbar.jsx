@@ -63,7 +63,9 @@ function Navbar() {
           <NavLink to="/Wishlist">
             <i className="fa-regular fa-heart border border-black bg-black p-2.5 xl:p-3 rounded-full text-white hover:bg-white hover:text-black transition"></i>
           </NavLink>
-          <i className="fa-regular fa-user bg-black border border-black p-2.5 xl:py-3 px-[0.70rem] xl:px-[0.80rem] rounded-full text-white hover:bg-white hover:text-black transition"></i>
+          <NavLink to="/UserAccount">
+            <i className="fa-regular fa-user bg-black border border-black p-2.5 xl:py-3 px-[0.70rem] xl:px-[0.80rem] rounded-full text-white hover:bg-white hover:text-black transition"></i>
+          </NavLink>
         </div>
       </div>
       {menuOpen && (
