@@ -1,8 +1,10 @@
 import { useState } from "react";
 import Category from "../../components/Category/Category";
 import ProductCard from "../../components/ProductCard/ProductCard";
-import ProductSlide from "../../components/Productslide/Productslide";
+import Slide from "../../components/Slide/Slide";
 import { useEffect } from "react";
+import ProductsSlider from "../../components/ProductsSlider/ProductsSlider";
+import { NavLink } from "react-router-dom";
 
 function Home() {
   const [columnCount, setColumnCount] = useState(1);
@@ -47,17 +49,26 @@ function Home() {
           </div>
         </div>
       </div>
-      <div className="px-6 lg:px-12 py-6 flex flex-wrap sm:flex-nowrap gap-2 justify-center sm:justify-between items-center">
-        <h4 className="text-base lg:lg:text-xl font-medium">est 2025</h4>
+      <div className="mx-6 flex md:hidden justify-end items-center gap-2 text-xs">
+        <i className="fa-solid fa-arrow-left border border-black py-1 pt-1.5 px-5 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
+        <p className="text-zinc-500 ">
+          <span className="underline text-black">01</span>/05
+        </p>
+        <i className="fa-solid fa-arrow-right border border-black bg-black text-white py-1 pt-1.5 px-5 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
+      </div>
+      <div className="px-6 lg:px-12 pt-6 md:pt-0 pb-6 flex flex-wrap sm:flex-nowrap gap-2 justify-center sm:justify-between items-center">
+        <h4 className="text-base lg:lg:text-xl font-medium sm:w-52 md:w-56 lg:w-60 xl:w-64">
+          est 2025
+        </h4>
         <h4 className="text-base lg:text-xl font-medium text-center">
           empowering brands to break through
         </h4>
-        <div className="flex items-center gap-4 md:gap-8 text-base lg:text-xl font-medium">
-          <i className="fa-solid fa-arrow-left border-2 border-blackpy-1 py-1 md:py-1.5 pt-1.5 md:pt-2 px-6 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
+        <div className="hidden md:flex items-center gap-4 lg:gap-7 xl:gap-8  text-xs lg:text-xl">
+          <i className="fa-solid fa-arrow-left border border-black py-1.5 pt-2 px-6 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
           <p className="text-zinc-500 ">
             <span className="underline text-black">01</span>/05
           </p>
-          <i className="fa-solid fa-arrow-right border-2 border-black bg-black text-white py-1 md:py-1.5 pt-1.5 md:pt-2 px-6 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
+          <i className="fa-solid fa-arrow-right border border-black bg-black text-white py-1.5 pt-2 px-6 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
         </div>
       </div>
       {/* end-slider */}
@@ -290,7 +301,7 @@ function Home() {
         <h5 className="text-white text-sm lg:text-lg">JEANS</h5>
       </div>
       {/* new-arrivals */}
-      <div className="py-16 md:py-20 px-6 lg:px-12">
+      <div className="pt-16 md:pt-20 pb-6 md:pb-16 px-6 lg:px-12">
         <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-16 md:gap-2">
           <div className="w-full md:w-1/2 lg:w-2/5">
             <h1 className="text-4xl sm:text-6xl lg:text-9xl mb-0 sm:mb-6">
@@ -307,14 +318,22 @@ function Home() {
         </div>
       </div>
       <div className="px-6 lg:px-12 flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-hidden md:justify-between">
           {products.slice(0, columnCount).map((_, index) => (
             <ProductCard key={index} />
           ))}
         </div>
       </div>
+      <ProductsSlider />
+      <NavLink
+        to="/FreshDrops"
+        className={
+          "px-6 lg:px-12 pt-6 flex justify-end underline text-2xl font-medium hover:no-underline transition duration-300 ease-in-out delay-150"
+        }
+      >
+        view all
+      </NavLink>
       {/* end-new-arrivals */}
-      {/* <ProductSlide /> */}
       {/* categories */}
       <div className="mt-16 py-16 md:py-20 px-6 lg:px-12 bg-black flex flex-col">
         <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl text-white mb-10 md:mb-0">
@@ -351,7 +370,7 @@ function Home() {
         </div>
       </div>
       {/* end-best-sales */}
-      <ProductSlide />
+      <Slide />
       {/* why-us */}
       <div className="my-16 py-16 md:py-20 px-6 lg:px-12 bg-black flex flex-col text-white">
         <div className="flex flex-col md:flex-row gap-2 sm:gap-8 md:gap-0 justify-between">

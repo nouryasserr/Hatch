@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import CartProduct from "../../components/CartProduct/CartProduct";
-import ProductSlide from "../../components/ProductSlide/Productslide";
+import Slide from "../../components/Slide/Slide";
 import OrderSummary from "../../components/orderSummary/OrderSummary";
 
 function Cart() {
@@ -42,7 +42,7 @@ function Cart() {
           view all
         </NavLink>
       </div>
-      <ProductSlide />
+      <Slide />
     </>
   );
 }
