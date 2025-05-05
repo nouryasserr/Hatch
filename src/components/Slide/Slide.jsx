@@ -1,7 +1,7 @@
-import "./ProductSlide.css";
+import "./Slide.css";
 import Product from "../Product/Product";
 
-function ProductSlide() {
+function Slide() {
   return (
     <>
       <Product />
@@ -31,4 +31,4 @@ function ProductSlide() {
   );
 }
 
-export default ProductSlide;
+export default Slide;

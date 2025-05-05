@@ -1,9 +1,9 @@
-import Productslide from "../../components/Productslide/Productslide";
+import Slide from "../../components/Slide/Slide";
 
 function BestSales() {
   return (
     <>
-      <Productslide />
+      <Slide />
     </>
   );
 }
