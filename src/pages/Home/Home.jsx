@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Category from "../../components/Category/Category";
 import ProductCard from "../../components/ProductCard/ProductCard";
-import Slide from "../../components/Slide/Slide";
 import { useEffect } from "react";
 import ProductsSlider from "../../components/ProductsSlider/ProductsSlider";
 import { NavLink } from "react-router-dom";
@@ -370,7 +369,22 @@ function Home() {
         </div>
       </div>
       {/* end-best-sales */}
-      <Slide />
+      <div className="px-6 lg:px-12 flex justify-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-hidden md:justify-between">
+          {products.slice(0, columnCount).map((_, index) => (
+            <ProductCard key={index} />
+          ))}
+        </div>
+      </div>
+      <ProductsSlider />
+      <NavLink
+        to="/BestSales"
+        className={
+          "px-6 lg:px-12 pt-6 flex justify-end underline text-2xl font-medium hover:no-underline transition duration-300 ease-in-out delay-150"
+        }
+      >
+        view all
+      </NavLink>
       {/* why-us */}
       <div className="my-16 py-16 md:py-20 px-6 lg:px-12 bg-black flex flex-col text-white">
         <div className="flex flex-col md:flex-row gap-2 sm:gap-8 md:gap-0 justify-between">
@@ -380,7 +394,9 @@ function Home() {
             </h6>
             <p className="text-zinc-400 text-xs">
               Get informed get quick response to your questions through{" "}
-              <span className="underline">this link</span>
+              <span className="underline text-white cursor-pointer">
+                this link
+              </span>
             </p>
           </div>
           <h2 className="text-2xl sm:text-4xl lg:text-5xl w-full sm:w-2/4 lg:w-2/5 md:text-end font-extralight">
