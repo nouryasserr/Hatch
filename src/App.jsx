@@ -10,7 +10,6 @@ import FreshDrops from "./pages/FreshDrops/FreshDrops";
 import Home from "./pages/Home/Home";
 import Otp from "./pages/Otp/Otp";
 import ProductDetails from "./pages/ProductDetails/ProductDetails";
-import ResetPass1 from "./pages/ResetPass1/ResetPass1";
 import ResetPass2 from "./pages/ResetPass2/ResetPass2";
 import ResetPass3 from "./pages/ResetPass3/ResetPass3";
 import Signin from "./pages/Signin/Signin";
@@ -37,7 +36,6 @@ function App() {
         { path: "/FreshDrops", element: <FreshDrops /> },
         { path: "/Otp", element: <Otp /> },
         { path: "/ProductDetails", element: <ProductDetails /> },
-        { path: "/ResetPass1", element: <ResetPass1 /> },
         { path: "/ResetPass2", element: <ResetPass2 /> },
         { path: "/ResetPass3", element: <ResetPass3 /> },
         { path: "/Sale", element: <Sale /> },
