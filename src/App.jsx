@@ -19,7 +19,7 @@ import Layout from "./components/Layout/Layout";
 import { Toaster } from "react-hot-toast";
 import Error404 from "./pages/Error404/Error404";
 import Sale from "./pages/Sale/Sale";
-import UserAccount from "./pages/userAccount/userAccount";
+import UserAccount from "./pages/UserAccount/UserAccount";
 function App() {
   const router = createBrowserRouter([
     {
