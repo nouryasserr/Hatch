@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import ForgetPassword from "../../components/ForgetPassword/ForgetPassword";
 import { object, string } from "yup";
 
 function Signin() {
@@ -25,6 +26,7 @@ function Signin() {
     validationSchema: validate,
     onSubmit: sendDataToApi,
   });
+  const [showForget, setShowForget] = useState(false);
   async function sendDataToApi(values) {
     const loadingToastId = toast.loading("logging in...");
     try {
@@ -125,9 +127,16 @@ function Signin() {
               <p className="text-red-500">*{inncorrectEmailOrPassword}</p>
             )}
           </div>
-          <p className="text-black underline cursor-pointer text-base">
+          <button
+            type="button"
+            className="text-black underline cursor-pointer text-base"
+            onClick={() => setShowForget(true)}
+          >
             forget password?
-          </p>
+          </button>
+          {/* <p className="text-black underline cursor-pointer text-base">
+            forget password?
+          </p> */}
           <button
             type="submit"
             className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
@@ -145,6 +154,7 @@ function Signin() {
           </p>
         </form>
       </div>
+      {showForget && <ForgetPassword onClose={() => setShowForget(false)} />}
     </>
   );
 }
