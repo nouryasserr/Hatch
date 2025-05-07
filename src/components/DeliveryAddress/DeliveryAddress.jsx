@@ -1,10 +1,17 @@
+import { useState } from "react";
+import CheckoutAdress from "../CheckoutAdress/CheckoutAdress";
+
 function DeliveryAddress() {
+  const [showCheckout, setShowCheckout] = useState(false);
   return (
     <>
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row justify-between gap-2 sm:items-center mb-4">
           <h4 className="text-2xl">delivery address</h4>
-          <button className="flex items-center gap-2 py-2 px-4 border border-blackmuted rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150">
+          <button
+            onClick={() => setShowCheckout(true)}
+            className="flex items-center gap-2 py-2 px-4 border border-blackmuted rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150"
+          >
             <i className="fa-solid fa-plus"></i>
             <span>Add New Address</span>
           </button>
@@ -19,6 +26,9 @@ function DeliveryAddress() {
           </div>
         </div>
       </div>
+      {showCheckout && (
+        <CheckoutAdress onClose={() => setShowCheckout(false)} />
+      )}
     </>
   );
 }

@@ -134,9 +134,6 @@ function Signin() {
           >
             forget password?
           </button>
-          {/* <p className="text-black underline cursor-pointer text-base">
-            forget password?
-          </p> */}
           <button
             type="submit"
             className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
