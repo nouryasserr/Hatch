@@ -16,8 +16,8 @@ function CartProduct() {
               <p className="text-zinc-400 text-xs lg:text-sm lg:mb-2">
                 category name
               </p>
-              <h5 className="text-lg lg:text-xl lg:mb-2">product name</h5>
-              <h4 className="text-lg lg:text-2xl">1200 EGP</h4>
+              <h4 className="text-lg lg:text-xl lg:mb-2">product name</h4>
+              <h3 className="text-lg lg:text-2xl">1200 EGP</h3>
             </div>
           </div>
           <div className="flex items-center justify-between w-full xs:w-fit">

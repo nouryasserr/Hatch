@@ -81,7 +81,7 @@ function Footer() {
           <div className="w-full md:w-1/2 lg:w-2/5 flex flex-col md:items-end gap-16 md:gap-0 justify-between">
             <h2 className="text-4xl lg:text-5xl font-light md:text-end">
               "stay updated with the latest {""}
-              <span className="text-neutral-500">
+              <span className="text-lightblack">
                 exclusive offers and product launches {""}
               </span>
               from hatch.

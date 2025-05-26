@@ -11,13 +11,13 @@ function Navbar() {
         <NavLink to="/">
           <img src={logo} alt="logo" className="w-20 xl:w-24" />
         </NavLink>
-        <div className="hidden xs:flex lg:hidden gap-2 items-center border border-slate-800 rounded-full px-5 py-1.5 w-3/4">
-          <i className="fa-solid fa-magnifying-glass text-slate-800"></i>
+        <div className="hidden xs:flex lg:hidden gap-2 items-center border border-black rounded-full px-5 py-1.5 w-3/4">
+          <i className="fa-solid fa-magnifying-glass text-blackmuted"></i>
           <input
             type="text"
             name="search"
             placeholder="search"
-            className="outline-none placeholder:text-slate-800 placeholder:font-medium w-full"
+            className="outline-none placeholder:text-blackmuted w-full"
           />
         </div>
         <div className="lg:hidden">
@@ -47,24 +47,27 @@ function Navbar() {
             </li>
           ))}
         </ul>
-        <div className="hidden lg:flex gap-2 items-center border border-slate-800 rounded-full px-5 py-1.5 xl:py-2 w-64 xl:w-1/3">
-          <i className="fa-solid fa-magnifying-glass text-slate-800"></i>
+        <div className="hidden lg:flex gap-2 items-center border border-black rounded-full px-5 py-1.5 xl:py-2 w-64 xl:w-1/3">
+          <i className="fa-solid fa-magnifying-glass text-blackmuted"></i>
           <input
             type="text"
             name="search"
             placeholder="search"
-            className="outline-none placeholder:text-slate-800 placeholder:font-medium w-full"
+            className="outline-none placeholder:text-blackmuted w-full"
           />
         </div>
         <div className="hidden lg:flex gap-2 items-center">
-          <NavLink to="/Cart">
-            <i className="fa-solid fa-cart-shopping border border-black bg-black p-2.5 xl:p-3 rounded-full text-white hover:bg-white hover:text-black transition"></i>
+          <NavLink to="/Cart" className={"relative"}>
+            <i className="fa-solid fa-cart-shopping border border-black bg-black p-2.5 xl:p-3 rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
+            <div className="flex justify-center items-center text-center h-5 w-5 border-2 border-white rounded-full bg-secondary text-white absolute right-0 top-0 translate-x-1/4 -translate-y-1/4">
+              <i className="fa-solid fa-info text-xs"></i>
+            </div>
           </NavLink>
           <NavLink to="/Wishlist">
-            <i className="fa-regular fa-heart border border-black bg-black p-2.5 xl:p-3 rounded-full text-white hover:bg-white hover:text-black transition"></i>
+            <i className="fa-regular fa-heart border border-black bg-black p-2.5 xl:p-3 rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
           </NavLink>
           <NavLink to="/UserAccount">
-            <i className="fa-regular fa-user bg-black border border-black p-2.5 xl:py-3 px-[0.70rem] xl:px-[0.80rem] rounded-full text-white hover:bg-white hover:text-black transition"></i>
+            <i className="fa-regular fa-user bg-black border border-black p-2.5 xl:py-3 px-[0.70rem] xl:px-[0.80rem] rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
           </NavLink>
         </div>
       </div>
@@ -93,21 +96,22 @@ function Navbar() {
             ))}
           </ul>
           <div className="flex gap-4 pt-2">
-            <NavLink to="/Cart">
-              <i className="fa-solid fa-cart-shopping border border-black bg-black p-2.5 rounded-full text-white hover:bg-white hover:text-black transition"></i>
+            <NavLink to="/Cart" className={"relative"}>
+              <i className="fa-solid fa-cart-shopping border border-black bg-black p-2.5 rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
+              <div className="flex justify-center items-center h-5 w-5 border-2 border-white rounded-full bg-secondary text-white absolute right-0 top-0 translate-x-1/4 -translate-y-1/4"></div>
             </NavLink>
             <NavLink to="/Wishlist">
-              <i className="fa-regular fa-heart border border-black bg-black p-2.5 rounded-full text-white hover:bg-white hover:text-black transition"></i>
+              <i className="fa-regular fa-heart border border-black bg-black p-2.5 rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
             </NavLink>
-            <i className="fa-regular fa-user bg-black border border-black py-2.5 px-[0.700rem] rounded-full text-white hover:bg-white hover:text-black transition"></i>
+            <i className="fa-regular fa-user bg-black border border-black py-2.5 px-[0.700rem] rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
           </div>
-          <div className="flex xs:hidden gap-2 items-center border border-slate-800 rounded-full px-5 py-1.5">
-            <i className="fa-solid fa-magnifying-glass text-slate-800"></i>
+          <div className="flex xs:hidden gap-2 items-center border border-black rounded-full px-5 py-1.5">
+            <i className="fa-solid fa-magnifying-glass text-blackmuted"></i>
             <input
               type="text"
               name="search"
               placeholder="search"
-              className="outline-none placeholder:text-slate-800 placeholder:font-medium w-full"
+              className="outline-none placeholder:text-blackmuted w-full"
             />
           </div>
         </div>
