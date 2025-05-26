@@ -1,47 +1,62 @@
 import { useState } from "react";
 import Category from "../../components/Category/Category";
-import ProductCard from "../../components/ProductCard/ProductCard";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import ProductsSlider from "../../components/ProductsSlider/ProductsSlider";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
+import Loader from "../../components/Loader/Loader";
 
 function Home() {
-  const [columnCount, setColumnCount] = useState(1);
+  // auto-slider
+  const sliderRef = useRef(null);
+  const trackRef = useRef(null);
 
   useEffect(() => {
-    const getColumnCount = () => {
-      const width = window.innerWidth;
-      if (width >= 1280) return 5;
-      if (width >= 1025) return 4;
-      if (width >= 769) return 3;
-      if (width >= 640) return 2;
-      return 1;
-    };
-
-    const updateColumnCount = () => {
-      setColumnCount(getColumnCount());
-    };
-
-    updateColumnCount();
-    window.addEventListener("resize", updateColumnCount);
-    return () => window.removeEventListener("resize", updateColumnCount);
+    const slider = sliderRef.current;
+    const track = trackRef.current;
+    if (!slider || !track) return;
+    const clone = track.innerHTML;
+    track.innerHTML += clone;
+    let scrollAmount = 0;
+    function step() {
+      scrollAmount += 0.4;
+      if (scrollAmount >= track.scrollWidth / 2) {
+        scrollAmount = 0;
+      }
+      slider.scrollLeft = scrollAmount;
+      requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+    return () => cancelAnimationFrame(step);
   }, []);
-
-  const products = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
-
+  // end-auto-slider
+  // fetch-products
+  const [productsData, setProductsData] = useState(null);
+  async function getProducts() {
+    const options = {
+      url: "https://ecommerce.routemisr.com/api/v1/products",
+      method: "GET",
+    };
+    let { data } = await axios.request(options);
+    setProductsData(data.data);
+  }
+  useEffect(() => {
+    getProducts();
+  }, []);
+  // end-fetch-products
   return (
     <>
-      {/* slider */}
+      {/* main-slider */}
       <div className="p-6 pt-0">
         <div className="h-[300px] md:h-[500px] lg:h-[550px] w-full bg-black rounded-3xl py-6 md:py-16 px-6 flex flex-col sm:flex-row sm:items-center justify-end sm:justify-between">
           <div className="w-3/5 md:w-3/4 text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white mb-4 sm:mb-0">
             exclusive
           </div>
           <div className="w-full sm:w-1/3 xl:w-1/5 self-end">
-            <h5 className="text-white mb-2 md:mb-4 text-base md:text-lg">
+            <h6 className="text-white mb-2 md:mb-4 text-base md:text-lg">
               hatch objectives
-            </h5>
-            <p className="text-zinc-400 text-sm md:tsxt-base">
+            </h6>
+            <p className="text-lightblack text-sm md:text-base">
               Real-world examples of how we have helped companies achieve their
               marketing objectives.
             </p>
@@ -50,7 +65,7 @@ function Home() {
       </div>
       <div className="mx-6 flex md:hidden justify-end items-center gap-2 text-xs">
         <i className="fa-solid fa-arrow-left border border-black py-1 pt-1.5 px-5 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
-        <p className="text-zinc-500 ">
+        <p className="text-lightblack">
           <span className="underline text-black">01</span>/05
         </p>
         <i className="fa-solid fa-arrow-right border border-black bg-black text-white py-1 pt-1.5 px-5 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
@@ -64,241 +79,281 @@ function Home() {
         </h4>
         <div className="hidden md:flex items-center gap-4 lg:gap-7 xl:gap-8  text-xs lg:text-xl">
           <i className="fa-solid fa-arrow-left border border-black py-1.5 pt-2 px-6 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
-          <p className="text-zinc-500 ">
+          <p className="text-lightblack">
             <span className="underline text-black">01</span>/05
           </p>
           <i className="fa-solid fa-arrow-right border border-black bg-black text-white py-1.5 pt-2 px-6 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
         </div>
       </div>
-      {/* end-slider */}
-      <div className="bg-black px-2 py-5 flex justify-between items-center gap-2 overflow-x-hidden">
-        <h5 className="text-white text-sm lg:text-lg">CAP</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
+      {/* end-main-slider */}
+      {/* auto-slider */}
+      <div
+        ref={sliderRef}
+        className="bg-black px-2 py-2 pt-3 md:py-5 overflow-x-hidden whitespace-nowrap"
+        style={{ width: "100%" }}
+      >
+        <div
+          ref={trackRef}
+          className="slider-track flex gap-4 md:gap-10 items-center inline-flex"
+          style={{ display: "inline-flex" }}
         >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">TROUSER</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">CAP</h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">SHORTS</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">
+            TROUSER
+          </h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">SHOES</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">SHORTS</h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">SOCKS</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">SHOES</h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">JACKET</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">SOCKS</h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">HOODIE</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">JACKET</h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">GLASSES</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">HOODIE</h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">BAG</h5>
-        <svg
-          width="14px"
-          height="24px"
-          viewBox="0 0 24.00 24.00"
-          fill="#ffffff"
-          xmlns="http://www.w3.org/2000/svg"
-          stroke="#ffffff"
-        >
-          <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
-          <g
-            id="SVGRepotracerCarrier"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          ></g>
-          <g id="SVGRepoIconCarrier">
-            <path
-              d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
-              stroke="#ffffff"
-              strokeWidth="1.5"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">
+            GLASSES
+          </h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
               strokeLinecap="round"
               strokeLinejoin="round"
-            ></path>
-          </g>
-        </svg>
-        <h5 className="text-white text-sm lg:text-lg">JEANS</h5>
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">BAG</h5>
+          <svg
+            width="14px"
+            height="24px"
+            viewBox="0 0 24.00 24.00"
+            fill="#ffffff"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#ffffff"
+          >
+            <g id="SVGRepoBgCarrier" strokeWidth="0"></g>
+            <g
+              id="SVGRepotracerCarrier"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></g>
+            <g id="SVGRepoIconCarrier">
+              <path
+                d="M12 3C12 7.97056 16.0294 12 21 12C16.0294 12 12 16.0294 12 21C12 16.0294 7.97056 12 3 12C7.97056 12 12 7.97056 12 3Z"
+                stroke="#ffffff"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              ></path>
+            </g>
+          </svg>
+          <h5 className="text-white text-sm lg:text-lg inline-block">JEANS</h5>
+        </div>
       </div>
+      {/* end-auto-slider */}
       {/* new-arrivals */}
       <div className="pt-16 md:pt-20 pb-6 md:pb-16 px-6 lg:px-12">
         <div className="flex flex-col md:flex-row justify-between items-center gap-2 md:gap-16 md:gap-2">
@@ -308,7 +363,7 @@ function Home() {
             </h1>
           </div>
           <div className="w-full md:w-1/2 lg:w-3/12 self-end">
-            <h4 className="text-4xl mb-4">stay ahead of the trends</h4>
+            <h1 className="text-4xl mb-4">stay ahead of the trends</h1>
             <p className="font-extralight">
               discover the latest additions to our collection. Fresh styles,
               trending designs, and must have pieces - just in!
@@ -316,14 +371,13 @@ function Home() {
           </div>
         </div>
       </div>
-      <div className="px-6 lg:px-12 flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-hidden md:justify-between">
-          {products.slice(0, columnCount).map((_, index) => (
-            <ProductCard key={index} />
-          ))}
-        </div>
+      <div className="px-6 lg:px-12">
+        {!productsData ? (
+          <Loader />
+        ) : (
+          <ProductsSlider productsData={productsData} />
+        )}
       </div>
-      <ProductsSlider />
       <NavLink
         to="/FreshDrops"
         className={
@@ -339,8 +393,8 @@ function Home() {
           categories
         </h1>
         <div className="text-white w-full md:w-1/3 lg:w-1/4 self-end">
-          <h4 className="text-2xl mb-2 md:mb-4">find your perfect match</h4>
-          <p className="font-extralight text-zinc-400 text-sm">
+          <h3 className="text-2xl mb-2 md:mb-4">find your perfect match</h3>
+          <p className="font-extralight text-lightblack text-sm">
             browse through our curated selections and discover styles that suit
             every occasion.
           </p>
@@ -360,7 +414,7 @@ function Home() {
             </h1>
           </div>
           <div className="w-full md:w-1/2 lg:w-3/12 self-end">
-            <h4 className="text-3xl mb-4">don't miss out</h4>
+            <h2 className="text-3xl mb-4">don't miss out</h2>
             <p className="font-extralight">
               shop our top deals and grap your favourites at unbeatable prices
               before they're gone!
@@ -368,15 +422,13 @@ function Home() {
           </div>
         </div>
       </div>
-      {/* end-best-sales */}
-      <div className="px-6 lg:px-12 flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-hidden md:justify-between">
-          {products.slice(0, columnCount).map((_, index) => (
-            <ProductCard key={index} />
-          ))}
-        </div>
+      <div className="px-6 lg:px-12">
+        {!productsData ? (
+          <Loader />
+        ) : (
+          <ProductsSlider productsData={productsData} />
+        )}
       </div>
-      <ProductsSlider />
       <NavLink
         to="/BestSales"
         className={
@@ -385,45 +437,46 @@ function Home() {
       >
         view all
       </NavLink>
+      {/* end-best-sales */}
       {/* why-us */}
       <div className="my-16 py-16 md:py-20 px-6 lg:px-12 bg-black flex flex-col text-white">
         <div className="flex flex-col md:flex-row gap-2 sm:gap-8 md:gap-0 justify-between">
           <div className="w-full sm:w-1/4">
-            <h6 className="text-white mb-4 text-sm">
+            <p className="text-white mb-4 text-sm">
               hatch - empowering brands to break through
-            </h6>
-            <p className="text-zinc-400 text-xs">
+            </p>
+            <p className="text-lightblack text-xs">
               Get informed get quick response to your questions through{" "}
               <span className="underline text-white cursor-pointer">
                 this link
               </span>
             </p>
           </div>
-          <h2 className="text-2xl sm:text-4xl lg:text-5xl w-full sm:w-2/4 lg:w-2/5 md:text-end font-extralight">
+          <h3 className="text-2xl sm:text-4xl lg:text-5xl w-full sm:w-2/4 lg:w-2/5 md:text-end font-extralight">
             "connect{" "}
-            <span className="text-zinc-700">
+            <span className="text-blackmuted">
               with <br /> emerging brands and discover quality products at great
               prices - all
             </span>{" "}
             in one place with hatch.
-          </h2>
+          </h3>
         </div>
         <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between mt-6 sm:mt-16">
           <h1 className="text-4xl md:text-8xl md:w-1/5">why htach?</h1>
           <div className="w-full md:w-1/4 flex flex-col gap-8">
             <i className="fa-solid fa-arrow-right origin-center -rotate-45 text-5xl self-end w-fit hidden md:block"></i>
             <div className="mb-8">
-              <h5 className="text-xl mb-4">01</h5>
-              <h5 className="text-xl mb-4">INCLUSIVE COLLABORATION</h5>
-              <p className="text-zinc-400 text-sm">
+              <h4 className="text-xl mb-4">01</h4>
+              <h4 className="text-xl mb-4">INCLUSIVE COLLABORATION</h4>
+              <p className="text-lightblack text-sm">
                 Beyond photography, we empower diverse creatives , including
                 under privileged talents.
               </p>
             </div>
             <div>
-              <h5 className="text-xl mb-4">02</h5>
-              <h5 className="text-xl mb-4">UNIQUE & CINEMATIC CONCEPT</h5>
-              <p className="text-zinc-400 text-sm">
+              <h4 className="text-xl mb-4">02</h4>
+              <h4 className="text-xl mb-4">UNIQUE & CINEMATIC CONCEPT</h4>
+              <p className="text-lightblack text-sm">
                 Every shot tells a story, crafted with cinematic lighting &
                 composition.
               </p>
