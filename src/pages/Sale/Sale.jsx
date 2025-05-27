@@ -1,12 +1,25 @@
-import ProductCard from "../../components/ProductCard/ProductCard";
-import ProductsSlider from "../../components/ProductsSlider/ProductsSlider";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Loader from "../../components/Loader/Loader";
+import Products from "../../components/Products/Products";
 
 function Sale() {
+  const [productsData, setProductsData] = useState(null);
+  async function getProducts() {
+    const options = {
+      url: "https://ecommerce.routemisr.com/api/v1/products",
+      method: "GET",
+    };
+    let { data } = await axios.request(options);
+    setProductsData(data.data);
+  }
+  useEffect(() => {
+    getProducts();
+  }, []);
   return (
     <>
-      {" "}
       <div className="px-6 lg:px-12 my-2 sm:my-6">
-        <h3 className="text-2xl md:text-4xl mb-2">Sales</h3>
+        <h3 className="text-2xl md:text-4xl mb-2 text-secondary">Sales</h3>
         <p>20 products</p>
         <div className="flex gap-2 mt-4 flex-col md:flex-row">
           <div className="flex gap-2 items-center border border-blackmuted px-4 py-2 grow">
@@ -29,25 +42,12 @@ function Sale() {
             </button>
           </div>
         </div>
-        <div className="flex flex-wrap justify-center md:justify-between gap-4 mt-8">
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-          <ProductCard />
-        </div>
-        <div className="flex justify-center">
-          <ProductsSlider />
+        <div className="mt-12">
+          {!productsData ? (
+            <Loader />
+          ) : (
+            <Products productsData={productsData} />
+          )}
         </div>
       </div>
     </>

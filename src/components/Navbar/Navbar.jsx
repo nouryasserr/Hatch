@@ -98,7 +98,9 @@ function Navbar() {
           <div className="flex gap-4 pt-2">
             <NavLink to="/Cart" className={"relative"}>
               <i className="fa-solid fa-cart-shopping border border-black bg-black p-2.5 rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
-              <div className="flex justify-center items-center h-5 w-5 border-2 border-white rounded-full bg-secondary text-white absolute right-0 top-0 translate-x-1/4 -translate-y-1/4"></div>
+              <div className="flex justify-center items-center h-5 w-5 border-2 border-white rounded-full bg-secondary text-white absolute right-0 top-0 translate-x-1/4 -translate-y-1/4">
+                <i className="fa-solid fa-info text-xs"></i>
+              </div>
             </NavLink>
             <NavLink to="/Wishlist">
               <i className="fa-regular fa-heart border border-black bg-black p-2.5 rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>

@@ -1,32 +1,26 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import ProductCard from "../../components/ProductCard/ProductCard";
 import CartProduct from "../../components/CartProduct/CartProduct";
 import OrderSummary from "../../components/OrderSummary/OrderSummary";
+import axios from "axios";
+import Loader from "../../components/Loader/Loader";
+import SlimilarProducts from "../../components/SimilarProducts/SlimilarProducts";
 
 function Cart() {
-  const [columnCount, setColumnCount] = useState(1);
-
+  // fetch-products
+  const [productsData, setProductsData] = useState(null);
+  async function getProducts() {
+    const options = {
+      url: "https://ecommerce.routemisr.com/api/v1/products",
+      method: "GET",
+    };
+    let { data } = await axios.request(options);
+    setProductsData(data.data);
+  }
   useEffect(() => {
-    const getColumnCount = () => {
-      const width = window.innerWidth;
-      if (width >= 1280) return 5;
-      if (width >= 1025) return 4;
-      if (width >= 769) return 3;
-      if (width >= 640) return 2;
-      return 1;
-    };
-
-    const updateColumnCount = () => {
-      setColumnCount(getColumnCount());
-    };
-
-    updateColumnCount();
-    window.addEventListener("resize", updateColumnCount);
-    return () => window.removeEventListener("resize", updateColumnCount);
+    getProducts();
   }, []);
-
-  const products = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+  // end-fetch-products
   return (
     <>
       <div className="px-6 md:pl-6 lg:pl-12 pt-2 md:pt-16 w-full md:w-3/5">
@@ -58,7 +52,7 @@ function Cart() {
           <OrderSummary />
         </div>
       </div>
-      <div className="px-6 lg:px-12 py-16 flex justify-between">
+      <div className="px-6 lg:px-12 pt-16 pb-4 flex justify-between">
         <h4 className="text-3xl">similar products</h4>
         <NavLink
           to="/NewArrivals"
@@ -67,12 +61,12 @@ function Cart() {
           view all
         </NavLink>
       </div>
-      <div className="px-6 lg:px-12 pb-16 flex justify-center">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 overflow-x-hidden md:justify-between">
-          {products.slice(0, columnCount).map((_, index) => (
-            <ProductCard key={index} />
-          ))}
-        </div>
+      <div className="pb-12">
+        {!productsData ? (
+          <Loader />
+        ) : (
+          <SlimilarProducts productsData={productsData} />
+        )}
       </div>
     </>
   );
