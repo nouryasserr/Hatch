@@ -16,7 +16,9 @@ function ProductsSlider({ productsData }) {
   } else if (windowWidth >= 640) {
     productsPerPage = 2;
   }
-  const totalPages = Math.ceil((productsData?.length || 0) / productsPerPage);
+  const totalPages = Math.ceil(
+    (productsData?.data?.length || 0) / productsPerPage
+  );
   const handleNext = () => {
     if (currentPage < totalPages - 1) setCurrentPage(currentPage + 1);
   };
@@ -24,7 +26,7 @@ function ProductsSlider({ productsData }) {
     if (currentPage > 0) setCurrentPage(currentPage - 1);
   };
   const startIndex = currentPage * productsPerPage;
-  const displayedProducts = productsData?.slice(
+  const displayedProducts = productsData?.data?.slice(
     startIndex,
     startIndex + productsPerPage
   );
@@ -38,7 +40,7 @@ function ProductsSlider({ productsData }) {
             className={`grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-8 overflow-x-hidden md:justify-between`}
           >
             {displayedProducts.map((product) => (
-              <ProductCard key={product._id} productInfo={product} />
+              <ProductCard key={product.id} productInfo={product} />
             ))}
           </div>
         )}
