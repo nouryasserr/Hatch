@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import "@fontsource-variable/archivo";
 import "@fontsource-variable/inter";
+import "react-image-gallery/styles/css/image-gallery.css";
 import "./index.css";
 import App from "./App.jsx";
 

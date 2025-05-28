@@ -1,16 +1,20 @@
+import { Link } from "react-router-dom";
+
 function ProductCard({ productInfo }) {
   const { imageCover, title, price } = productInfo;
   return (
     <>
-      <div className="relative max-w-[300px]">
+      <div className="relative w-56 overflow-hidden">
         <span className="absolute right-1 top-3 bg-black text-white font-extralight px-2.5 py-0.5 rounded-sm">
           New
         </span>
-        <img
-          src={imageCover}
-          alt="product"
-          className="object-cover h-64 w-full rounded-t"
-        />
+        <Link to={`/ProductDetails`}>
+          <img
+            src={imageCover}
+            alt="product"
+            className="object-contain object-center h-52 w-full rounded-t"
+          />
+        </Link>
         <div className="py-4 px-1.5">
           <div className="flex justify-between gap-4">
             <h5 className="text-lg font-medium line-clamp-1">{title}</h5>
