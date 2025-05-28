@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 function ProductCard({ productInfo }) {
-  const { imageCover, title, price } = productInfo;
+  const { images, name, price, sub_category } = productInfo;
   return (
     <>
       <div className="relative w-56 overflow-hidden">
@@ -10,20 +10,20 @@ function ProductCard({ productInfo }) {
         </span>
         <Link to={`/ProductDetails`}>
           <img
-            src={imageCover}
+            src={images}
             alt="product"
             className="object-contain object-center h-52 w-full rounded-t"
           />
         </Link>
         <div className="py-4 px-1.5">
           <div className="flex justify-between gap-4">
-            <h5 className="text-lg font-medium line-clamp-1">{title}</h5>
+            <h5 className="text-lg font-medium line-clamp-1">{name}</h5>
             <h5 className="text-lightblack text-lg text-nowrap">
               <span className="font-light">{price}</span> EGP
             </h5>
           </div>
           <div className="flex justify-between">
-            <p className="text-xs text-lightblack">brand name</p>
+            <p className="text-xs text-lightblack">{sub_category.name}</p>
             <p className="text-secondary text-xs font-semibold line-through">
               750 EGP
             </p>

@@ -18,7 +18,7 @@ function ProductsSlider({ productsData }) {
   };
 
   const startIndex = currentPage * productsPerPage;
-  const displayedProducts = productsData?.slice(
+  const displayedProducts = productsData?.data?.slice(
     startIndex,
     startIndex + productsPerPage
   );
@@ -31,7 +31,7 @@ function ProductsSlider({ productsData }) {
         ) : (
           <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-8 overflow-x-hidden md:justify-between">
             {displayedProducts.map((product) => (
-              <ProductCard key={product._id} productInfo={product} />
+              <ProductCard key={product.id} productInfo={product} />
             ))}
           </div>
         )}

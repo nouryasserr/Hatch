@@ -36,7 +36,7 @@ function Home() {
   const [productsData, setProductsData] = useState(null);
   async function getProducts() {
     const options = {
-      url: "https://ecommerce.routemisr.com/api/v1/products",
+      url: "http://127.0.0.1:8000/api/general/products",
       method: "GET",
     };
     let { data } = await axios.request(options);
