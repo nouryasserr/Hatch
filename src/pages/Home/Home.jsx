@@ -5,6 +5,8 @@ import ProductsSlider from "../../components/ProductsSlider/ProductsSlider";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../components/Loader/Loader";
+import hatch01 from "../../assets/imgs/hatch01.jpeg";
+import hatch02 from "../../assets/imgs/hatch02.avif";
 
 function Home() {
   // auto-slider
@@ -482,6 +484,14 @@ function Home() {
               </p>
             </div>
             <i className="fa-solid fa-arrow-right origin-center rotate-45 text-5xl self-end w-fit hidden md:block"></i>
+          </div>
+        </div>
+        <div className="flex flex-col md:flex-row gap-4 mt-16">
+          <div className="grow">
+            <img src={hatch01} className="md:h-72 lg:h-96 rounded w-full" />
+          </div>
+          <div className="grow">
+            <img src={hatch02} className="md:h-72 lg:h-96 rounded w-full" />
           </div>
         </div>
       </div>

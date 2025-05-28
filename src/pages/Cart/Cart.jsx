@@ -55,7 +55,7 @@ function Cart() {
       <div className="px-6 lg:px-12 pt-16 pb-4 flex justify-between">
         <h4 className="text-3xl">similar products</h4>
         <NavLink
-          to="/NewArrivals"
+          to="/FreshDrops"
           className={"underline hover:no-underline text-nowrap"}
         >
           view all
