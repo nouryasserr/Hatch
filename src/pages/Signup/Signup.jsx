@@ -43,7 +43,7 @@ function Signup() {
     const loadingToastId = toast.loading("creating account...");
     try {
       const options = {
-        url: "https://35ad-197-56-17-99.ngrok-free.app/api/register",
+        url: "hhttp://127.0.0.1:8000/api/register",
         method: "POST",
         data: values,
       };

@@ -36,7 +36,7 @@ function NotSignedIn() {
               <i className="fa-solid fa-arrow-right"></i>
             </NavLink>
             <NavLink
-              to="/Signin"
+              to="/Signup"
               className={
                 "mt-2 underline text-xs text-blackmuted hover:no-underline transition duration-300 ease-in-out delay-150"
               }

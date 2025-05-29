@@ -45,8 +45,8 @@ function Cart() {
       </div>
       <div className="flex justify-between flex-col md:flex-row">
         <div className="w-full md:w-3/5">
-          <CartProduct />
-          <CartProduct />
+          {/* <CartProduct />
+          <CartProduct /> */}
         </div>
         <div className="w-full md:w-2/5 mt-16 md:mt-0">
           <OrderSummary />

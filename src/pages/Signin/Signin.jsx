@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ForgetPassword from "../../components/ForgetPassword/ForgetPassword";
 import { object, string } from "yup";
+import { UserContext } from "../../context/User.context";
 
 function Signin() {
+  let { setToken } = useContext(UserContext);
   const [inncorrectEmailOrPassword, setIncorrectEmailOrPassword] =
     useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -31,13 +33,15 @@ function Signin() {
     const loadingToastId = toast.loading("logging in...");
     try {
       const options = {
-        url: "https://35ad-197-56-17-99.ngrok-free.app/api/login",
+        url: "http://127.0.0.1:8000/api/login",
         method: "POST",
         data: values,
       };
       let { data } = await axios(options);
       console.log("data of registration", data);
       if (data) {
+        localStorage.setItem("token", data.token);
+        setToken(data.token);
         toast.dismiss(loadingToastId);
         toast.success("logged in successfully!");
         setTimeout(() => {

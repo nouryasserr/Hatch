@@ -1,7 +1,9 @@
 import { Navigate } from "react-router-dom";
+import { UserContext } from "../../context/User.context";
+import { useContext } from "react";
 
 function GuestRoute({ children }) {
-  const token = true;
+  let { token } = useContext(UserContext);
   if (!token) {
     return children;
   } else {

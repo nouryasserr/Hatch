@@ -1,6 +1,5 @@
-import { useState } from "react";
 import Category from "../../components/Category/Category";
-import { useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import ProductsSlider from "../../components/ProductsSlider/ProductsSlider";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
