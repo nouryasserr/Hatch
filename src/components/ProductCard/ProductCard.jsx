@@ -1,18 +1,36 @@
 import { Link } from "react-router-dom";
 
 function ProductCard({ productInfo }) {
-  const { images, name, price, sub_category } = productInfo;
+  const { images, name, price, sub_category, created_at } = productInfo;
+  const isNewProduct = () => {
+    if (!created_at) return false;
+
+    const productDate = new Date(created_at);
+    const currentDate = new Date();
+    const diffTime = currentDate - productDate;
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    return diffDays <= 7;
+  };
+
   return (
     <>
       <div className="relative w-56 overflow-hidden">
-        <span className="absolute right-1 top-3 bg-black text-white font-extralight px-2.5 py-0.5 rounded-sm">
-          New
-        </span>
+        {isNewProduct() && (
+          <span className="absolute right-1 top-3 bg-black text-white font-extralight px-2.5 py-0.5 rounded-sm">
+            New
+          </span>
+        )}
         <Link to={`/ProductDetails`}>
           <img
-            src={images}
+            src={
+              images?.[0] || "https://placehold.co/200x200?text=Product+Image"
+            }
             alt="product"
             className="object-contain object-center h-52 w-full rounded-t"
+            onError={(e) => {
+              e.target.src = "https://placehold.co/200x200?text=Product+Image";
+            }}
           />
         </Link>
         <div className="py-4 px-1.5">

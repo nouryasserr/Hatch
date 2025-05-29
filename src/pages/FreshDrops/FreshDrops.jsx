@@ -7,7 +7,7 @@ function FreshDrops() {
   const [productsData, setProductsData] = useState(null);
   async function getProducts() {
     const options = {
-      url: "http://127.0.0.1:8000/api/general/products",
+      url: "http://127.0.0.1:8000/api/general/new_arrivals",
       method: "GET",
     };
     let { data } = await axios.request(options);

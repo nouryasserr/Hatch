@@ -20,6 +20,8 @@ import { Toaster } from "react-hot-toast";
 import Error404 from "./pages/Error404/Error404";
 import Sale from "./pages/Sale/Sale";
 import UserAccount from "./pages/UserAccount/UserAccount";
+import UserProvider from "./context/User.provider";
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -50,7 +52,9 @@ function App() {
 
   return (
     <>
-      <RouterProvider router={router} />
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
       <Toaster />
     </>
   );
