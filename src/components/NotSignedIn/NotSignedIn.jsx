@@ -27,7 +27,7 @@ function NotSignedIn() {
               this page is personal - please login to access your profile
             </p>
             <NavLink
-              to="/Signin"
+              to="/Auth/Signin"
               className={
                 "mt-4 sm:mt-0 flex items-center gap-2 hover:gap-3 transition duration-300 ease-in-out delay-150"
               }
@@ -36,7 +36,7 @@ function NotSignedIn() {
               <i className="fa-solid fa-arrow-right"></i>
             </NavLink>
             <NavLink
-              to="/Signup"
+              to="/Auth/Signup"
               className={
                 "mt-2 underline text-xs text-blackmuted hover:no-underline transition duration-300 ease-in-out delay-150"
               }
