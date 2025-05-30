@@ -1,15 +1,15 @@
 import { Link } from "react-router-dom";
 
 function ProductCard({ productInfo }) {
-  const { images, name, price, sub_category, created_at } = productInfo;
+  const { images, name, price, sub_category, created_at, discounted_price } =
+    productInfo;
+  const hasDiscount = discounted_price && discounted_price < price;
   const isNewProduct = () => {
     if (!created_at) return false;
-
     const productDate = new Date(created_at);
     const currentDate = new Date();
     const diffTime = currentDate - productDate;
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
-
     return diffDays <= 7;
   };
 
@@ -21,7 +21,7 @@ function ProductCard({ productInfo }) {
             New
           </span>
         )}
-        <Link to={`/ProductDetails`}>
+        <Link to={`/User/ProductDetails`}>
           <img
             src={
               images?.[0] || "https://placehold.co/200x200?text=Product+Image"
@@ -37,14 +37,24 @@ function ProductCard({ productInfo }) {
           <div className="flex justify-between gap-4">
             <h5 className="text-lg font-medium line-clamp-1">{name}</h5>
             <h5 className="text-lightblack text-lg text-nowrap">
-              <span className="font-light">{price}</span> EGP
+              {hasDiscount ? (
+                <>
+                  <span className="font-light">{discounted_price}</span> EGP
+                </>
+              ) : (
+                <>
+                  <span className="font-light">{price}</span> EGP
+                </>
+              )}
             </h5>
           </div>
           <div className="flex justify-between">
             <p className="text-xs text-lightblack">{sub_category.name}</p>
-            <p className="text-secondary text-xs font-semibold line-through">
-              750 EGP
-            </p>
+            {hasDiscount && (
+              <p className="text-secondary text-xs font-semibold line-through">
+                {price} EGP
+              </p>
+            )}
           </div>
         </div>
         <div className="flex justify-between gap-4">

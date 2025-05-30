@@ -21,7 +21,7 @@ function Footer() {
               <ul className="space-y-6 grow">
                 <li>
                   <NavLink
-                    to="/FreshDrops"
+                    to="/User/FreshDrops"
                     className={"flex items-center justify-between"}
                   >
                     new arrivals
@@ -30,7 +30,7 @@ function Footer() {
                 </li>
                 <li>
                   <NavLink
-                    to="/BestSales"
+                    to="/User/BestSales"
                     className={"flex items-center justify-between"}
                   >
                     best sales
@@ -39,7 +39,7 @@ function Footer() {
                 </li>
                 <li>
                   <NavLink
-                    to="/Categories"
+                    to="/User/Categories"
                     className={"flex items-center justify-between"}
                   >
                     categories
@@ -50,7 +50,7 @@ function Footer() {
               <ul className="space-y-6 grow">
                 <li>
                   <NavLink
-                    to="/About"
+                    to="/User/About"
                     className={"flex items-center justify-between"}
                   >
                     about us
@@ -59,7 +59,7 @@ function Footer() {
                 </li>
                 <li>
                   <NavLink
-                    to="/Contact"
+                    to="/User/Contact"
                     className={"flex items-center justify-between"}
                   >
                     contact us
@@ -68,7 +68,7 @@ function Footer() {
                 </li>
                 <li>
                   <NavLink
-                    to="/Sale"
+                    to="/User/Sale"
                     className={"flex items-center justify-between"}
                   >
                     sale
@@ -80,9 +80,9 @@ function Footer() {
           </div>
           <div className="w-full md:w-1/2 lg:w-2/5 flex flex-col md:items-end gap-16 md:gap-0 justify-between">
             <h2 className="text-4xl lg:text-5xl font-light md:text-end">
-              "stay updated with the latest {""}
+              "stay updated with the latest
               <span className="text-lightblack">
-                exclusive offers and product launches {""}
+                exclusive offers and product launches
               </span>
               from hatch.
             </h2>
