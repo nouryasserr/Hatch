@@ -5,8 +5,15 @@ import OrderSummary from "../../../components/OrderSummary/OrderSummary";
 import axios from "axios";
 import Loader from "../../../components/Loader/Loader";
 import SlimilarProducts from "../../../components/SimilarProducts/SlimilarProducts";
+import { useContext } from "react";
+import { CartContext } from "../../../context/Cart.context";
 
 function Cart() {
+  let { getCartProducts, cartInfo } = useContext(CartContext);
+  useEffect(() => {
+    getCartProducts();
+  }, [getCartProducts]);
+
   // fetch-products
   const [productsData, setProductsData] = useState(null);
   async function getProducts() {
@@ -15,7 +22,7 @@ function Cart() {
       method: "GET",
     };
     let { data } = await axios.request(options);
-    setProductsData(data.data);
+    setProductsData(data);
   }
   useEffect(() => {
     getProducts();
@@ -45,8 +52,21 @@ function Cart() {
       </div>
       <div className="flex justify-between flex-col md:flex-row">
         <div className="w-full md:w-3/5">
-          {/* <CartProduct />
-          <CartProduct /> */}
+          {cartInfo === null ? (
+            <Loader />
+          ) : (
+            <section>
+              {cartInfo.numOfCartItems === 0 ? (
+                <EmptyCart />
+              ) : (
+                <div>
+                  {cartInfo.data.products.map((product) => (
+                    <CartProduct key={product.id} cartProductInfo={product} />
+                  ))}
+                </div>
+              )}
+            </section>
+          )}
         </div>
         <div className="w-full md:w-2/5 mt-16 md:mt-0">
           <OrderSummary />

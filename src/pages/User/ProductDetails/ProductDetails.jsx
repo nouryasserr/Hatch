@@ -14,7 +14,7 @@ function ProductDetails() {
       method: "GET",
     };
     let { data } = await axios.request(options);
-    setProductsData(data.data);
+    setProductsData(data);
   }
   useEffect(() => {
     getProducts();

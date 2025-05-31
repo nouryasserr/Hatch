@@ -4,7 +4,7 @@ function Products() {
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
-        <div className="mt-8 mb-4 flex flex-col xs:flex-row justify-between xs:items-center">
+        <div className="mb-4 flex flex-col xs:flex-row justify-between xs:items-center">
           <div className="mb-4 xs:mb-0">
             <h2 className="text-3xl mb-0.5">products</h2>
             <p
