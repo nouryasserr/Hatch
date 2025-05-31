@@ -28,6 +28,7 @@ import Overview from "./pages/Startup/Overview/Overview";
 import StartupLayout from "./components/Layout/StartupLayout";
 import Products from "./pages/Startup/Products/Products";
 import AddProduct from "./pages/Startup/AddProduct/AddProduct";
+import CartProvider from "./context/Cart.provider";
 
 function App() {
   const router = createBrowserRouter([
@@ -75,7 +76,9 @@ function App() {
   return (
     <>
       <UserProvider>
-        <RouterProvider router={router} />
+        <CartProvider>
+          <RouterProvider router={router} />
+        </CartProvider>
       </UserProvider>
       <Toaster />
     </>

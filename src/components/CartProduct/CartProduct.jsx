@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 function CartProduct({ cartProductInfo }) {
-  const { image, name, price, sub_category, quantity } = cartProductInfo;
+  const { images, name, price, sub_category, quantity } = cartProductInfo;
   const [productQuantity, setProductQuantity] = useState(0);
   function increaseQuantity() {
     setProductQuantity(productQuantity + 1);
@@ -20,7 +20,13 @@ function CartProduct({ cartProductInfo }) {
               name="checkbox"
               className="hidden xs:block w-6 lg:w-8 h-6 lg:h-8 appearance-none border-2 border-black rounded checked:bg-black checked:border-black checked:after:content-['✔'] checked:after:text-white checked:after:text-lg checked:after:flex checked:after:justify-center checked:after:items-center"
             />
-            <img src={image} alt="product" className="w-28 lg:w-48" />
+            <img
+              src={
+                images?.[0] || "https://placehold.co/100x100?text=Product+Image"
+              }
+              alt="product"
+              className="w-28 lg:w-48"
+            />
             <div>
               <p className="text-lightblack text-xs lg:text-sm lg:mb-2">
                 {sub_category.name}
@@ -38,12 +44,12 @@ function CartProduct({ cartProductInfo }) {
             <div className="flex items-center gap-4 text-lg lg:text-2xl">
               <i
                 onClick={decreaseQuantity}
-                className="fa-solid fa-minus border border-lightblack p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm"
+                className="fa-solid fa-minus border border-lightblack p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"
               ></i>
               <span className="text-sm">{quantity}</span>
               <i
                 onClick={increaseQuantity}
-                className="fa-solid fa-plus border border-blackmuted p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm"
+                className="fa-solid fa-plus border border-blackmuted p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"
               ></i>
             </div>
           </div>

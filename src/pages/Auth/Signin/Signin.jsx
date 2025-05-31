@@ -38,9 +38,8 @@ function Signin() {
         data: values,
       };
       let { data } = await axios(options);
-      console.log("data of registration", data);
-      if (data) {
-        localStorage.setItem("token", data.token);
+      if (data.data?.token) {
+        localStorage.setItem("token", data.data.token);
         setToken(data.data.token);
         toast.dismiss(loadingToastId);
         toast.success("logged in successfully!");
@@ -91,7 +90,7 @@ function Signin() {
               type="email"
               autoComplete="on"
               placeholder="type here"
-              className="border border-slate-600 px-2 py-1.5 pb-2 placeholder:text-xs"
+              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
               value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -99,7 +98,7 @@ function Signin() {
               id="email"
             />
             {formik.errors.email && formik.touched.email && (
-              <p className="text-red-500">*{formik.errors.email}</p>
+              <p className="text-secondary">*{formik.errors.email}</p>
             )}
           </div>
           <div className="flex flex-col gap-2">

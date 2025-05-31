@@ -1,8 +1,17 @@
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { CartContext } from "../../context/Cart.context";
 
 function ProductCard({ productInfo }) {
-  const { images, name, price, sub_category, created_at, discounted_price } =
-    productInfo;
+  const {
+    images,
+    name,
+    price,
+    sub_category,
+    created_at,
+    discounted_price,
+    id,
+  } = productInfo;
   const hasDiscount = discounted_price && discounted_price < price;
   const isNewProduct = () => {
     if (!created_at) return false;
@@ -12,12 +21,13 @@ function ProductCard({ productInfo }) {
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
     return diffDays <= 7;
   };
+  let { addProductToCart } = useContext(CartContext);
 
   return (
     <>
       <div className="relative w-56 overflow-hidden">
         {isNewProduct() && (
-          <span className="absolute right-1 top-3 bg-black text-white font-extralight px-2.5 py-0.5 rounded-sm">
+          <span className="absolute right-1 top-3 bg-primary text-white font-extralight px-2.5 py-0.5 rounded-sm">
             New
           </span>
         )}
@@ -58,7 +68,12 @@ function ProductCard({ productInfo }) {
           </div>
         </div>
         <div className="flex justify-between gap-4">
-          <button className="text-sm font-light bg-black border border-black text-white py-1.5 px-2 rounded-full w-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150">
+          <button
+            onClick={() => {
+              addProductToCart({ product_id: id });
+            }}
+            className="text-sm font-light bg-black border border-black text-white py-1.5 px-2 rounded-full w-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"
+          >
             add to cart
           </button>
           <button className="border border-zinc-400 py-1.5 px-7 rounded-full text-zinc-400 hover:bg-secondary hover:text-white hover:border-secondary">
