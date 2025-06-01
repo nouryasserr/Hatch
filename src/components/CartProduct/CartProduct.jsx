@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-function CartProduct({ cartProductInfo }) {
-  const { images, name, price, sub_category, quantity } = cartProductInfo;
+function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
+  const { id, images, name, price, sub_category, quantity } = cartProductInfo;
   const [productQuantity, setProductQuantity] = useState(0);
   function increaseQuantity() {
     setProductQuantity(productQuantity + 1);
@@ -18,6 +18,8 @@ function CartProduct({ cartProductInfo }) {
             <input
               type="checkbox"
               name="checkbox"
+              checked={checked}
+              onChange={(e) => onCheckboxChange(id, e.target.checked)}
               className="hidden xs:block w-6 lg:w-8 h-6 lg:h-8 appearance-none border-2 border-black rounded checked:bg-black checked:border-black checked:after:content-['✔'] checked:after:text-white checked:after:text-lg checked:after:flex checked:after:justify-center checked:after:items-center"
             />
             <img
@@ -39,6 +41,8 @@ function CartProduct({ cartProductInfo }) {
             <input
               type="checkbox"
               name="checkbox"
+              checked={checked}
+              onChange={(e) => onCheckboxChange(id, e.target.checked)}
               className="block xs:hidden w-6 lg:w-8 h-6 lg:h-8 appearance-none border-2 border-black rounded checked:bg-black checked:border-black checked:after:content-['✔'] checked:after:text-white checked:after:text-lg checked:after:flex checked:after:justify-center checked:after:items-center"
             />
             <div className="flex items-center gap-4 text-lg lg:text-2xl">

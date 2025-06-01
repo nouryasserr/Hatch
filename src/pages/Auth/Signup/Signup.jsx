@@ -225,7 +225,7 @@ function Signup() {
               </span>
             </p>
             <p
-              onClick={() => navigate("/Startup/Registeration")}
+              onClick={() => navigate("/Auth/Registeration")}
               className="ttext-black underline cursor-pointer"
             >
               join as a startup
