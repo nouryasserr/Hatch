@@ -22,7 +22,7 @@ import { Toaster } from "react-hot-toast";
 import Error404 from "./pages/Error404/Error404";
 import Sale from "./pages/User/Sale/Sale";
 import UserProvider from "./context/User.provider";
-import Registeration from "./pages/Startup/Registeration/Registeration";
+import Registeration from "./pages/Auth/Registeration/Registeration";
 import Login from "./pages/Startup/Login/Login";
 import Overview from "./pages/Startup/Overview/Overview";
 import StartupLayout from "./components/Layout/StartupLayout";
@@ -38,6 +38,7 @@ function App() {
       path: "/Auth",
       element: <Layout />,
       children: [
+        { path: "Registeration", element: <Registeration /> },
         { path: "Signin", element: <Signin /> },
         { path: "Signup", element: <Signup /> },
       ],
@@ -68,7 +69,6 @@ function App() {
         { path: "Login", element: <Login /> },
         { path: "Overview", element: <Overview /> },
         { path: "Products", element: <Products /> },
-        { path: "Registeration", element: <Registeration /> },
       ],
     },
   ]);

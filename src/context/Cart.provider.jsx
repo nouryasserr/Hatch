@@ -54,10 +54,41 @@ export default function CartProvider({ children }) {
       console.log(error);
     }
   }
+  async function removeProductFromCart({ product_id }) {
+    let toastId = toast.loading("Removing product from cart...");
+    try {
+      const options = {
+        url: "http://127.0.0.1:8000/api/user/cart/remove",
+        data: { product_id },
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      let { data } = await axios.request(options);
+      if (data.success) {
+        toast.success("Product removed from cart successfully!");
+        await getCartProducts();
+      } else {
+        toast.error("Failed to remove product from cart.");
+      }
+    } catch (error) {
+      console.error("Error:", error.response?.data || error.message);
+      toast.error("An error occurred while removing from cart.");
+    } finally {
+      toast.dismiss(toastId);
+    }
+  }
 
   return (
     <CartContext.Provider
-      value={{ addProductToCart, getCartProducts, cartInfo }}
+      value={{
+        addProductToCart,
+        getCartProducts,
+        cartInfo,
+        removeProductFromCart,
+      }}
     >
       {children}
     </CartContext.Provider>
