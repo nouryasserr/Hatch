@@ -6,11 +6,57 @@ import axios from "axios";
 import Loader from "../../../components/Loader/Loader";
 import hatch01 from "../../../assets/imgs/hatch01.jpeg";
 import hatch02 from "../../../assets/imgs/hatch02.avif";
+import {
+  getBestSellersProducts,
+  getNewArrivalsProducts,
+} from "../../../apis/productsApis";
 
 function Home() {
-  // auto-slider
+  const [categories, setCategories] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [bestSellers, setBestSellers] = useState([]);
+  const [newArrivalsLoading, setNewArrivalsLoading] = useState(true);
+  const [bestSellersLoading, setBestSellersLoading] = useState(true);
+
   const sliderRef = useRef(null);
   const trackRef = useRef(null);
+
+  async function getCategories() {
+    try {
+      const options = {
+        url: "http://127.0.0.1:8000/api/general/subcategory",
+        method: "GET",
+      };
+      const response = await axios.request(options);
+      setCategories(response.data.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  }
+
+  useEffect(() => {
+    getCategories();
+    getBestSellersProducts()
+      .then((res) => {
+        setBestSellers(res.data);
+        setNewArrivalsLoading(false);
+      })
+      .catch((e) => {
+        console.error("Error fetching best sellers:", e);
+      });
+
+    getNewArrivalsProducts()
+      .then((res) => {
+        setBestSellersLoading(false);
+        setNewArrivals(res.data);
+      })
+      .catch((e) => {
+        console.error("Error fetching best new arrivals:", e);
+      });
+  }, []);
+
+  // auto-slider
+
   useEffect(() => {
     const slider = sliderRef.current;
     const track = trackRef.current;
@@ -29,38 +75,7 @@ function Home() {
     requestAnimationFrame(step);
     return () => cancelAnimationFrame(step);
   }, []);
-  // end-auto-slider
-  // fetch-products
-  const [productsData, setProductsData] = useState(null);
-  async function getProducts() {
-    const options = {
-      url: "http://127.0.0.1:8000/api/general/products",
-      method: "GET",
-    };
-    let { data } = await axios.request(options);
-    setProductsData(data);
-  }
-  useEffect(() => {
-    getProducts();
-  }, []);
-  // end-fetch-products
-  // fetch-categories
-  const [categories, setCategories] = useState([]);
-  async function getCategories() {
-    try {
-      const options = {
-        url: "http://127.0.0.1:8000/api/general/subcategory",
-        method: "GET",
-      };
-      const response = await axios.request(options);
-      setCategories(response.data.data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  }
-  useEffect(() => {
-    getCategories();
-  }, []);
+
   // end-fetch-categories
   return (
     <>
@@ -390,10 +405,10 @@ function Home() {
         </div>
       </div>
       <div className="px-6 lg:px-12">
-        {!productsData ? (
+        {newArrivalsLoading ? (
           <Loader />
         ) : (
-          <ProductsSlider productsData={productsData} />
+          <ProductsSlider productsData={newArrivals} />
         )}
       </div>
       <NavLink
@@ -447,10 +462,10 @@ function Home() {
         </div>
       </div>
       <div className="px-6 lg:px-12">
-        {!productsData ? (
+        {bestSellersLoading ? (
           <Loader />
         ) : (
-          <ProductsSlider productsData={productsData} />
+          <ProductsSlider productsData={bestSellers} />
         )}
       </div>
       <NavLink
