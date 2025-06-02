@@ -11,7 +11,6 @@ function Home() {
   // auto-slider
   const sliderRef = useRef(null);
   const trackRef = useRef(null);
-
   useEffect(() => {
     const slider = sliderRef.current;
     const track = trackRef.current;
@@ -45,6 +44,24 @@ function Home() {
     getProducts();
   }, []);
   // end-fetch-products
+  // fetch-categories
+  const [categories, setCategories] = useState([]);
+  async function getCategories() {
+    try {
+      const options = {
+        url: "http://127.0.0.1:8000/api/general/subcategory",
+        method: "GET",
+      };
+      const response = await axios.request(options);
+      setCategories(response.data.data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  }
+  useEffect(() => {
+    getCategories();
+  }, []);
+  // end-fetch-categories
   return (
     <>
       {/* main-slider */}
@@ -400,10 +417,16 @@ function Home() {
             every occasion.
           </p>
         </div>
-        <Category />
-        <div className="flex justify-end mt-8">
-          <span className="text-white underline cursor-pointer">view all</span>
+        <div className="flex flex-wrap gap-6 mt-16 text-white">
+          {categories.slice(0, 10).map((subcategory) => (
+            <Category key={subcategory.id} subcategory={subcategory} />
+          ))}
         </div>
+        <NavLink to="/User/Categories" className={"flex justify-end mt-8"}>
+          <span className="text-white underline cursor-pointer hover:no-underline transition duration-300 ease-in-out delay-150">
+            view all
+          </span>
+        </NavLink>
       </div>
       {/* end-categories */}
       {/* best-sales */}

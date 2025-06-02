@@ -7,32 +7,37 @@ import { CartContext } from "./Cart.context";
 export default function CartProvider({ children }) {
   const { token } = useContext(UserContext);
   const [cartInfo, setCartInfo] = useState(null);
-  async function addProductToCart({ product_id }) {
+  async function addProductToCart({ product_id, size, color }) {
     if (!token) {
       toast.error("Please login to add items to cart");
       return;
     }
-    let toastId = toast.loading("Adding product to cart...");
+    const toastId = toast.loading("Adding product to cart...");
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/user/cart/add",
-        { product_id },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.data.success) {
-        console.log("Product added to cart:", response.data);
+      const options = {
+        url: "http://127.0.0.1:8000/api/user/cart/add",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        data: { product_id, size, color },
+      };
+      const { data } = await axios.request(options);
+      if (data.success) {
         toast.success("Product added to cart successfully!");
+        getCartProducts();
       } else {
         toast.error("Failed to add product to cart.");
       }
     } catch (error) {
-      console.error("Error:", error.response?.data || error.message);
-      toast.error("An error occurred while adding to cart.");
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[
+          Object.keys(error.response.data.errors)[0]
+        ]?.[0] ||
+        "An error occurred while adding to cart.";
+      toast.error(errorMessage);
     } finally {
       toast.dismiss(toastId);
     }
@@ -80,7 +85,6 @@ export default function CartProvider({ children }) {
       toast.dismiss(toastId);
     }
   }
-
   return (
     <CartContext.Provider
       value={{

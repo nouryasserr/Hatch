@@ -1,12 +1,17 @@
 import logo from "../../assets/imgs/logo.jpeg";
 import { NavLink } from "react-router-dom";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/User.context";
+import { CartContext } from "../../context/Cart.context";
 
 function Navbar() {
   const { token } = useContext(UserContext);
+  const { cartInfo, getCartProducts } = useContext(CartContext);
   const [menuOpen, setMenuOpen] = useState(false);
-
+  useEffect(() => {
+    getCartProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       {token && (
@@ -71,7 +76,11 @@ function Navbar() {
             <NavLink to="/User/Cart" className={"relative"}>
               <i className="fa-solid fa-cart-shopping border border-black bg-black p-2.5 xl:p-3 rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
               <div className="flex justify-center items-center text-center h-5 w-5 border-2 border-white rounded-full bg-secondary text-white absolute right-0 top-0 translate-x-1/4 -translate-y-1/4">
-                <i className="fa-solid fa-info text-xs"></i>
+                {cartInfo === null ? (
+                  <i className="fa-solid fa-info text-xs"></i>
+                ) : (
+                  <span className="text-xs">{cartInfo?.data?.totalItems}</span>
+                )}
               </div>
             </NavLink>
             <NavLink to="/User/Wishlist">
@@ -110,7 +119,11 @@ function Navbar() {
               <NavLink to="/User/Cart" className={"relative"}>
                 <i className="fa-solid fa-cart-shopping border border-black bg-black p-2.5 rounded-full text-white hover:bg-white hover:text-black transition duration-300 ease-in-out delay-150"></i>
                 <div className="flex justify-center items-center h-5 w-5 border-2 border-white rounded-full bg-secondary text-white absolute right-0 top-0 translate-x-1/4 -translate-y-1/4">
-                  <i className="fa-solid fa-info text-xs"></i>
+                  {cartInfo === null ? (
+                    <i className="fa-solid fa-info text-xs"></i>
+                  ) : (
+                    <span className="text-xs">{cartInfo.totalItems}</span>
+                  )}
                 </div>
               </NavLink>
               <NavLink to="/User/Wishlist">
