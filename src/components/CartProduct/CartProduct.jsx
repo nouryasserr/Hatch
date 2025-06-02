@@ -2,12 +2,14 @@ import { useState } from "react";
 
 function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
   const { id, images, name, price, sub_category, quantity } = cartProductInfo;
-  const [productQuantity, setProductQuantity] = useState(0);
+  const [productQuantity, setProductQuantity] = useState(quantity);
   function increaseQuantity() {
     setProductQuantity(productQuantity + 1);
   }
   function decreaseQuantity() {
-    setProductQuantity(productQuantity - 1);
+    if (productQuantity > 1) {
+      setProductQuantity(productQuantity - 1);
+    }
   }
 
   return (
@@ -50,7 +52,7 @@ function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
                 onClick={decreaseQuantity}
                 className="fa-solid fa-minus border border-lightblack p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"
               ></i>
-              <span className="text-sm">{quantity}</span>
+              <span className="text-sm">{productQuantity}</span>
               <i
                 onClick={increaseQuantity}
                 className="fa-solid fa-plus border border-blackmuted p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"

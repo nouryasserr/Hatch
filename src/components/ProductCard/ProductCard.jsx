@@ -4,13 +4,16 @@ import { CartContext } from "../../context/Cart.context";
 
 function ProductCard({ productInfo }) {
   const {
+    id,
     images,
     name,
     price,
     sub_category,
     created_at,
     discounted_price,
-    id,
+    stock,
+    has_sizes,
+    has_colors,
   } = productInfo;
   const hasDiscount = discounted_price && discounted_price < price;
   const isNewProduct = () => {
@@ -22,24 +25,24 @@ function ProductCard({ productInfo }) {
     return diffDays <= 7;
   };
   let { addProductToCart } = useContext(CartContext);
-
+  const isDisabled = stock === 0 || has_sizes || has_colors;
   return (
     <>
-      <div className="relative w-56 overflow-hidden">
+      <div className="relative overflow-hidden">
         {isNewProduct() && (
           <span className="absolute right-1 top-3 bg-primary text-white font-extralight px-2.5 py-0.5 rounded-sm">
             New
           </span>
         )}
-        <Link to={`/User/ProductDetails`}>
+        <Link to={`/User/ProductDetails/${id}`}>
           <img
             src={
-              images?.[0] || "https://placehold.co/200x200?text=Product+Image"
+              images?.[0] || "https://placehold.co/300x350?text=Product+Image"
             }
             alt="product"
             className="object-contain object-center h-52 w-full rounded-t"
             onError={(e) => {
-              e.target.src = "https://placehold.co/200x200?text=Product+Image";
+              e.target.src = "https://placehold.co/300x350?text=Product+Image";
             }}
           />
         </Link>
@@ -69,12 +72,21 @@ function ProductCard({ productInfo }) {
         </div>
         <div className="flex justify-between gap-4">
           <button
+            disabled={isDisabled}
             onClick={() => {
               addProductToCart({ product_id: id });
             }}
-            className="text-sm font-light bg-black border border-black text-white py-1.5 px-2 rounded-full w-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"
+            className={`text-sm font-light py-1.5 px-2 rounded-full w-full transition duration-300 ease-in-out delay-150 ${
+              isDisabled
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                : "bg-black border border-black text-white hover:bg-transparent hover:text-black"
+            }`}
           >
-            add to cart
+            {stock === 0
+              ? "Out of Stock"
+              : has_sizes || has_colors
+              ? "Select options"
+              : "Add to Cart"}
           </button>
           <button className="border border-zinc-400 py-1.5 px-7 rounded-full text-zinc-400 hover:bg-secondary hover:text-white hover:border-secondary">
             <i className="fa-regular fa-heart"></i>
