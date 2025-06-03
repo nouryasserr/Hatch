@@ -1,16 +1,5 @@
-import { useState } from "react";
-
 function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
   const { id, images, name, price, sub_category, quantity } = cartProductInfo;
-  const [productQuantity, setProductQuantity] = useState(quantity);
-  function increaseQuantity() {
-    setProductQuantity(productQuantity + 1);
-  }
-  function decreaseQuantity() {
-    if (productQuantity > 1) {
-      setProductQuantity(productQuantity - 1);
-    }
-  }
 
   return (
     <>
@@ -48,15 +37,9 @@ function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
               className="block xs:hidden w-6 lg:w-8 h-6 lg:h-8 appearance-none border-2 border-black rounded checked:bg-black checked:border-black checked:after:content-['✔'] checked:after:text-white checked:after:text-lg checked:after:flex checked:after:justify-center checked:after:items-center"
             />
             <div className="flex items-center gap-4 text-lg lg:text-2xl">
-              <i
-                onClick={decreaseQuantity}
-                className="fa-solid fa-minus border border-lightblack p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"
-              ></i>
-              <span className="text-sm">{productQuantity}</span>
-              <i
-                onClick={increaseQuantity}
-                className="fa-solid fa-plus border border-blackmuted p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"
-              ></i>
+              <i className="fa-solid fa-minus border border-lightblack p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"></i>
+              <span className="text-sm">{quantity}</span>
+              <i className="fa-solid fa-plus border border-blackmuted p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"></i>
             </div>
           </div>
         </div>

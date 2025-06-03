@@ -4,7 +4,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { CartContext } from "./Cart.context";
 
-export default function CartProvider({ children }) {
+function CartProvider({ children }) {
   const { token } = useContext(UserContext);
   const [cartInfo, setCartInfo] = useState(null);
   async function addProductToCart({ product_id, size, color }) {
@@ -85,6 +85,7 @@ export default function CartProvider({ children }) {
       toast.dismiss(toastId);
     }
   }
+
   return (
     <CartContext.Provider
       value={{
@@ -98,3 +99,5 @@ export default function CartProvider({ children }) {
     </CartContext.Provider>
   );
 }
+
+export default CartProvider;

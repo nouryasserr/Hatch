@@ -14,3 +14,16 @@
 .price {
   font-family: "Inter Variable", sans-serif;
 }
+
+.fade {
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0.3;
+  }
+  to {
+    opacity: 1;
+  }
+}
