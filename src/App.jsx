@@ -29,6 +29,10 @@ import StartupLayout from "./components/Layout/StartupLayout";
 import Products from "./pages/Startup/Products/Products";
 import AddProduct from "./pages/Startup/AddProduct/AddProduct";
 import CartProvider from "./context/Cart.provider";
+import AddProduct2 from "./pages/Startup/AddProduct2/AddProduct2";
+import ProductDetail from "./pages/Startup/ProductDetail/ProductDetail";
+import Orders from "./pages/Startup/Orders/Orders";
+import OrderDetails from "./pages/Startup/OrderDetails/OrderDetails";
 
 function App() {
   const router = createBrowserRouter([
@@ -66,8 +70,12 @@ function App() {
       element: <StartupLayout />,
       children: [
         { path: "AddProduct", element: <AddProduct /> },
+        { path: "AddProduct2", element: <AddProduct2 /> },
         { path: "Login", element: <Login /> },
+        { path: "OrderDetails", element: <OrderDetails /> },
+        { path: "Orders", element: <Orders /> },
         { path: "Overview", element: <Overview /> },
+        { path: "ProductDetail", element: <ProductDetail /> },
         { path: "Products", element: <Products /> },
       ],
     },

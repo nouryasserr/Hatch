@@ -1,7 +1,6 @@
 import logo from "../../assets/imgs/HatchWhite.png";
 import { NavLink } from "react-router-dom";
 import { useState } from "react";
-
 function SideNav() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleSideNav = () => {
@@ -39,7 +38,7 @@ function SideNav() {
             </li>
             <li className="flex gap-3 items-center cursor-pointer py-2 px-4 rounded-full hover:bg-primary transition duration-300 ease-in-ouy delay-150">
               <i className="fa-solid fa-users"></i>
-              <NavLink>orders</NavLink>
+              <NavLink to="/Startup/Orders">orders</NavLink>
             </li>
             <li className="flex gap-3 items-center cursor-pointer py-2 px-4 rounded-full hover:bg-primary transition duration-300 ease-in-ouy delay-150">
               <i className="fa-regular fa-comment-dots"></i>

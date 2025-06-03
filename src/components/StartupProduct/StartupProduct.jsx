@@ -1,19 +1,22 @@
+import { Link } from "react-router-dom";
 import hatch01 from "../../assets/imgs/hatch01.jpeg";
 
 function StartupProduct() {
   return (
     <>
-      <div className="relative w-64 overflow-hidden">
-        <img
-          src={
-            hatch01?.[0] || "https://placehold.co/200x200?text=Product+Image"
-          }
-          alt="product"
-          className="object-contain object-center h-52 w-full rounded-t"
-          onError={(e) => {
-            e.target.src = "https://placehold.co/250x200?text=Product+Image";
-          }}
-        />
+      <div className="w-64 overflow-hidden">
+        <Link to={"/Startup/ProductDetail"}>
+          <img
+            src={
+              hatch01?.[0] || "https://placehold.co/200x200?text=Product+Image"
+            }
+            alt="product"
+            className="object-contain object-center h-52 w-full rounded-t"
+            onError={(e) => {
+              e.target.src = "https://placehold.co/250x200?text=Product+Image";
+            }}
+          />
+        </Link>
         <div className="flex justify-between px-1.5 py-2">
           <p className="text-xs text-lightblack">category: accsessories</p>
           <p className="text-xs text-lightblack">quantity: 21</p>

@@ -1,8 +1,24 @@
 import { NavLink } from "react-router-dom";
 import StartupProduct from "../../../components/StartupProduct/StartupProduct";
 import StartupOrder from "../../../components/StartupOrder/StartupOrder";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 function Overview() {
+  const [orders, setOrders] = useState([]);
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/startup/orders"
+        );
+        setOrders(response.data.data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    }
+    fetchOrders();
+  }, []);
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
@@ -78,9 +94,37 @@ function Overview() {
             view order history
           </NavLink>
         </div>
-        <StartupOrder />
-        <StartupOrder />
-        <StartupOrder />
+        <div className="overflow-x-auto">
+          <div>
+            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 ">
+              <span className="text-sm whitespace-nowrap text-lightblack">
+                order id
+              </span>
+              <span className="text-sm whitespace-nowrap text-lightblack">
+                customer
+              </span>
+              <span className="text-sm whitespace-nowrap text-lightblack">
+                amount
+              </span>
+              <span className="text-sm whitespace-nowrap text-lightblack">
+                order date
+              </span>
+              <span className="text-sm whitespace-nowrap text-lightblack">
+                status
+              </span>
+            </div>
+            {orders.map((order) => (
+              <StartupOrder
+                key={order.id}
+                id={`#${order.id}`}
+                customer={order.customer_name}
+                amount={`${order.amount} EGP`}
+                date={order.order_date}
+                status={order.status}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </>
   );
