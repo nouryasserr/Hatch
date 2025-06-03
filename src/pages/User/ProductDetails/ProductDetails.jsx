@@ -122,21 +122,23 @@ function ProductDetails() {
           </div>
         </div>
       </div>
-      <div className="px-6 lg:px-12 pt-16 pb-4 flex justify-between">
-        <h4 className="text-3xl">similar products</h4>
-        <NavLink
-          to="/FreshDrops"
-          className={"underline hover:no-underline text-nowrap"}
-        >
-          view all
-        </NavLink>
-      </div>
-      <div className="pb-12">
-        {!productsData ? (
-          <Loader />
-        ) : (
-          <SlimilarProducts productsData={productsData} />
-        )}
+      <div className="px-6 lg:px-12 pt-16 ">
+        <div className="pb-4 flex justify-between">
+          <h4 className="text-3xl">similar products</h4>
+          <NavLink
+            to="/FreshDrops"
+            className={"underline hover:no-underline text-nowrap"}
+          >
+            view all
+          </NavLink>
+        </div>
+        <div className="pb-12">
+          {!productsData ? (
+            <Loader />
+          ) : (
+            <SlimilarProducts productsData={productsData} />
+          )}
+        </div>
       </div>
     </>
   );

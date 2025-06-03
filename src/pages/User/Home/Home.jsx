@@ -11,16 +11,54 @@ import {
   getNewArrivalsProducts,
 } from "../../../apis/productsApis";
 
+const slides = [
+  {
+    title: "exclusive",
+    subtitle: "hatch objectives",
+    paragraph:
+      "Real-world examples of how we have helped companies achieve their marketing objectives.",
+    bg: "url('https://images.pexels.com/photos/5930091/pexels-photo-5930091.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')",
+  },
+  {
+    title: "online-ready",
+    subtitle: "digital storefront",
+    paragraph:
+      "Easily launch your online shop and start selling your products to a wider audience.",
+    bg: "url('https://images.pexels.com/photos/404280/pexels-photo-404280.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2')",
+  },
+  {
+    title: "connected",
+    subtitle: "supplier network",
+    paragraph:
+      "Discover trusted suppliers and build reliable partnerships to grow your brand.",
+    bg: "url('https://images.pexels.com/photos/162487/old-factory-dusty-large-space-emptiness-162487.jpeg?auto=compress&cs=tinysrgb&w=600')",
+  },
+];
 function Home() {
+  const [current, setCurrent] = useState(0);
+  const [fadeClass, setFadeClass] = useState("fade");
+  const nextSlide = () => {
+    setFadeClass("");
+    setTimeout(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+      setFadeClass("fade");
+    }, 50);
+  };
+  const prevSlide = () => {
+    setFadeClass("");
+    setTimeout(() => {
+      setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
+      setFadeClass("fade");
+    }, 50);
+  };
+  const { title, subtitle, paragraph, bg } = slides[current];
   const [categories, setCategories] = useState([]);
   const [newArrivals, setNewArrivals] = useState([]);
   const [bestSellers, setBestSellers] = useState([]);
   const [newArrivalsLoading, setNewArrivalsLoading] = useState(true);
   const [bestSellersLoading, setBestSellersLoading] = useState(true);
-
   const sliderRef = useRef(null);
   const trackRef = useRef(null);
-
   async function getCategories() {
     try {
       const options = {
@@ -33,7 +71,6 @@ function Home() {
       console.error("Error fetching categories:", error);
     }
   }
-
   useEffect(() => {
     getCategories();
     getBestSellersProducts()
@@ -44,7 +81,6 @@ function Home() {
       .catch((e) => {
         console.error("Error fetching best sellers:", e);
       });
-
     getNewArrivalsProducts()
       .then((res) => {
         setBestSellersLoading(false);
@@ -54,9 +90,6 @@ function Home() {
         console.error("Error fetching best new arrivals:", e);
       });
   }, []);
-
-  // auto-slider
-
   useEffect(() => {
     const slider = sliderRef.current;
     const track = trackRef.current;
@@ -75,33 +108,44 @@ function Home() {
     requestAnimationFrame(step);
     return () => cancelAnimationFrame(step);
   }, []);
-
-  // end-fetch-categories
   return (
     <>
       {/* main-slider */}
       <div className="p-6 pt-0">
-        <div className="h-[300px] md:h-[500px] lg:h-[550px] w-full bg-black rounded-3xl py-6 md:py-16 px-6 flex flex-col sm:flex-row sm:items-center justify-end sm:justify-between">
+        <div
+          className={`h-[300px] md:h-[500px] lg:h-[550px] w-full rounded-3xl py-6 md:py-16 px-6 flex flex-col sm:flex-row sm:items-center justify-end sm:justify-between transition-all duration-500 ${fadeClass}`}
+          style={{
+            backgroundImage: bg,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
           <div className="w-3/5 md:w-3/4 text-4xl sm:text-6xl md:text-7xl lg:text-8xl text-white mb-4 sm:mb-0">
-            exclusive
+            {title}
           </div>
           <div className="w-full sm:w-1/3 xl:w-1/5 self-end">
             <h6 className="text-white mb-2 md:mb-4 text-base md:text-lg">
-              hatch objectives
+              {subtitle}
             </h6>
-            <p className="text-lightblack text-sm md:text-base">
-              Real-world examples of how we have helped companies achieve their
-              marketing objectives.
-            </p>
+            <p className="text-lightblack text-sm md:text-base">{paragraph}</p>
           </div>
         </div>
       </div>
       <div className="mx-6 flex md:hidden justify-end items-center gap-2 text-xs">
-        <i className="fa-solid fa-arrow-left border border-black py-1 pt-1.5 px-5 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
+        <button
+          onClick={prevSlide}
+          className="fa-solid fa-arrow-left border border-black py-1.5 px-5 rounded-full hover:bg-black hover:text-white transition"
+        ></button>
         <p className="text-lightblack">
-          <span className="underline text-black">01</span>/05
+          <span className="underline text-black">
+            {String(current + 1).padStart(2, "0")}
+          </span>
+          /{String(slides.length).padStart(2, "0")}
         </p>
-        <i className="fa-solid fa-arrow-right border border-black bg-black text-white py-1 pt-1.5 px-5 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
+        <button
+          onClick={nextSlide}
+          className="fa-solid fa-arrow-right border border-black bg-black text-white py-1.5 px-5 rounded-full hover:bg-transparent hover:text-black transition"
+        ></button>
       </div>
       <div className="px-6 lg:px-12 pt-6 md:pt-0 pb-6 flex flex-wrap sm:flex-nowrap gap-2 justify-center sm:justify-between items-center">
         <h4 className="text-base lg:lg:text-xl font-medium sm:w-52 md:w-56 lg:w-60 xl:w-64">
@@ -111,11 +155,20 @@ function Home() {
           empowering brands to break through
         </h4>
         <div className="hidden md:flex items-center gap-4 lg:gap-7 xl:gap-8  text-xs lg:text-xl">
-          <i className="fa-solid fa-arrow-left border border-black py-1.5 pt-2 px-6 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
+          <button
+            onClick={prevSlide}
+            className="fa-solid fa-arrow-left border border-black py-1.5 pt-2 px-6 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150"
+          ></button>
           <p className="text-lightblack">
-            <span className="underline text-black">01</span>/05
+            <span className="underline text-black">
+              {String(current + 1).padStart(2, "0")}
+            </span>
+            /{String(slides.length).padStart(2, "0")}
           </p>
-          <i className="fa-solid fa-arrow-right border border-black bg-black text-white py-1.5 pt-2 px-6 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150 cursor-pointer"></i>
+          <button
+            onClick={nextSlide}
+            className="fa-solid fa-arrow-right border border-black bg-black text-white py-1.5 pt-2 px-6 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"
+          ></button>
         </div>
       </div>
       {/* end-main-slider */}
