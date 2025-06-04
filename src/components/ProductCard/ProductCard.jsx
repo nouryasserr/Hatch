@@ -15,6 +15,8 @@ function ProductCard({ productInfo }) {
     has_sizes,
     has_colors,
   } = productInfo;
+  const { addProductToCart, cartInfo } = useContext(CartContext);
+  const isInCart = cartInfo?.data?.data?.some((item) => item.id === id);
   const hasDiscount = discounted_price && discounted_price < price;
   const isNewProduct = () => {
     if (!created_at) return false;
@@ -24,8 +26,14 @@ function ProductCard({ productInfo }) {
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
     return diffDays <= 7;
   };
-  let { addProductToCart } = useContext(CartContext);
-  const isDisabled = stock === 0 || has_sizes || has_colors;
+  const isDisabled = stock === 0 || has_sizes || has_colors || isInCart;
+  const handleAddToCart = () => {
+    if (isInCart) {
+      console.log("This product is already in your cart");
+      return;
+    }
+    addProductToCart({ product_id: id });
+  };
   return (
     <>
       <div className="relative overflow-hidden">
@@ -73,12 +81,10 @@ function ProductCard({ productInfo }) {
         <div className="flex justify-between gap-4">
           <button
             disabled={isDisabled}
-            onClick={() => {
-              addProductToCart({ product_id: id });
-            }}
+            onClick={handleAddToCart}
             className={`text-sm font-light py-1.5 px-2 rounded-full w-full transition duration-300 ease-in-out delay-150 ${
               isDisabled
-                ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                ? "bg-lightblack text-blackmuted cursor-not-allowed"
                 : "bg-black border border-black text-white hover:bg-transparent hover:text-black"
             }`}
           >
@@ -86,9 +92,11 @@ function ProductCard({ productInfo }) {
               ? "Out of Stock"
               : has_sizes || has_colors
               ? "Select options"
+              : isInCart
+              ? "Added"
               : "Add to Cart"}
           </button>
-          <button className="border border-zinc-400 py-1.5 px-7 rounded-full text-zinc-400 hover:bg-secondary hover:text-white hover:border-secondary">
+          <button className="border border-lightblack py-1.5 px-7 rounded-full text-lightblack hover:bg-secondary hover:text-white hover:border-secondary">
             <i className="fa-regular fa-heart"></i>
           </button>
         </div>
