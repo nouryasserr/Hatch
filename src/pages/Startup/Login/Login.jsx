@@ -5,9 +5,9 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ForgetPassword from "../../../components/ForgetPassword/ForgetPassword";
 import { object, string } from "yup";
-import { UserContext } from "../../../context/User.context";
+import { startupContext } from "../../../context/Startup.context";
 function Login() {
-  let { setToken } = useContext(UserContext);
+  let { setToken } = useContext(startupContext);
   const [inncorrectEmailOrPassword, setIncorrectEmailOrPassword] =
     useState(null);
   const [showPassword, setShowPassword] = useState(false);

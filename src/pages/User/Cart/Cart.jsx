@@ -12,7 +12,7 @@ import EmptyCart from "../../../components/EmptyCart/EmptyCart";
 function Cart() {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [checkedProductIds, setCheckedProductIds] = useState([]);
-  const { getCartProducts, cartInfo, removeProductFromCart, clearCart } =
+  const { getCartProducts, cartInfo, removeProduct, clearCart } =
     useContext(CartContext);
   function handleCheckboxChange(productId, isChecked) {
     if (isChecked) {
@@ -38,7 +38,7 @@ function Cart() {
       }
     } else {
       const deletePromises = checkedProductIds.map((id) =>
-        removeProductFromCart({ product_id: id })
+        removeProduct({ product_id: id })
       );
       try {
         await Promise.all(deletePromises);

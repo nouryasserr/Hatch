@@ -1,25 +1,120 @@
-import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { useState, useEffect, useContext, useCallback } from "react";
+import { NavLink, useParams } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../../components/Loader/Loader";
 import SlimilarProducts from "../../../components/SimilarProducts/SlimilarProducts";
 import ReactImageGallery from "react-image-gallery";
+import { CartContext } from "../../../context/Cart.context";
+import toast from "react-hot-toast";
 
 function ProductDetails() {
-  // fetch-products
+  const { id } = useParams();
+  const [productDetails, setProductDetails] = useState(null);
   const [productsData, setProductsData] = useState(null);
-  async function getProducts() {
-    const options = {
-      url: "http://127.0.0.1:8000/api/general/products",
-      method: "GET",
-    };
-    let { data } = await axios.request(options);
-    setProductsData(data);
-  }
-  useEffect(() => {
-    getProducts();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const { addProductToCart } = useContext(CartContext);
+
+  const [selectedOptions, setSelectedOptions] = useState({
+    sizeId: null,
+    colorId: null,
+    quantity: 1,
+    availableSizes: [],
+    availableColors: [],
+  });
+
+  const selectedSize = productDetails?.sizes?.find(
+    (item) =>
+      item.size.id === selectedOptions.sizeId &&
+      item.color.id === selectedOptions.colorId
+  );
+
+  const fetchProductDetails = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const { data } = await axios.get(
+        `http://127.0.0.1:8000/api/general/products/${id}`
+      );
+      setProductDetails(data.data);
+    } catch (error) {
+      toast.error("Failed to load product details");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id]);
+
+  const fetchProducts = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        "http://127.0.0.1:8000/api/general/products"
+      );
+      setProductsData(data);
+    } catch (error) {
+      toast.error("Failed to load similar products");
+      console.error(error);
+    }
   }, []);
-  // end-fetch-products
+
+  useEffect(() => {
+    fetchProductDetails();
+    fetchProducts();
+  }, [fetchProductDetails, fetchProducts]);
+
+  useEffect(() => {
+    if (productDetails?.sizes?.length > 0) {
+      const sizes = [...new Set(productDetails.sizes.map((item) => item.size))];
+      const colors = [
+        ...new Set(productDetails.sizes.map((item) => item.color)),
+      ];
+
+      setSelectedOptions((prev) => ({
+        ...prev,
+        availableSizes: sizes,
+        availableColors: colors,
+        sizeId: sizes[0]?.id || null,
+        colorId: colors[0]?.id || null,
+      }));
+    }
+  }, [productDetails]);
+
+  const handleAddToCart = async () => {
+    if (!selectedSize) {
+      toast.error("Please select size and color");
+      return;
+    }
+
+    setIsAddingToCart(true);
+    try {
+      await addProductToCart({
+        product_id: id,
+        size_id: selectedSize.id,
+        quantity: selectedOptions.quantity,
+      });
+      toast.success("Product added to cart successfully!");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to add to cart");
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const handleQuantityChange = (newQuantity) => {
+    if (newQuantity < 1) return;
+    setSelectedOptions((prev) => ({
+      ...prev,
+      quantity: newQuantity,
+    }));
+  };
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (!productDetails) {
+    return <div className="p-12 text-center">Product not found</div>;
+  }
+
   return (
     <>
       <div className="px-6 lg:px-12 py-4 sm:py-12 flex flex-col lg:flex-row justify-between gap-2">
@@ -28,108 +123,190 @@ function ProductDetails() {
             showFullscreenButton={false}
             showPlayButton={false}
             showNav={false}
-            items={(ProductDetails?.images || []).map((image, index) => ({
+            items={(productDetails?.images || []).map((image) => ({
               original: image,
               thumbnail: image,
-              originalAlt: `Product image ${index + 1}`,
-              thumbnailAlt: `Thumbnail ${index + 1}`,
             }))}
           />
         </div>
         <div className="w-full lg:w-2/5">
           <div className="flex justify-between">
-            <p className="text-sm text-lightblack">category name</p>
-            <p className="bg-black rounded-sm py-0.5 px-2 text-white text-xs">
-              Best Seller
+            <p className="text-sm text-lightblack">
+              {productDetails.sub_category.category.name}
             </p>
+            {productDetails.is_best_seller && (
+              <p className="bg-black rounded-sm py-0.5 px-2 text-white text-xs">
+                Best Seller
+              </p>
+            )}
           </div>
-          <h2 className="text-3xl mt-2">product name</h2>
-          <h5 className="text-lg mb-4">
-            450 EGP <span className="text-secondary line-through">750 EGP</span>
-          </h5>
-          <p className="text-xs mb-2">size</p>
-          <div className="flex gap-4 flex-wrap">
-            {["XS", "S", "M", "L", "XL", "XXL"].map((size) => (
-              <label
-                key={size}
-                className="flex items-center gap-2 cursor-pointer"
+          <h1 className="text-3xl mt-2">{productDetails.name}</h1>
+          <h2 className="text-lg mb-4">
+            {selectedSize?.discounted_price ||
+              selectedSize?.price ||
+              productDetails.price}{" "}
+            EGP
+            {selectedSize?.discounted_price && selectedSize?.price && (
+              <span className="text-secondary line-through ml-2">
+                {selectedSize.price} EGP
+              </span>
+            )}
+          </h2>
+
+          <div className="mb-4">
+            <label className="text-xs mb-2 block">Size</label>
+            <div className="flex gap-4 flex-wrap">
+              {selectedOptions.availableSizes.map((size) => (
+                <label
+                  key={size.id}
+                  className="flex items-center gap-2 cursor-pointer"
+                  htmlFor={`size-${size.id}`}
+                >
+                  <input
+                    id={`size-${size.id}`}
+                    type="radio"
+                    name="size"
+                    checked={selectedOptions.sizeId === size.id}
+                    onChange={() =>
+                      setSelectedOptions((prev) => ({
+                        ...prev,
+                        sizeId: size.id,
+                      }))
+                    }
+                    className="hidden peer"
+                  />
+                  <div
+                    className={`py-2 w-12 text-sm text-center border ${
+                      selectedOptions.sizeId === size.id
+                        ? "border-2 border-black text-black"
+                        : "border-lightblack text-lightblack"
+                    }`}
+                    aria-label={`Size ${size.name}`}
+                  >
+                    {size.name}
+                  </div>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-4">
+            <label className="text-xs mt-4 mb-2 block">Color</label>
+            <div className="flex gap-2 flex-wrap">
+              {selectedOptions.availableColors.map((color) => (
+                <label
+                  key={color.id}
+                  className="cursor-pointer"
+                  htmlFor={`color-${color.id}`}
+                >
+                  <input
+                    id={`color-${color.id}`}
+                    type="radio"
+                    name="color"
+                    checked={selectedOptions.colorId === color.id}
+                    onChange={() =>
+                      setSelectedOptions((prev) => ({
+                        ...prev,
+                        colorId: color.id,
+                      }))
+                    }
+                    className="hidden peer"
+                  />
+                  <div
+                    className={`w-10 h-10 rounded-full border ${
+                      selectedOptions.colorId === color.id
+                        ? "ring-1 ring-offset-1 ring-black"
+                        : "border-lightblack"
+                    }`}
+                    style={{ backgroundColor: color.code }}
+                    aria-label={`Color ${color.name}`}
+                  />
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <label className="text-xs mt-4 mb-2 block">Quantity</label>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() =>
+                  handleQuantityChange(selectedOptions.quantity - 1)
+                }
+                disabled={selectedOptions.quantity <= 1}
+                className={`border-2 ${
+                  selectedOptions.quantity <= 1
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                } border-lightblack text-lightblack p-2 rounded-sm hover:border-blackmuted hover:text-black`}
+                aria-label="Decrease quantity"
               >
-                <input
-                  type="radio"
-                  name="size"
-                  value={size}
-                  className="hidden peer"
-                />
-                <div className="py-2 w-12 text-sm text-center text-lightblack border border-lightblack peer-checked:border-2 peer-checked:border-black peer-checked:text-black transition duration-300 ease-in-out delay-150">
-                  {size}
-                </div>
-              </label>
-            ))}
+                <i className="fa-solid fa-minus" />
+              </button>
+              <span className="text-sm">{selectedOptions.quantity}</span>
+              <button
+                onClick={() =>
+                  handleQuantityChange(selectedOptions.quantity + 1)
+                }
+                className="border-2 border-blackmuted p-2 rounded-sm"
+                aria-label="Increase quantity"
+              >
+                <i className="fa-solid fa-plus" />
+              </button>
+            </div>
           </div>
-          <p className="text-xs mt-4 mb-2">Color</p>
-          <div className="flex gap-2 flex-wrap">
-            {[
-              { name: "Light Beige", color: "#f5f5dc" },
-              { name: "Light Coral", color: "#f08080" },
-              { name: "Burgundy", color: "#800020" },
-            ].map(({ name, color }) => (
-              <label key={name} className="cursor-pointer">
-                <input
-                  type="radio"
-                  name="color"
-                  value={name}
-                  className="hidden peer"
-                />
-                <div
-                  className="w-10 h-10 rounded-full border border-lightblack peer-checked:ring-1 peer-checked:ring-offset-1 peer-checked:ring-black transition duration-300 ease-in-out delay-150"
-                  style={{ backgroundColor: color }}
-                  title={name}
-                ></div>
-              </label>
-            ))}
-          </div>
-          <p className="text-xs mt-4 mb-2">quantity</p>
-          <div className="flex items-center gap-4 mb-4">
-            <i className="fa-solid fa-minus cursor-pointer border-2 border-lightblack text-lightblack p-2 rounded-sm hover:border-blackmuted hover:text-black"></i>
-            <span className="text-sm">1</span>
-            <i className="fa-solid fa-plus cursor-pointer border-2 border-blackmuted p-2 rounded-sm"></i>
-          </div>
+
           <div className="mt-6 flex gap-6 items-center">
-            <div className="flex items-center gap-2 cursor-pointer text-lg font-light pl-4">
-              <i className="fa-solid fa-share-nodes"></i>
+            <button className="flex items-center gap-2 cursor-pointer text-lg font-light pl-4">
+              <i className="fa-solid fa-share-nodes" aria-hidden="true" />
               <span>Share</span>
-            </div>
-            <div className="flex items-center gap-2 cursor-pointer text-lg font-light">
-              <i className="fa-regular fa-heart"></i>
-              <span>Save</span>
-            </div>
-          </div>
-          <div className="flex justify-between items-center my-6">
-            <p className="text-sm">PRODUCT DETAILS:</p>
-            <p className="text-sm cursor-pointer">DESCRIPTION +</p>
-          </div>
-          <div className="flex justify-between items-center">
-            <p className="text-sm">SHIPPING & RETURNS</p>
-            <i className="fa-solid fa-plus text-sm cursor-pointer"></i>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 mt-6">
-            <button className="w-full xs:w-auto  bg-black text-sm font-light border-black border text-white rounded-full py-2 px-8 hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150">
-              Add to cart
             </button>
-            <button className="w-full xs:w-auto border text-sm font-light border-black rounded-full py-2 px-8 hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150">
+            <button className="flex items-center gap-2 cursor-pointer text-lg font-light">
+              <i className="fa-regular fa-heart" aria-hidden="true" />
+              <span>Save</span>
+            </button>
+          </div>
+
+          <div className="my-6">
+            <div className="flex justify-between items-center">
+              <p className="text-sm">PRODUCT DETAILS:</p>
+              <button className="text-sm">DESCRIPTION +</button>
+            </div>
+            <div className="flex justify-between items-center mt-4">
+              <p className="text-sm">SHIPPING & RETURNS</p>
+              <button className="text-sm">
+                <i className="fa-solid fa-plus" aria-hidden="true" />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 mt-6">
+            <button
+              onClick={handleAddToCart}
+              disabled={!selectedSize || isAddingToCart}
+              className={`w-full xs:w-auto bg-black text-sm font-light border border-black text-white rounded-full py-2 px-8 ${
+                !selectedSize || isAddingToCart
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-transparent hover:text-black"
+              } transition duration-300 ease-in-out`}
+            >
+              {isAddingToCart ? "Adding..." : "Add to cart"}
+            </button>
+            <button className="w-full xs:w-auto border text-sm font-light border-black rounded-full py-2 px-8 hover:bg-black hover:text-white transition duration-300 ease-in-out">
               Buy Now
             </button>
           </div>
         </div>
       </div>
-      <div className="px-6 lg:px-12 pt-16 ">
+
+      <div className="px-6 lg:px-12 pt-16">
         <div className="pb-4 flex justify-between">
-          <h4 className="text-3xl">similar products</h4>
+          <h2 className="text-3xl">Similar products</h2>
           <NavLink
             to="/FreshDrops"
-            className={"underline hover:no-underline text-nowrap"}
+            className="underline hover:no-underline text-nowrap"
           >
-            view all
+            View all
           </NavLink>
         </div>
         <div className="pb-12">

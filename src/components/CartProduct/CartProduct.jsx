@@ -4,6 +4,13 @@ import { CartContext } from "../../context/Cart.context";
 function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
   const { id, images, name, price, sub_category, quantity } = cartProductInfo;
   let { increaseQuantity, removeProductFromCart } = useContext(CartContext);
+  const handleDecreaseQuantity = () => {
+    if (quantity <= 1) {
+      console.log("Minimum quantity is 1");
+      return;
+    }
+    removeProductFromCart({ product_id: id });
+  };
   return (
     <>
       <div className="px-6 md:pl-6 lg:pl-12">
@@ -41,10 +48,17 @@ function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
             />
             <div className="flex items-center gap-4 text-lg lg:text-2xl">
               <i
-                onClick={() => {
-                  removeProductFromCart({ product_id: id });
-                }}
-                className="fa-solid fa-minus border border-lightblack p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm cursor-pointer"
+                onClick={handleDecreaseQuantity}
+                className={`fa-solid fa-minus border ${
+                  quantity <= 1
+                    ? "opacity-50 cursor-not-allowed"
+                    : "cursor-pointer"
+                } border-lightblack p-1.5 px-2 lg:p-2 lg:px-2.5 rounded-sm`}
+                title={
+                  quantity <= 1
+                    ? "Minimum quantity reached"
+                    : "Decrease quantity"
+                }
               ></i>
               <span className="text-sm">{quantity}</span>
               <i

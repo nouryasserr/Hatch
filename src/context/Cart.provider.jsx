@@ -78,6 +78,34 @@ function CartProvider({ children }) {
       console.error("Error:", error.response?.data || error.message);
     }
   }
+  async function removeProduct({ product_id }) {
+    const toastId = toast.loading("Removing Product...");
+    try {
+      const options = {
+        url: `http://127.0.0.1:8000/api/user/cart/remove-product/${product_id}`,
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      let { data } = await axios.request(options);
+      if (data.success) {
+        toast.success("Product removed successfully!");
+        await getCartProducts();
+      } else {
+        toast.error(data.message || "Failed to clear cart");
+      }
+    } catch (error) {
+      console.error("Error:", error.response?.data || error.message);
+      toast.error(
+        error.response?.data?.message ||
+          "An error occurred while removing product"
+      );
+    } finally {
+      toast.dismiss(toastId);
+    }
+  }
   async function clearCart() {
     const toastId = toast.loading("Clearing cart...");
     try {
@@ -131,6 +159,7 @@ function CartProvider({ children }) {
         getCartProducts,
         cartInfo,
         removeProductFromCart,
+        removeProduct,
         increaseQuantity,
         clearCart,
       }}

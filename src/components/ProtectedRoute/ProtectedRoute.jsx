@@ -1,13 +1,13 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
-import { UserContext } from "../../context/User.context";
+import { startupContext } from "../../context/Startup.context";
 
 function ProtectedRoute({ children }) {
-  let { token } = useContext(UserContext);
+  let { token } = useContext(startupContext);
   if (token) {
     return children;
   } else {
-    return <Navigate to="/Signin" />;
+    return <Navigate to="/Startup/Login" />;
   }
 }
 
