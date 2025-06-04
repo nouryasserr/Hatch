@@ -60,7 +60,6 @@ function CartProvider({ children }) {
     }
   }
   async function removeProductFromCart({ product_id }) {
-    let toastId = toast.loading("Removing product from cart...");
     try {
       const options = {
         url: "http://127.0.0.1:8000/api/user/cart/remove",
@@ -73,19 +72,58 @@ function CartProvider({ children }) {
       };
       let { data } = await axios.request(options);
       if (data.success) {
-        toast.success("Product removed from cart successfully!");
         await getCartProducts();
-      } else {
-        toast.error("Failed to remove product from cart.");
       }
     } catch (error) {
       console.error("Error:", error.response?.data || error.message);
-      toast.error("An error occurred while removing from cart.");
+    }
+  }
+  async function clearCart() {
+    const toastId = toast.loading("Clearing cart...");
+    try {
+      const options = {
+        url: "http://127.0.0.1:8000/api/user/cart/clear",
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      let { data } = await axios.request(options);
+      if (data.success) {
+        toast.success("Cart cleared successfully!");
+        await getCartProducts();
+      } else {
+        toast.error(data.message || "Failed to clear cart");
+      }
+    } catch (error) {
+      console.error("Error:", error.response?.data || error.message);
+      toast.error(
+        error.response?.data?.message || "An error occurred while clearing cart"
+      );
     } finally {
       toast.dismiss(toastId);
     }
   }
-
+  async function increaseQuantity({ product_id }) {
+    try {
+      const options = {
+        url: "http://127.0.0.1:8000/api/user/cart/increase-quantity",
+        data: { product_id },
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      let { data } = await axios.request(options);
+      if (data.success) {
+        await getCartProducts();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <CartContext.Provider
       value={{
@@ -93,6 +131,8 @@ function CartProvider({ children }) {
         getCartProducts,
         cartInfo,
         removeProductFromCart,
+        increaseQuantity,
+        clearCart,
       }}
     >
       {children}

@@ -12,6 +12,8 @@ import EmptyCart from "../../../components/EmptyCart/EmptyCart";
 function Cart() {
   const [isSelectAll, setIsSelectAll] = useState(false);
   const [checkedProductIds, setCheckedProductIds] = useState([]);
+  const { getCartProducts, cartInfo, removeProductFromCart, clearCart } =
+    useContext(CartContext);
   function handleCheckboxChange(productId, isChecked) {
     if (isChecked) {
       const newChecked = [...checkedProductIds, productId];
@@ -25,29 +27,48 @@ function Cart() {
       setIsSelectAll(false);
     }
   }
-  let { getCartProducts, cartInfo, removeProductFromCart } =
-    useContext(CartContext);
-
+  const handleDeleteSelected = async () => {
+    if (isSelectAll || checkedProductIds.length === cartInfo.data.data.length) {
+      try {
+        await clearCart();
+        setCheckedProductIds([]);
+        setIsSelectAll(false);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      const deletePromises = checkedProductIds.map((id) =>
+        removeProductFromCart({ product_id: id })
+      );
+      try {
+        await Promise.all(deletePromises);
+        setCheckedProductIds([]);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
   useEffect(() => {
     getCartProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
   const [productsData, setProductsData] = useState(null);
   async function getProducts() {
-    const options = {
-      url: "http://127.0.0.1:8000/api/general/products",
-      method: "GET",
-    };
-    let { data } = await axios.request(options);
-    setProductsData(data);
+    try {
+      const options = {
+        url: "http://127.0.0.1:8000/api/general/products",
+        method: "GET",
+      };
+      let { data } = await axios.request(options);
+      setProductsData(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
   }
   useEffect(() => {
     getProducts();
   }, []);
-
   if (!cartInfo) return <Loader />;
-
   if (!cartInfo.data || !cartInfo.data.data || cartInfo.data.data.length === 0)
     return <EmptyCart />;
   return (
@@ -81,12 +102,7 @@ function Cart() {
             </span>
           </div>
           <p
-            onClick={() => {
-              checkedProductIds.forEach((id) => {
-                removeProductFromCart({ product_id: id });
-              });
-              setCheckedProductIds([]);
-            }}
+            onClick={handleDeleteSelected}
             className="text-secondary text-sm underline cursor-pointer hover:no-underline"
           >
             delete
