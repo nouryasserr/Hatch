@@ -42,7 +42,7 @@ function ProductCard({ productInfo }) {
             New
           </span>
         )}
-        <Link to={`/User/ProductDetails/`}>
+        <Link to={`/User/ProductDetails/${id}`}>
           <img
             src={
               images?.[0] || "https://placehold.co/300x350?text=Product+Image"

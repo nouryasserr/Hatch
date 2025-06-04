@@ -33,6 +33,8 @@ import AddProduct2 from "./pages/Startup/AddProduct2/AddProduct2";
 import ProductDetail from "./pages/Startup/ProductDetail/ProductDetail";
 import Orders from "./pages/Startup/Orders/Orders";
 import OrderDetails from "./pages/Startup/OrderDetails/OrderDetails";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import GuestRoute from "./components/GuestRoute/GuestRoute";
 
 function App() {
   const router = createBrowserRouter([
@@ -48,6 +50,28 @@ function App() {
       ],
     },
     {
+      path: "/Startup",
+      element: (
+        <ProtectedRoute>
+          <StartupLayout />
+        </ProtectedRoute>
+      ),
+      children: [
+        { path: "AddProduct", element: <AddProduct /> },
+        { path: "AddProduct2", element: <AddProduct2 /> },
+        { path: "OrderDetails", element: <OrderDetails /> },
+        { path: "Orders", element: <Orders /> },
+        { path: "Overview", element: <Overview /> },
+        { path: "ProductDetail", element: <ProductDetail /> },
+        { path: "Products", element: <Products /> },
+      ],
+    },
+    {
+      path: "/Startup",
+      element: <GuestRoute />,
+      children: [{ path: "Login", element: <Login /> }],
+    },
+    {
       path: "/User",
       element: <Layout />,
       children: [
@@ -59,24 +83,10 @@ function App() {
         { path: "Checkout", element: <Checkout /> },
         { path: "Contact", element: <Contact /> },
         { path: "FreshDrops", element: <FreshDrops /> },
-        { path: "ProductDetails", element: <ProductDetails /> },
+        { path: "ProductDetails/:id", element: <ProductDetails /> },
         { path: "Sale", element: <Sale /> },
         { path: "UserAccount", element: <UserAccount /> },
         { path: "Wishlist", element: <Wishlist /> },
-      ],
-    },
-    {
-      path: "/Startup",
-      element: <StartupLayout />,
-      children: [
-        { path: "AddProduct", element: <AddProduct /> },
-        { path: "AddProduct2", element: <AddProduct2 /> },
-        { path: "Login", element: <Login /> },
-        { path: "OrderDetails", element: <OrderDetails /> },
-        { path: "Orders", element: <Orders /> },
-        { path: "Overview", element: <Overview /> },
-        { path: "ProductDetail", element: <ProductDetail /> },
-        { path: "Products", element: <Products /> },
       ],
     },
   ]);
