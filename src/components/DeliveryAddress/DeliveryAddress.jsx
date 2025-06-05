@@ -1,8 +1,15 @@
 import { useState } from "react";
 import CheckoutAdress from "../CheckoutAdress/CheckoutAdress";
 
-function DeliveryAddress() {
+function DeliveryAddress({ onAddressSelect }) {
   const [showCheckout, setShowCheckout] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address);
+    if (onAddressSelect) {
+      onAddressSelect(address);
+    }
+  };
   return (
     <>
       <div className="mb-6">
@@ -16,18 +23,23 @@ function DeliveryAddress() {
             <span>Add New Address</span>
           </button>
         </div>
-        <div className="flex items-center gap-2">
-          <i className="fa-solid fa-location-dot bg-stone-100 py-2 px-3.5 rounded-full text-xl"></i>
-          <div>
-            <h5 className="text-lg">ziad's home</h5>
-            <p className="text-xs text-zinc-400">
-              15 a - hada2ek el ahram - giza
-            </p>
+        {selectedAddress ? (
+          <div className="flex items-center gap-2">
+            <i className="fa-solid fa-location-dot bg-stone-100 py-2 px-3.5 rounded-full text-xl"></i>
+            <div>
+              <h5 className="text-lg">{selectedAddress.city || "Address"}</h5>
+              <p className="text-xs text-zinc-400">{selectedAddress.address}</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <p className="text-sm text-gray-500">No address selected</p>
+        )}
       </div>
       {showCheckout && (
-        <CheckoutAdress onClose={() => setShowCheckout(false)} />
+        <CheckoutAdress
+          onClose={() => setShowCheckout(false)}
+          onAddressSelect={handleAddressSelect}
+        />
       )}
     </>
   );

@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { CartContext } from "../../context/Cart.context";
+import { NavLink } from "react-router-dom";
 function OrderSummary() {
   const { cartInfo } = useContext(CartContext);
   if (!cartInfo) return <div>Loading...</div>;
@@ -39,9 +40,12 @@ function OrderSummary() {
               <p>{grandTotal.toFixed(2)} EGP</p>
             </div>
           </div>
-          <button className="bg-black text-white rounded-full w-full p-3 mt-6 border border-black hover:bg-white hover:text-black transition duration-300 ease-in-out">
+          <NavLink
+            to={"/User/Checkout"}
+            className="block text-center bg-black text-white rounded-full w-full p-3 mt-6 border border-black hover:bg-white hover:text-black transition duration-300 ease-in-out"
+          >
             Checkout
-          </button>
+          </NavLink>
         </div>
       </div>
     </>

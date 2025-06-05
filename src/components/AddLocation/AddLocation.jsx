@@ -1,4 +1,44 @@
+import { useFormik } from "formik";
+import { useContext } from "react";
+import { UserContext } from "../../context/User.context";
+import axios from "axios";
+import toast from "react-hot-toast";
+
 function AddLocation({ onClose }) {
+  let { token } = useContext(UserContext);
+  async function storeAddress(values) {
+    let toastId = toast.loading("adding address...");
+    try {
+      const options = {
+        url: "http://127.0.0.1:8000/api/user/addresses",
+        data: values,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      };
+      let { data } = await axios.request(options);
+      if (data.success) {
+        toast.success("Address Added Succesfully");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      toast.dismiss(toastId);
+    }
+  }
+  const formik = useFormik({
+    initialValues: {
+      address: "",
+      city: "",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    },
+    onSubmit: storeAddress,
+  });
   return (
     <>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-blackmuted bg-opacity-70">
@@ -13,7 +53,10 @@ function AddLocation({ onClose }) {
             </button>
           </div>
           <hr />
-          <div className="py-4 md:py-6 px-4 xs:px-6">
+          <form
+            onSubmit={formik.handleSubmit}
+            className="py-4 md:py-6 px-4 xs:px-6"
+          >
             <div className="w-full h-52 relative mb-2">
               <iframe
                 src="https://www.google.com/maps/embed?pb=YourMapURL"
@@ -33,18 +76,32 @@ function AddLocation({ onClose }) {
               <input
                 type="text"
                 autoComplete="on"
-                name="location"
+                name="address"
                 placeholder="15 a - hada2ek el ahram - giza"
-                className="py-2 px-2 xs:px-3 text-xs placeholder:text-zinc-400 w-full border border-blackmuted rounded-sm"
+                value={formik.values.address}
+                onChange={formik.handleChange}
+                className="py-2 px-2 xs:px-3 text-xs placeholder:text-lightblack w-full border border-blackmuted rounded-sm"
+              />
+            </div>
+            <div className="mt-4 mb-2">
+              <h5 className="pb-1 text-sm xs:text-lg font-light">your city</h5>
+              <input
+                type="text"
+                autoComplete="on"
+                name="city"
+                placeholder="6th of October City"
+                value={formik.values.city}
+                onChange={formik.handleChange}
+                className="py-2 px-2 xs:px-3 text-xs placeholder:text-lightblack w-full border border-blackmuted rounded-sm"
               />
             </div>
             <button
-              onClick={onClose}
+              type="submit"
               className="mt-4 w-full my-2 bg-black border border-black rounded-full font-extralight text-sm text-white p-2 hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"
             >
               continue to detail adress
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </>
