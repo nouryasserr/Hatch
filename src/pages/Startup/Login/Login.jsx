@@ -5,9 +5,10 @@ import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ForgetPassword from "../../../components/ForgetPassword/ForgetPassword";
 import { object, string } from "yup";
-import { startupContext } from "../../../context/Startup.context";
+import { StartupContext } from "../../../context/Startup.context";
+
 function Login() {
-  let { setToken } = useContext(startupContext);
+  let { setToken } = useContext(StartupContext);
   const [inncorrectEmailOrPassword, setIncorrectEmailOrPassword] =
     useState(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -32,18 +33,18 @@ function Login() {
     const loadingToastId = toast.loading("logging in...");
     try {
       const options = {
-        url: "http://127.0.0.1:8000/api/login",
+        url: "http://127.0.0.1:8000/api/startup/login",
         method: "POST",
         data: values,
       };
       let { data } = await axios(options);
       if (data.data?.token) {
-        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("startupToken", data.data.token);
         setToken(data.data.token);
         toast.dismiss(loadingToastId);
         toast.success("logged in successfully!");
         setTimeout(() => {
-          navigate("/");
+          navigate("/Startup/Overview");
         }, 2000);
       } else {
         toast.dismiss(loadingToastId);

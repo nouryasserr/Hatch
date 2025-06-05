@@ -39,7 +39,7 @@ function Signin() {
       };
       let { data } = await axios(options);
       if (data.data?.token) {
-        localStorage.setItem("token", data.data.token);
+        localStorage.setItem("userToken", data.data.token);
         setToken(data.data.token);
         toast.dismiss(loadingToastId);
         toast.success("logged in successfully!");

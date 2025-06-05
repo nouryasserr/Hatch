@@ -35,6 +35,13 @@ import Orders from "./pages/Startup/Orders/Orders";
 import OrderDetails from "./pages/Startup/OrderDetails/OrderDetails";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import GuestRoute from "./components/GuestRoute/GuestRoute";
+import StartupProvider from "./context/Startup.provider";
+import FactoryProvider from "./context/Factory.provider";
+import AdminProvider from "./context/Admin.provider";
+import Dashboard from "./pages/Admin/Dashboard/Dashboard";
+import Main from "./pages/Factory/Main/Main";
+import FactoryLogin from "./pages/Factory/FactoryLogin/FactoryLogin";
+import OutletWrapper from "./components/Layout/OutletWrapper";
 
 function App() {
   const router = createBrowserRouter([
@@ -42,7 +49,13 @@ function App() {
     { path: "*", element: <Error404 /> },
     {
       path: "/Auth",
-      element: <Layout />,
+      element: (
+        <UserProvider>
+          <CartProvider>
+            <Layout />
+          </CartProvider>
+        </UserProvider>
+      ),
       children: [
         { path: "Registeration", element: <Registeration /> },
         { path: "Signin", element: <Signin /> },
@@ -52,28 +65,105 @@ function App() {
     {
       path: "/Startup",
       element: (
-        <ProtectedRoute>
-          <StartupLayout />
-        </ProtectedRoute>
+        <StartupProvider>
+          <OutletWrapper />
+        </StartupProvider>
       ),
       children: [
-        { path: "AddProduct", element: <AddProduct /> },
-        { path: "AddProduct2", element: <AddProduct2 /> },
-        { path: "OrderDetails", element: <OrderDetails /> },
-        { path: "Orders", element: <Orders /> },
-        { path: "Overview", element: <Overview /> },
-        { path: "ProductDetail", element: <ProductDetail /> },
-        { path: "Products", element: <Products /> },
+        {
+          path: "Login",
+          element: (
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          ),
+        },
+        {
+          element: (
+            <ProtectedRoute>
+              <StartupLayout />
+            </ProtectedRoute>
+          ),
+          children: [
+            { path: "AddProduct", element: <AddProduct /> },
+            { path: "AddProduct2", element: <AddProduct2 /> },
+            { path: "OrderDetails", element: <OrderDetails /> },
+            { path: "Orders", element: <Orders /> },
+            { path: "Overview", element: <Overview /> },
+            { path: "ProductDetail", element: <ProductDetail /> },
+            { path: "Products", element: <Products /> },
+          ],
+        },
       ],
     },
+    // {
+    //   path: "/Startup",
+    //   element: (
+    //     <StartupProvider>
+    //       <GuestRoute></GuestRoute>
+    //     </StartupProvider>
+    //   ),
+    //   children: [{ path: "Login", element: <Login /> }],
+    // },
+    // {
+    //   path: "/Startup",
+    //   element: (
+    //     <StartupProvider>
+    //       <ProtectedRoute>
+    //         <StartupLayout />
+    //       </ProtectedRoute>
+    //     </StartupProvider>
+    //   ),
+    //   children: [
+    //     { path: "AddProduct", element: <AddProduct /> },
+    //     { path: "AddProduct2", element: <AddProduct2 /> },
+    //     { path: "OrderDetails", element: <OrderDetails /> },
+    //     { path: "Orders", element: <Orders /> },
+    //     { path: "Overview", element: <Overview /> },
+    //     { path: "ProductDetail", element: <ProductDetail /> },
+    //     { path: "Products", element: <Products /> },
+    //   ],
+    // },
     {
-      path: "/Startup",
-      element: <GuestRoute />,
-      children: [{ path: "Login", element: <Login /> }],
+      path: "/Factory",
+      element: (
+        <FactoryProvider>
+          <GuestRoute></GuestRoute>
+        </FactoryProvider>
+      ),
+      children: [{ path: "FactoryLogin", element: <FactoryLogin /> }],
+    },
+    {
+      path: "/Factory",
+      element: (
+        <FactoryProvider>
+          <ProtectedRoute>
+            <StartupLayout />
+          </ProtectedRoute>
+        </FactoryProvider>
+      ),
+      children: [{ path: "Main", element: <Main /> }],
+    },
+    {
+      path: "/Admin",
+      element: (
+        <AdminProvider>
+          <ProtectedRoute>
+            <StartupLayout />
+          </ProtectedRoute>
+        </AdminProvider>
+      ),
+      children: [{ path: "Dashboard", element: <Dashboard /> }],
     },
     {
       path: "/User",
-      element: <Layout />,
+      element: (
+        <UserProvider>
+          <CartProvider>
+            <Layout />
+          </CartProvider>
+        </UserProvider>
+      ),
       children: [
         { index: true, element: <Home /> },
         { path: "About", element: <About /> },
@@ -93,11 +183,7 @@ function App() {
 
   return (
     <>
-      <UserProvider>
-        <CartProvider>
-          <RouterProvider router={router} />
-        </CartProvider>
-      </UserProvider>
+      <RouterProvider router={router} />
       <Toaster />
     </>
   );

@@ -1,11 +1,20 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { object, ref, string } from "yup";
+import { UserContext } from "../../../context/User.context";
 
 function Registeration() {
+  const { token } = useContext(UserContext);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!token) {
+      toast.error("You need to login first");
+      navigate("/login");
+    }
+  }, [token, navigate]);
   const [categories, setCategories] = useState([]);
   useEffect(() => {
     async function fetchCategoris() {
@@ -15,7 +24,6 @@ function Registeration() {
           method: "GET",
         };
         let { data } = await axios(options);
-        console.log("data of categories", data);
         if (data) {
           setCategories(data.data);
         }
@@ -24,13 +32,10 @@ function Registeration() {
         toast.error("Failed to fetch categories.");
       }
     }
-
     fetchCategoris();
   }, []);
-
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const navigate = useNavigate();
   const [accountExistsError, setAccountExistsError] = useState(null);
   const validate = object({
     name: string()
@@ -57,18 +62,6 @@ function Registeration() {
       Instagram: string().url("invalid URL format"),
     }).required("social media links are required"),
     category_id: string().required("category is required"),
-    logo: string()
-      .required("logo is required")
-      .test(
-        "fileFormat",
-        "logo must be a valid image (jpeg, png, jpg)",
-        (value) => {
-          if (!value) return false;
-          const allowedExtensions = ["jpg", "jpeg", "png"];
-          const extension = value.split(".").pop().toLowerCase();
-          return allowedExtensions.includes(extension);
-        }
-      ),
     payment_method: string()
       .required("payment method is required")
       .min(3, "payment method must be at least 3 characters")
@@ -91,7 +84,6 @@ function Registeration() {
         Instagram: "",
       },
       category_id: "",
-      logo: "",
       payment_method: "",
       payment_account: "",
     },
@@ -100,12 +92,21 @@ function Registeration() {
   });
 
   async function sendDataToApi(values) {
+    if (!token) {
+      toast.error("You need to login first");
+      navigate("/Auth/Signin");
+      return;
+    }
     const loadingToastId = toast.loading("creating request...");
     try {
       const options = {
-        url: "http://127.0.0.1:8000/api/register",
+        url: "http://127.0.0.1:8000/api/user/startup/register",
         method: "POST",
         data: values,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       };
       let { data } = await axios(options);
       console.log("data of registration", data);
@@ -128,6 +129,14 @@ function Registeration() {
       toast.dismiss(loadingToastId);
       toast.error(msg);
     }
+  }
+  if (!token) {
+    return (
+      <div className="w-full lg:w-3/6 px-6 lg:pl-12 py-8 space-y-8">
+        <p>You need to login first to register as a startup.</p>
+        <button onClick={() => navigate("/Auth/Signin")}>Go to Login</button>
+      </div>
+    );
   }
   return (
     <>
@@ -271,37 +280,35 @@ function Registeration() {
               <p className="text-secondary">*{formik.errors.description}</p>
             )}
           </div>
-          {["Facebook", "Instagram"].map((platform) => (
-            <div key={platform} className="pb-6 flex flex-col gap-2">
-              <label
-                htmlFor={`social_media_links[${platform}]`}
-                className="text-lg"
-              >
-                {platform.toLowerCase()} link
-              </label>
-              <input
-                type="text"
-                autoComplete="on"
-                placeholder="type here"
-                className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-                value={formik.values.social_media_links?.[platform] || ""}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                name={`social_media_links[${platform}]`}
-                id={`social_media_links[${platform}]`}
-              />
-              {formik.errors.social_media_links?.[platform] &&
-                formik.touched.social_media_links?.[platform] && (
-                  <p className="text-secondary">
-                    *{formik.errors.social_media_links[platform]}
-                  </p>
-                )}
-              {platform === "Instagram" && accountExistsError && (
-                <p className="text-secondary">*{accountExistsError}</p>
-              )}
-            </div>
-          ))}
-
+          <div className="flex flex-col gap-2 space-y-2">
+            {["Facebook", "Instagram"].map((platform) => (
+              <div key={platform} className="flex flex-col gap-2">
+                <label
+                  htmlFor={`social_media_links[${platform}]`}
+                  className="text-lg"
+                >
+                  {platform.toLowerCase()} link
+                </label>
+                <input
+                  type="text"
+                  autoComplete="on"
+                  placeholder="type here"
+                  className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+                  value={formik.values.social_media_links?.[platform] || ""}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  name={`social_media_links[${platform}]`}
+                  id={`social_media_links[${platform}]`}
+                />
+                {formik.errors.social_media_links?.[platform] &&
+                  formik.touched.social_media_links?.[platform] && (
+                    <p className="text-secondary">
+                      *{formik.errors.social_media_links[platform]}
+                    </p>
+                  )}
+              </div>
+            ))}
+          </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="category_id" className="text-lg">
               category
@@ -318,9 +325,9 @@ function Registeration() {
                 <option value="" disabled>
                   select a category
                 </option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
+                {categories.map((subcat) => (
+                  <option key={subcat.id} value={subcat.category_id}>
+                    {subcat.category.name} - {subcat.name}
                   </option>
                 ))}
               </select>
@@ -340,40 +347,6 @@ function Registeration() {
                 </svg>
               </div>
             </div>
-
-            {/* <input
-              type="text"
-              autoComplete="on"
-              placeholder="type here (about your startup)"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="description"
-              id="description"
-            /> */}
-            {formik.errors.description && formik.touched.description && (
-              <p className="text-secondary">*{formik.errors.description}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="logo" className="text-lg">
-              logo
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              placeholder="upload your logo"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-              value={formik.values.logo}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="logo"
-              id="logo"
-            />
-            {formik.errors.logo && formik.touched.logo && (
-              <p className="text-secondary">*{formik.errors.logo}</p>
-            )}
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="payment_method" className="text-lg">
