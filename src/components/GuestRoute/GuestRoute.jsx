@@ -1,14 +1,13 @@
 import { Navigate } from "react-router-dom";
 import { useContext } from "react";
-import { startupContext } from "../../context/Startup.context";
+import { StartupContext } from "../../context/Startup.context";
 
 function GuestRoute({ children }) {
-  let { token } = useContext(startupContext);
-  if (!token) {
-    return children;
-  } else {
-    return <Navigate to="/Startup/Overview" />;
+  let { token } = useContext(StartupContext);
+  if (token) {
+    return <Navigate to="/Startup/Overview" replace />;
   }
+  return children;
 }
 
 export default GuestRoute;

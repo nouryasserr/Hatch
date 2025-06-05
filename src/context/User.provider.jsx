@@ -2,11 +2,11 @@ import { useState } from "react";
 import { UserContext } from "./User.context";
 
 function UserProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState(localStorage.getItem("userToken"));
 
   function handleLogout() {
     setToken(null);
-    localStorage.removeItem("token");
+    localStorage.removeItem("userToken");
   }
 
   return (

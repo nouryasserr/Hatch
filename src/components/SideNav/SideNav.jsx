@@ -1,11 +1,13 @@
 import logo from "../../assets/imgs/HatchWhite.png";
 import { NavLink } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { StartupContext } from "../../context/Startup.context";
 function SideNav() {
   const [isOpen, setIsOpen] = useState(false);
   const toggleSideNav = () => {
     setIsOpen(!isOpen);
   };
+  const { handleLogout } = useContext(StartupContext);
   return (
     <>
       <button
@@ -52,7 +54,7 @@ function SideNav() {
           <ul className="text-white absolute bottom-0 left-0">
             <li className="flex gap-3 items-center cursor-pointer hover:text-secondary transition duration-300 ease-in-out delay-150">
               <i className="fa-solid fa-arrow-right-from-bracket"></i>
-              <NavLink>logout</NavLink>
+              <span onClick={handleLogout}>logout</span>
             </li>
           </ul>
         </div>
