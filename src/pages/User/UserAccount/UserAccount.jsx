@@ -3,6 +3,7 @@ import { useContext } from "react";
 import DeliveryAddress from "../../../components/DeliveryAddress/DeliveryAddress";
 import Order from "../../../components/Order/Order";
 import { UserContext } from "../../../context/User.context";
+import { NavLink } from "react-router-dom";
 
 function UserAccount() {
   const { token, handleLogout } = useContext(UserContext);
@@ -46,14 +47,17 @@ function UserAccount() {
           </div>
         </div>
         <div className="flex gap-4 items-center">
+          <NavLink
+            to={"/Auth/Registeration"}
+            className="w-fit cursor-pointer text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"
+          >
+            join as a startup
+          </NavLink>
           <p
             onClick={handleLogout}
             className="w-fit cursor-pointer text-secondary text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"
           >
             log out
-          </p>
-          <p className="w-fit cursor-pointer text-secondary text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150">
-            delete account
           </p>
         </div>
       </div>

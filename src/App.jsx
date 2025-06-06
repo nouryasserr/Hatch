@@ -29,6 +29,7 @@ import StartupLayout from "./components/Layout/StartupLayout";
 import Products from "./pages/Startup/Products/Products";
 import AddProduct from "./pages/Startup/AddProduct/AddProduct";
 import CartProvider from "./context/Cart.provider";
+import WishlistProvider from "./context/Wishlist.provider";
 import AddProduct2 from "./pages/Startup/AddProduct2/AddProduct2";
 import ProductDetail from "./pages/Startup/ProductDetail/ProductDetail";
 import Orders from "./pages/Startup/Orders/Orders";
@@ -96,34 +97,6 @@ function App() {
         },
       ],
     },
-    // {
-    //   path: "/Startup",
-    //   element: (
-    //     <StartupProvider>
-    //       <GuestRoute></GuestRoute>
-    //     </StartupProvider>
-    //   ),
-    //   children: [{ path: "Login", element: <Login /> }],
-    // },
-    // {
-    //   path: "/Startup",
-    //   element: (
-    //     <StartupProvider>
-    //       <ProtectedRoute>
-    //         <StartupLayout />
-    //       </ProtectedRoute>
-    //     </StartupProvider>
-    //   ),
-    //   children: [
-    //     { path: "AddProduct", element: <AddProduct /> },
-    //     { path: "AddProduct2", element: <AddProduct2 /> },
-    //     { path: "OrderDetails", element: <OrderDetails /> },
-    //     { path: "Orders", element: <Orders /> },
-    //     { path: "Overview", element: <Overview /> },
-    //     { path: "ProductDetail", element: <ProductDetail /> },
-    //     { path: "Products", element: <Products /> },
-    //   ],
-    // },
     {
       path: "/Factory",
       element: (
@@ -160,7 +133,9 @@ function App() {
       element: (
         <UserProvider>
           <CartProvider>
-            <Layout />
+            <WishlistProvider>
+              <Layout />
+            </WishlistProvider>
           </CartProvider>
         </UserProvider>
       ),
