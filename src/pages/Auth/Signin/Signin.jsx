@@ -12,6 +12,7 @@ function Signin() {
   const [inncorrectEmailOrPassword, setIncorrectEmailOrPassword] =
     useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const navigate = useNavigate();
   const validate = object({
     email: string().required("email is required").email("invalid email"),
@@ -29,6 +30,33 @@ function Signin() {
     onSubmit: sendDataToApi,
   });
   const [showForget, setShowForget] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    try {
+      setIsGoogleLoading(true);
+      const { data } = await axios.get(
+        "http://127.0.0.1:8000/api/auth/google/redirect",
+        {
+          params: {
+            callback_url: `${window.location.origin}/Auth/GoogleCallback`,
+          },
+        }
+      );
+
+      if (data.success && data.data?.url) {
+        // Redirect to Google's OAuth page
+        window.location.href = data.data.url;
+      } else {
+        toast.error("Failed to initiate Google login");
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error("Failed to connect with Google");
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
   async function sendDataToApi(values) {
     const loadingToastId = toast.loading("logging in...");
     try {
@@ -71,9 +99,15 @@ function Signin() {
             <i className="fa-brands fa-apple text-xl"></i>
             <span className="text-sm font-medium">continue with apple</span>
           </button>
-          <button className="flex gap-2 items-center justify-center border border-slate-600 rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer">
+          <button
+            onClick={handleGoogleLogin}
+            disabled={isGoogleLoading}
+            className="flex gap-2 items-center justify-center border border-slate-600 rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <i className="fa-brands fa-google text-lg"></i>
-            <span className="text-sm font-medium"> continue with google </span>
+            <span className="text-sm font-medium">
+              {isGoogleLoading ? "connecting..." : "continue with google"}
+            </span>
           </button>
         </div>
         <div className="flex items-center gap-4">

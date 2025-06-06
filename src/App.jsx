@@ -44,6 +44,8 @@ import Dashboard from "./pages/Admin/Dashboard/Dashboard";
 import Main from "./pages/Factory/Main/Main";
 import FactoryLogin from "./pages/Factory/FactoryLogin/FactoryLogin";
 import OutletWrapper from "./components/Layout/OutletWrapper";
+import GoogleCallback from "./pages/Auth/GoogleCallback/GoogleCallback";
+import ChoosePlan from "./pages/Startup/ChoosePlan/ChoosePlan";
 
 function App() {
   const router = createBrowserRouter([
@@ -62,6 +64,7 @@ function App() {
         { path: "Registeration", element: <Registeration /> },
         { path: "Signin", element: <Signin /> },
         { path: "Signup", element: <Signup /> },
+        { path: "GoogleCallback", element: <GoogleCallback /> },
       ],
     },
     {
@@ -77,6 +80,14 @@ function App() {
           element: (
             <GuestRoute>
               <Login />
+            </GuestRoute>
+          ),
+        },
+        {
+          path: "ChoosePlan",
+          element: (
+            <GuestRoute>
+              <ChoosePlan />
             </GuestRoute>
           ),
         },
