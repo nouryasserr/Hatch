@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CartContext } from "../../context/Cart.context";
-import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../context/User.context";
+import { WishlistContext } from "../../context/Wishlist.context";
 import toast from "react-hot-toast";
 
 function ProductCard({ productInfo }) {
@@ -21,8 +21,15 @@ function ProductCard({ productInfo }) {
     has_colors,
   } = productInfo;
   const { addProductToCart, cartInfo } = useContext(CartContext);
+  const { wishlistInfo, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
+
   const isInCart = cartInfo?.data?.data?.some((item) => item.id === id);
+  const isInWishlist = wishlistInfo?.data?.some(
+    (item) => item.product.id === id
+  );
   const hasDiscount = discounted_price && discounted_price < price;
+
   const isNewProduct = () => {
     if (!created_at) return false;
     const productDate = new Date(created_at);
@@ -31,7 +38,9 @@ function ProductCard({ productInfo }) {
     const diffDays = diffTime / (1000 * 60 * 60 * 24);
     return diffDays <= 7;
   };
+
   const isDisabled = stock === 0 || has_sizes || has_colors || isInCart;
+
   const handleAddToCart = () => {
     if (!token) {
       toast.error("Please login first");
@@ -46,6 +55,21 @@ function ProductCard({ productInfo }) {
 
     addProductToCart({ product_id: id });
   };
+
+  const handleWishlistToggle = () => {
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/Auth/Signin");
+      return;
+    }
+
+    if (isInWishlist) {
+      removeFromWishlist(id);
+    } else {
+      addToWishlist(id);
+    }
+  };
+
   return (
     <>
       <div className="relative overflow-hidden">
@@ -108,8 +132,17 @@ function ProductCard({ productInfo }) {
               ? "Added"
               : "Add to Cart"}
           </button>
-          <button className="border border-lightblack py-1.5 px-7 rounded-full text-lightblack hover:bg-secondary hover:text-white hover:border-secondary">
-            <i className="fa-regular fa-heart"></i>
+          <button
+            onClick={handleWishlistToggle}
+            className={`border py-1.5 px-7 rounded-full transition duration-300 ease-in-out delay-150 ${
+              isInWishlist
+                ? "bg-secondary border-secondary text-white hover:bg-transparent hover:text-secondary"
+                : "border-lightblack text-lightblack hover:bg-secondary hover:text-white hover:border-secondary"
+            }`}
+          >
+            <i
+              className={`fa-${isInWishlist ? "solid" : "regular"} fa-heart`}
+            ></i>
           </button>
         </div>
       </div>

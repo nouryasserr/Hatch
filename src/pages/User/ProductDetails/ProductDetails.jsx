@@ -1,19 +1,27 @@
 import { useState, useEffect, useContext, useCallback } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { NavLink, useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loader from "../../../components/Loader/Loader";
 import SlimilarProducts from "../../../components/SimilarProducts/SlimilarProducts";
 import ReactImageGallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 import { CartContext } from "../../../context/Cart.context";
+import { UserContext } from "../../../context/User.context";
+import { WishlistContext } from "../../../context/Wishlist.context";
 import toast from "react-hot-toast";
 
 function ProductDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { token } = useContext(UserContext);
+  const { addProductToCart } = useContext(CartContext);
+  const { wishlistInfo, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
+
   const [productDetails, setProductDetails] = useState(null);
   const [productsData, setProductsData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
-  const { addProductToCart } = useContext(CartContext);
   const [selectedOptions, setSelectedOptions] = useState({
     sizeId: null,
     colorId: null,
@@ -26,6 +34,10 @@ function ProductDetails() {
       item.size.id === selectedOptions.sizeId &&
       item.color.id === selectedOptions.colorId
   );
+  const isInWishlist = wishlistInfo?.data?.some(
+    (item) => item.product.id === parseInt(id)
+  );
+
   const fetchProductDetails = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -102,6 +114,19 @@ function ProductDetails() {
       ...prev,
       quantity: newQuantity,
     }));
+  };
+  const handleWishlistToggle = () => {
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/Auth/Signin");
+      return;
+    }
+
+    if (isInWishlist) {
+      removeFromWishlist(parseInt(id));
+    } else {
+      addToWishlist(parseInt(id));
+    }
   };
   if (isLoading) {
     return <Loader />;
@@ -252,9 +277,17 @@ function ProductDetails() {
               <i className="fa-solid fa-share-nodes" aria-hidden="true" />
               <span>Share</span>
             </button>
-            <button className="flex items-center gap-2 cursor-pointer text-lg font-light">
-              <i className="fa-regular fa-heart" aria-hidden="true" />
-              <span>Save</span>
+            <button
+              onClick={handleWishlistToggle}
+              className={`flex items-center gap-2 cursor-pointer text-lg font-light ${
+                isInWishlist ? "text-secondary" : ""
+              }`}
+            >
+              <i
+                className={`fa-${isInWishlist ? "solid" : "regular"} fa-heart`}
+                aria-hidden="true"
+              />
+              <span>{isInWishlist ? "Saved" : "Save"}</span>
             </button>
           </div>
           <div className="my-6">
@@ -290,10 +323,7 @@ function ProductDetails() {
       <div className="px-6 lg:px-12 pt-16">
         <div className="pb-4 flex justify-between">
           <h2 className="text-3xl">Similar products</h2>
-          <NavLink
-            to="/FreshDrops"
-            className="underline hover:no-underline text-nowrap"
-          >
+          <NavLink to="/" className="underline hover:no-underline text-nowrap">
             View all
           </NavLink>
         </div>
