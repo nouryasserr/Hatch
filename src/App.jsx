@@ -30,6 +30,7 @@ import Products from "./pages/Startup/Products/Products";
 import AddProduct from "./pages/Startup/AddProduct/AddProduct";
 import CartProvider from "./context/Cart.provider";
 import WishlistProvider from "./context/Wishlist.provider";
+import UserProfileProvider from "./context/UserProfile.provider";
 import AddProduct2 from "./pages/Startup/AddProduct2/AddProduct2";
 import ProductDetail from "./pages/Startup/ProductDetail/ProductDetail";
 import Orders from "./pages/Startup/Orders/Orders";
@@ -134,7 +135,9 @@ function App() {
         <UserProvider>
           <CartProvider>
             <WishlistProvider>
-              <Layout />
+              <UserProfileProvider>
+                <Layout />
+              </UserProfileProvider>
             </WishlistProvider>
           </CartProvider>
         </UserProvider>

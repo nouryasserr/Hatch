@@ -32,10 +32,6 @@ function AddLocation({ onClose }) {
     initialValues: {
       address: "",
       city: "",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
     },
     onSubmit: storeAddress,
   });
@@ -84,12 +80,14 @@ function AddLocation({ onClose }) {
               />
             </div>
             <div className="mt-4 mb-2">
-              <h5 className="pb-1 text-sm xs:text-lg font-light">your city</h5>
+              <h5 className="pb-1 text-sm xs:text-lg font-light">
+                location type
+              </h5>
               <input
                 type="text"
                 autoComplete="on"
                 name="city"
-                placeholder="6th of October City"
+                placeholder="Home"
                 value={formik.values.city}
                 onChange={formik.handleChange}
                 className="py-2 px-2 xs:px-3 text-xs placeholder:text-lightblack w-full border border-blackmuted rounded-sm"
@@ -99,7 +97,7 @@ function AddLocation({ onClose }) {
               type="submit"
               className="mt-4 w-full my-2 bg-black border border-black rounded-full font-extralight text-sm text-white p-2 hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"
             >
-              continue to detail adress
+              confirm
             </button>
           </form>
         </div>

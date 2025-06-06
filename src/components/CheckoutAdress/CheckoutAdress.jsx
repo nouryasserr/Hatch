@@ -87,14 +87,14 @@ function CheckoutAddress({ onClose, onAddressSelect }) {
             </button>
           </div>
           <hr />
-          <div className="py-4 md:py-6 px-4 xs:px-6 max-h-96 overflow-y-auto">
+          <div className="py-4 px-4 xs:px-6 max-h-96 overflow-y-auto">
             {addresses.length === 0 ? (
               <p className="text-center py-4">
                 No addresses found. Please add one.
               </p>
             ) : (
               addresses.map((addr) => (
-                <div key={addr.id} className="py-4">
+                <div key={addr.id} className="py-2">
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="text-zinc-400 text-xs">
