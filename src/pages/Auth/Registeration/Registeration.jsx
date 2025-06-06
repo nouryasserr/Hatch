@@ -12,7 +12,7 @@ function Registeration() {
   useEffect(() => {
     if (!token) {
       toast.error("You need to login first");
-      navigate("/login");
+      navigate("/Auth/Signin");
     }
   }, [token, navigate]);
   const [categories, setCategories] = useState([]);

@@ -1,8 +1,13 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { CartContext } from "../../context/Cart.context";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../../context/User.context";
+import toast from "react-hot-toast";
 
 function ProductCard({ productInfo }) {
+  const navigate = useNavigate();
+  const { token } = useContext(UserContext);
   const {
     id,
     images,
@@ -28,10 +33,17 @@ function ProductCard({ productInfo }) {
   };
   const isDisabled = stock === 0 || has_sizes || has_colors || isInCart;
   const handleAddToCart = () => {
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/Auth/Signin");
+      return;
+    }
+
     if (isInCart) {
       console.log("This product is already in your cart");
       return;
     }
+
     addProductToCart({ product_id: id });
   };
   return (
