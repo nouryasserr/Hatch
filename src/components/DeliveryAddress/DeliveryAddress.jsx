@@ -28,11 +28,13 @@ function DeliveryAddress({ onAddressSelect }) {
             <i className="fa-solid fa-location-dot bg-stone-100 py-2 px-3.5 rounded-full text-xl"></i>
             <div>
               <h5 className="text-lg">{selectedAddress.city || "Address"}</h5>
-              <p className="text-xs text-zinc-400">{selectedAddress.address}</p>
+              <p className="text-xs text-lightblack">
+                {selectedAddress.address}
+              </p>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-gray-500">No address selected</p>
+          <p className="text-sm text-blackmuted">No address selected</p>
         )}
       </div>
       {showCheckout && (
