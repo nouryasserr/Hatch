@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { UserProfileContext } from "./UserProfile.context";
 import { UserContext } from "./User.context";
 import axios from "axios";
@@ -10,7 +10,20 @@ function UserProfileProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const navigate = useNavigate();
 
+  // Reset profile when token changes
+  useEffect(() => {
+    if (!token) {
+      setUserProfile(null);
+    }
+  }, [token]);
+
   async function getUserProfile() {
+    // Don't make the API call if there's no token
+    if (!token) {
+      setUserProfile(null);
+      return;
+    }
+
     try {
       const options = {
         url: "http://127.0.0.1:8000/api/user/profile",
@@ -25,8 +38,13 @@ function UserProfileProvider({ children }) {
         setUserProfile(data.data);
       }
     } catch (error) {
-      toast.error("Failed to fetch user profile.");
+      // Don't show error toast for 401 errors after logout
+      if (error.response?.status === 401) {
+        setUserProfile(null);
+        return;
+      }
       console.error(error);
+      toast.error("Failed to fetch user profile.");
     }
   }
 

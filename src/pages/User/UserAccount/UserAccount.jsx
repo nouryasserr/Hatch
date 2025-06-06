@@ -14,9 +14,19 @@ function UserAccount() {
   const [showAllOrders, setShowAllOrders] = useState(false);
 
   useEffect(() => {
-    if (token) {
-      getUserProfile();
+    let mounted = true;
+
+    async function fetchProfile() {
+      if (token && mounted) {
+        await getUserProfile();
+      }
     }
+
+    fetchProfile();
+
+    return () => {
+      mounted = false;
+    };
   }, [token, getUserProfile]);
 
   if (!token) {
@@ -26,6 +36,7 @@ function UserAccount() {
   if (!userProfile) {
     return <Loader />;
   }
+
   const sortedOrders = [...userProfile.orders].sort(
     (a, b) => new Date(b.created_at) - new Date(a.created_at)
   );
