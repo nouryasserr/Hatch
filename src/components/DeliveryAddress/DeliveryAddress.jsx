@@ -1,15 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import CheckoutAdress from "../CheckoutAdress/CheckoutAdress";
 
 function DeliveryAddress({ onAddressSelect }) {
   const [showCheckout, setShowCheckout] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const onAddressSelectRef = useRef(onAddressSelect);
+
+  // Update ref when prop changes
+  useEffect(() => {
+    onAddressSelectRef.current = onAddressSelect;
+  }, [onAddressSelect]);
+
+  // Load saved address from localStorage on component mount
+  useEffect(() => {
+    const savedAddress = localStorage.getItem("selectedAddress");
+    if (savedAddress) {
+      const parsedAddress = JSON.parse(savedAddress);
+      setSelectedAddress(parsedAddress);
+      if (onAddressSelectRef.current) {
+        onAddressSelectRef.current(parsedAddress);
+      }
+    }
+  }, []); // Remove onAddressSelect from dependencies
+
   const handleAddressSelect = (address) => {
     setSelectedAddress(address);
-    if (onAddressSelect) {
-      onAddressSelect(address);
+    // Save selected address to localStorage
+    localStorage.setItem("selectedAddress", JSON.stringify(address));
+    if (onAddressSelectRef.current) {
+      onAddressSelectRef.current(address);
     }
   };
+
   return (
     <>
       <div className="mb-6">

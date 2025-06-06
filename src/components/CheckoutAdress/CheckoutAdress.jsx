@@ -13,6 +13,11 @@ function CheckoutAddress({ onClose, onAddressSelect }) {
 
   useEffect(() => {
     getAddresses();
+    // Load saved address from localStorage
+    const savedAddress = localStorage.getItem("selectedAddress");
+    if (savedAddress) {
+      setSelectedAddress(JSON.parse(savedAddress));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -30,6 +35,18 @@ function CheckoutAddress({ onClose, onAddressSelect }) {
       };
       const { data } = await axios.request(options);
       setAddresses(data.data || []);
+
+      // If we have a saved address, find and select it in the loaded addresses
+      const savedAddress = localStorage.getItem("selectedAddress");
+      if (savedAddress) {
+        const parsedSavedAddress = JSON.parse(savedAddress);
+        const matchingAddress = data.data?.find(
+          (addr) => addr.id === parsedSavedAddress.id
+        );
+        if (matchingAddress) {
+          setSelectedAddress(matchingAddress);
+        }
+      }
     } catch (error) {
       console.error("Error fetching addresses:", error);
       setError("Failed to load addresses. Please try again.");
@@ -41,6 +58,7 @@ function CheckoutAddress({ onClose, onAddressSelect }) {
 
   const handleAddressSelect = (address) => {
     setSelectedAddress(address);
+    localStorage.setItem("selectedAddress", JSON.stringify(address));
   };
 
   const handleConfirm = () => {
