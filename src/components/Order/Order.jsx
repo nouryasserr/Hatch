@@ -10,8 +10,21 @@ function Order({ orderInfo }) {
   const displayItem = orderInfo.order_items[0]?.product;
 
   return (
-    <div className="flex items-center h-fit">
-      <div>
+    <div className="flex items-start gap-4">
+      <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded">
+        <img
+          src={
+            displayItem?.images?.[0] ||
+            "https://placehold.co/300x350?text=Product+Image"
+          }
+          alt={displayItem?.name || "Product Image"}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = "https://placehold.co/300x350?text=Product+Image";
+          }}
+        />
+      </div>
+      <div className="flex-1">
         <p className="text-xs mb-1 text-lightblack">
           {displayItem?.sub_category?.name}
         </p>
