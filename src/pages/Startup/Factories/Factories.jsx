@@ -165,7 +165,7 @@ function Factories() {
             </div>
             {responses.map((response) => (
               <div
-                key={response.id}
+                key={response.request.id}
                 className="min-w-[600px] flex justify-between items-center gap-4 mb-4"
               >
                 <p className="text-sm">request #{response.request_id}</p>

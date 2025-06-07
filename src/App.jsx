@@ -110,7 +110,7 @@ function App() {
             { path: "ProductDetail/:id", element: <ProductDetail /> },
             { path: "Products", element: <Products /> },
             { path: "Request", element: <Request /> },
-            { path: "RequestDetails", element: <RequestDetails /> },
+            { path: "RequestDetails/:id", element: <RequestDetails /> },
           ],
         },
       ],
