@@ -103,7 +103,7 @@ function App() {
             { path: "OrderDetails", element: <OrderDetails /> },
             { path: "Orders", element: <Orders /> },
             { path: "Overview", element: <Overview /> },
-            { path: "ProductDetail", element: <ProductDetail /> },
+            { path: "ProductDetail/:id", element: <ProductDetail /> },
             { path: "Products", element: <Products /> },
           ],
         },

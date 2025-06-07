@@ -10,7 +10,7 @@ function StartupProduct({ product }) {
   return (
     <>
       <div className="w-64 overflow-hidden">
-        <Link to={"/Startup/ProductDetail"}>
+        <Link to={`/Startup/ProductDetail/${product.id}`}>
           <img
             src={imageUrl}
             alt="product"

@@ -1,8 +1,93 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { StartupContext } from "../../../context/Startup.context";
+import Loader from "../../../components/Loader/Loader";
 
 function ProductDetail() {
-  const sizes = ["M"];
-  const colors = [{ name: "Light Coral", color: "#f08080" }];
+  const { id } = useParams();
+  const [productDetails, setProductDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { token } = useContext(StartupContext);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchProductDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/startup/products/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (mounted) {
+          setProductDetails(response.data.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        if (mounted) {
+          console.error("Error fetching product details:", error);
+          setError(error.message);
+          setLoading(false);
+        }
+      }
+    };
+
+    if (token && id) {
+      fetchProductDetails();
+    } else {
+      setLoading(false);
+    }
+
+    return () => {
+      mounted = false;
+    };
+  }, [token, id]);
+
+  if (loading) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6 min-h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6 min-h-screen flex items-center justify-center">
+        <div className="text-center text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!productDetails) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6 min-h-screen flex items-center justify-center">
+        <div className="text-center text-gray-500">
+          No product details found
+        </div>
+      </div>
+    );
+  }
+
+  const sizes = productDetails.sizes.map((size) => size.size.name);
+  const colors = productDetails.sizes.map((size) => ({
+    name: size.color.name,
+    color: size.color.code || "#000000", // fallback color if code is null
+  }));
+
+  const mainImage =
+    productDetails.images.find((img) => img.is_main)?.url ||
+    productDetails.images[0]?.url ||
+    "https://placehold.co/300x350?text=Product+Image";
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
@@ -18,26 +103,44 @@ function ProductDetail() {
             <span>Edit</span>
           </Link>
         </div>
-        <div className="flex mt-6 justify-between flex-col lg:flex-row">
-          <div className="lg:w-1/3"></div>
+        <div className="flex mt-6 justify-between gap-8 flex-col lg:flex-row">
+          <div className="lg:w-1/3">
+            <img
+              src={mainImage}
+              alt={productDetails.name}
+              className="w-full h-auto object-cover"
+              onError={(e) => {
+                e.target.src =
+                  "https://placehold.co/300x350?text=Product+Image";
+              }}
+            />
+          </div>
           <div className="w-full lg:w-2/3">
-            <p className="text-sm text-lightblack mb-4">product id: #23498</p>
-            <h2 className="text-3xl my-2">urban flex t-shirt</h2>
-            <p className="my-4">
-              A lightweight, breathable cotton t-shirt designed for everyday
-              comfort and a sleek urban look. Perfect for layering or wearing on
-              its own.
-            </p>
             <p className="text-sm text-lightblack mb-4">
-              {`clothing > t-shirts`}
+              product id: #{productDetails.id}
+            </p>
+            <h2 className="text-3xl my-2">{productDetails.name}</h2>
+            <p className="my-4">{productDetails.description}</p>
+            <p className="text-sm text-lightblack mb-4">
+              {`${productDetails.sub_category.category.name} > ${productDetails.sub_category.name}`}
             </p>
             <div className="my-2 flex justify-between gap-2 flex-wrap">
               <p>
                 base price:{" "}
-                <span className="text-secondary line-through">499 EGP</span>
+                {productDetails.discount_percentage ? (
+                  <span className="text-secondary line-through">
+                    {productDetails.price} EGP
+                  </span>
+                ) : (
+                  <span>{productDetails.price} EGP</span>
+                )}
               </p>
-              <p>discount: 20%</p>
-              <p>final price: 399 EGP</p>
+              {productDetails.discount_percentage && (
+                <>
+                  <p>discount: {productDetails.discount_percentage}%</p>
+                  <p>final price: {productDetails.discounted_price} EGP</p>
+                </>
+              )}
             </div>
             <div className="flex gap-8 my-4">
               <div>
@@ -68,64 +171,38 @@ function ProductDetail() {
                 </div>
               </div>
               <div>
-                <p className="mb-1">color code</p>
-                <div className="flex gap-2 flex-wrap">
-                  {colors.length === 1 ? (
-                    <div
-                      className="py-2 w-24 text-sm text-center border border-black cursor-default"
-                      title={colors[0].name}
-                    >
-                      {colors[0].color}
-                    </div>
-                  ) : (
-                    colors.map(({ name, color }) => (
-                      <label key={name} className="cursor-pointer">
-                        <input
-                          type="radio"
-                          name="color"
-                          value={name}
-                          className="hidden peer"
-                        />
-                        <div
-                          className="w-10 h-10 rounded-full border border-lightblack peer-checked:ring-1 peer-checked:ring-offset-1 peer-checked:ring-black transition duration-300 ease-in-out delay-150"
-                          style={{ backgroundColor: color }}
-                          title={name}
-                        ></div>
-                      </label>
-                    ))
-                  )}
-                </div>
-              </div>
-              <div>
                 <p className="mb-1">color</p>
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-4 flex-wrap">
                   {colors.length === 1 ? (
                     <div
-                      className="w-10 h-10 rounded-full cursor-default"
+                      className="w-8 h-8 rounded-full border-2 border-black"
                       style={{ backgroundColor: colors[0].color }}
                       title={colors[0].name}
-                    ></div>
+                    />
                   ) : (
-                    colors.map(({ name, color }) => (
-                      <label key={name} className="cursor-pointer">
+                    colors.map((color, index) => (
+                      <label
+                        key={index}
+                        className="flex items-center gap-2 cursor-pointer"
+                      >
                         <input
                           type="radio"
                           name="color"
-                          value={name}
+                          value={color.name}
                           className="hidden peer"
                         />
                         <div
-                          className="w-10 h-10 rounded-full border border-lightblack peer-checked:ring-1 peer-checked:ring-offset-1 peer-checked:ring-black transition duration-300 ease-in-out delay-150"
-                          style={{ backgroundColor: color }}
-                          title={name}
-                        ></div>
+                          className="w-8 h-8 rounded-full border border-gray-300 peer-checked:border-2 peer-checked:border-black transition-all"
+                          style={{ backgroundColor: color.color }}
+                          title={color.name}
+                        />
                       </label>
                     ))
                   )}
                 </div>
               </div>
             </div>
-            <p>stock (total): 40 pieces</p>
+            <p> stock: {productDetails.stock} items</p>
           </div>
         </div>
       </div>
