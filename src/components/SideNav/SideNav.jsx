@@ -51,7 +51,11 @@ function SideNav() {
               <NavLink>revenues</NavLink>
             </li>
           </ul>
-          <ul className="text-white absolute bottom-0 left-0">
+          <ul className="text-white absolute bottom-0 left-0 space-y-2">
+            <li className="flex gap-3 items-center cursor-pointer hover:text-lightblack transition duration-300 ease-in-out delay-150">
+              <i className="fa-solid fa-gear"></i>
+              <NavLink to={"/Startup/SettingsProfile"}>settings</NavLink>
+            </li>
             <li className="flex gap-3 items-center cursor-pointer hover:text-secondary transition duration-300 ease-in-out delay-150">
               <i className="fa-solid fa-arrow-right-from-bracket"></i>
               <span onClick={handleLogout}>logout</span>

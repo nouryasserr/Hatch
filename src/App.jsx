@@ -49,6 +49,7 @@ import ChoosePlan from "./pages/Startup/ChoosePlan/ChoosePlan";
 import Factories from "./pages/Startup/Factories/Factories";
 import Request from "./pages/Startup/Request/Request";
 import RequestDetails from "./pages/Startup/RequestDetails/RequestDetails";
+import SettingsProfile from "./pages/Startup/SettingsProfile/SettingsProfile";
 
 function App() {
   const router = createBrowserRouter([
@@ -111,6 +112,7 @@ function App() {
             { path: "Products", element: <Products /> },
             { path: "Request", element: <Request /> },
             { path: "RequestDetails/:id", element: <RequestDetails /> },
+            { path: "SettingsProfile", element: <SettingsProfile /> },
           ],
         },
       ],
