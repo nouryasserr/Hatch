@@ -1,24 +1,65 @@
 import { NavLink } from "react-router-dom";
 import StartupProduct from "../../../components/StartupProduct/StartupProduct";
 import StartupOrder from "../../../components/StartupOrder/StartupOrder";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { StartupContext } from "../../../context/Startup.context";
+import Loader from "../../../components/Loader/Loader";
 
 function Overview() {
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { token } = useContext(StartupContext);
+
   useEffect(() => {
-    async function fetchOrders() {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/startup/orders"
-        );
-        setOrders(response.data.data);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
+        const [ordersResponse, productsResponse] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/startup/orders", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+          axios.get("http://127.0.0.1:8000/api/startup/products", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+        ]);
+
+        setOrders(ordersResponse.data.data);
+        setProducts(productsResponse.data.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.response?.data?.message || err.message);
+        setLoading(false);
       }
+    };
+
+    if (token) {
+      fetchData();
     }
-    fetchOrders();
-  }, []);
+  }, [token]);
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6">
+        <p className="text-red-500">Error loading data: {error}</p>
+      </div>
+    );
+  }
+
+  // Get only the first 4 products
+  const displayProducts = products.slice(0, 4);
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
@@ -48,20 +89,21 @@ function Overview() {
               <i className="fa-solid fa-circle text-green-500 text-xs"></i>
               <span>total orders</span>
             </p>
-            <h2 className="text-3xl">16 order</h2>
+            <h2 className="text-3xl">{orders.length} order</h2>
           </div>
           <div className="grow space-y-2 md:space-y-6">
             <p className="space-x-3">
               <i className="fa-solid fa-circle text-secondary text-xs"></i>
-              <span>avaliable for sale</span>
+              <span>available for sale</span>
             </p>
-            <h2 className="text-3xl">8 products</h2>
+            <h2 className="text-3xl">{products.length} products</h2>
           </div>
         </div>
         <div className="mt-8 mb-4 flex flex-col xs:flex-row justify-between xs:items-center">
           <div className="mb-4 xs:mb-0">
             <h2 className="text-3xl mb-0.5">products</h2>
             <NavLink
+              to="/Startup/Products"
               className={
                 "text-lightblack text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"
               }
@@ -79,14 +121,14 @@ function Overview() {
           </NavLink>
         </div>
         <div className="flex gap-4 flex-wrap">
-          <StartupProduct />
-          <StartupProduct />
-          <StartupProduct />
-          <StartupProduct />
+          {displayProducts.map((product) => (
+            <StartupProduct key={product.id} product={product} />
+          ))}
         </div>
         <div className="mb-4 mt-8 xs:mb-0">
           <h2 className="text-3xl mb-0.5">orders</h2>
           <NavLink
+            to="/Startup/Orders"
             className={
               "text-lightblack text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"
             }
