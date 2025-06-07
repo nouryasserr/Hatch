@@ -44,7 +44,7 @@ function SideNav() {
             </li>
             <li className="flex gap-3 items-center cursor-pointer py-2 px-4 rounded-full hover:bg-primary transition duration-300 ease-in-ouy delay-150">
               <i className="fa-regular fa-comment-dots"></i>
-              <NavLink>factories</NavLink>
+              <NavLink to={"/Startup/Factories"}>factories</NavLink>
             </li>
             <li className="flex gap-3 items-center cursor-pointer py-2 px-4 rounded-full hover:bg-primary transition duration-300 ease-in-ouy delay-150">
               <i className="fa-solid fa-chart-pie"></i>

@@ -13,8 +13,6 @@ function StartupOrder({ id, customer, amount, date, status }) {
         return "bg-gray-500";
     }
   };
-
-  // Extract the raw order ID without the "order #" prefix
   const orderId = id.split("#")[1];
 
   return (
@@ -27,9 +25,7 @@ function StartupOrder({ id, customer, amount, date, status }) {
           }`
         }
       >
-        <span className="text-sm whitespace-nowrap hover:text-primary">
-          {id}
-        </span>
+        <span className="text-sm whitespace-nowrap hover:underline">{id}</span>
         <span className="text-sm whitespace-nowrap">{customer}</span>
         <span className="text-sm whitespace-nowrap">{amount}</span>
         <span className="text-sm whitespace-nowrap">{date}</span>

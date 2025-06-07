@@ -163,7 +163,7 @@ function OrderDetails() {
         </div>
         <div className="overflow-x-auto">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2">
+            <div className="min-w-[600px] flex justify-between items-center gap-4">
               <span className="text-sm whitespace-nowrap text-lightblack">
                 product
               </span>
@@ -171,7 +171,7 @@ function OrderDetails() {
                 quantity
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
-                size
+                status
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
                 unit price
@@ -180,15 +180,15 @@ function OrderDetails() {
                 subtotal
               </span>
             </div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 bg-gray-50">
+            <div className="min-w-[600px] flex justify-between items-center gap-4">
               <span className="text-sm whitespace-nowrap">
                 {orderDetails.product.name}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.quantity}
+                {orderDetails.quantity} item
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.product_size_id}
+                {orderDetails.order.status}
               </span>
               <span className="text-sm whitespace-nowrap">
                 {orderDetails.price} EGP

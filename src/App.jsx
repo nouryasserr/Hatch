@@ -46,6 +46,9 @@ import FactoryLogin from "./pages/Factory/FactoryLogin/FactoryLogin";
 import OutletWrapper from "./components/Layout/OutletWrapper";
 import GoogleCallback from "./pages/Auth/GoogleCallback/GoogleCallback";
 import ChoosePlan from "./pages/Startup/ChoosePlan/ChoosePlan";
+import Factories from "./pages/Startup/Factories/Factories";
+import Request from "./pages/Startup/Request/Request";
+import RequestDetails from "./pages/Startup/RequestDetails/RequestDetails";
 
 function App() {
   const router = createBrowserRouter([
@@ -100,11 +103,14 @@ function App() {
           children: [
             { path: "AddProduct", element: <AddProduct /> },
             { path: "AddProduct2", element: <AddProduct2 /> },
+            { path: "Factories", element: <Factories /> },
             { path: "OrderDetails/:id", element: <OrderDetails /> },
             { path: "Orders", element: <Orders /> },
             { path: "Overview", element: <Overview /> },
             { path: "ProductDetail/:id", element: <ProductDetail /> },
             { path: "Products", element: <Products /> },
+            { path: "Request", element: <Request /> },
+            { path: "RequestDetails", element: <RequestDetails /> },
           ],
         },
       ],

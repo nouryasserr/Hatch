@@ -20,11 +20,11 @@ function StartupInvoice({ orderDetails }) {
             <hr className="my-8" />
           </div>
           <div>
-            <div className="flex justify-between mb-4 text-zinc-400">
+            <div className="flex justify-between mb-4 text-lightblack">
               <p>total price (item)</p>
               <p>{subtotal.toFixed(2)} EGP</p>
             </div>
-            <div className="flex justify-between mb-4 text-zinc-400">
+            <div className="flex justify-between mb-4 text-lightblack">
               <p>shipping tax & fee</p>
               <p>{shippingFee.toFixed(2)} EGP</p>
             </div>
