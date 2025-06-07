@@ -80,7 +80,7 @@ function ProductDetail() {
   const sizes = productDetails.sizes.map((size) => size.size.name);
   const colors = productDetails.sizes.map((size) => ({
     name: size.color.name,
-    color: size.color.code || "#000000", // fallback color if code is null
+    color: size.color.code || "#000000",
   }));
 
   const mainImage =

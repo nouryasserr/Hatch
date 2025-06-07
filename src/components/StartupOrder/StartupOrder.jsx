@@ -1,3 +1,5 @@
+import { NavLink } from "react-router-dom";
+
 function StartupOrder({ id, customer, amount, date, status }) {
   const getStatusStyle = (status) => {
     switch (status?.toUpperCase()) {
@@ -12,10 +14,22 @@ function StartupOrder({ id, customer, amount, date, status }) {
     }
   };
 
+  // Extract the raw order ID without the "order #" prefix
+  const orderId = id.split("#")[1];
+
   return (
     <>
-      <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 border-b">
-        <span className="text-sm whitespace-nowrap">{id}</span>
+      <NavLink
+        to={`/Startup/OrderDetails/${orderId}`}
+        className={({ isActive }) =>
+          `min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 border-b hover:bg-gray-50 transition-colors duration-200 ${
+            isActive ? "bg-gray-50" : ""
+          }`
+        }
+      >
+        <span className="text-sm whitespace-nowrap hover:text-primary">
+          {id}
+        </span>
         <span className="text-sm whitespace-nowrap">{customer}</span>
         <span className="text-sm whitespace-nowrap">{amount}</span>
         <span className="text-sm whitespace-nowrap">{date}</span>
@@ -26,7 +40,7 @@ function StartupOrder({ id, customer, amount, date, status }) {
         >
           {status}
         </span>
-      </div>
+      </NavLink>
     </>
   );
 }

@@ -1,29 +1,91 @@
-import { Link } from "react-router-dom";
-import StartupOrder from "../../../components/StartupOrder/StartupOrder";
-import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import Invoice from "../../../components/Invoice/Invoice";
+import { StartupContext } from "../../../context/Startup.context";
+import Loader from "../../../components/Loader/Loader";
+import StartupInvoice from "../../../components/StartupInvoice/StartupInvoice";
+
 function OrderDetails() {
-  const [orders, setOrders] = useState([]);
+  const { id } = useParams();
+  const [orderDetails, setOrderDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { token } = useContext(StartupContext);
+
   useEffect(() => {
-    async function fetchOrders() {
+    const fetchOrderDetails = async () => {
+      if (!token || !id) {
+        setLoading(false);
+        return;
+      }
+
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/startup/orders"
+          `http://127.0.0.1:8000/api/startup/orders/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
         );
-        setOrders(response.data.data);
+        setOrderDetails(response.data.data);
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error("Error fetching order details:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
-    }
-    fetchOrders();
-  }, []);
+    };
+
+    fetchOrderDetails();
+  }, [token, id]);
+
+  if (loading) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6 min-h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6">
+        <div className="text-red-500">Error loading order details: {error}</div>
+      </div>
+    );
+  }
+
+  if (!orderDetails) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6">
+        <div className="text-gray-500">No order details found</div>
+      </div>
+    );
+  }
+
+  // Format date to a readable string
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleString("en-US", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
         <div className="flex justify-between gap-2 flex-wrap">
           <div>
-            <h2 className="text-3xl mb-0.5">order #7 - details page</h2>
+            <h2 className="text-3xl mb-0.5">
+              order #{orderDetails.order_id} - details page
+            </h2>
             <p className="text-lightblack text-sm">
               this page shows full details of the selected order
             </p>
@@ -33,12 +95,12 @@ function OrderDetails() {
             <span>Export</span>
           </Link>
         </div>
-        <div className="flex flex-col lg:flex-row gap-2">
+        <div className="flex flex-col lg:flex-row gap-8 mt-8">
           <div className="lg:w-1/2">
-            <div className="mb-4 mt-8 xs:mb-0">
+            <div className="mb-4 xs:mb-0">
               <h2 className="text-3xl mb-0.5">customer info</h2>
               <p className="text-lightblack text-sm">
-                basic details about the user who placed this order
+                overview of the customer details and shipping address
               </p>
             </div>
             <div className="flex gap-2 mt-4">
@@ -46,39 +108,49 @@ function OrderDetails() {
                 <p className="text-sm xs:text-base">name</p>
                 <p className="text-sm xs:text-base">email</p>
                 <p className="text-sm xs:text-base">phone</p>
-                <p className="text-sm xs:text-base">email verified</p>
+                <p className="text-sm xs:text-base">second phone</p>
               </div>
               <div className="w-1/2 space-y-2">
-                <p className="text-sm xs:text-base">ziad amr</p>
-                <p className="text-sm xs:text-base">zi*******@gmail.com</p>
-                <p className="text-sm xs:text-base">01060816***</p>
-                <p className="text-sm xs:text-base">no</p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.user.name}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.user.email}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.user.phone}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.second_phone}
+                </p>
               </div>
             </div>
           </div>
           <div className="lg:w-1/2">
-            <div className="mb-4 mt-8 xs:mb-0">
+            <div className="mb-4 xs:mb-0">
               <h2 className="text-3xl mb-0.5">order info</h2>
               <p className="text-lightblack text-sm">
-                overview of the order status. timing and payment
+                overview of the order status, timing and payment
               </p>
             </div>
             <div className="flex gap-2 mt-4">
               <div className="w-1/2 space-y-2">
                 <p className="text-sm xs:text-base">order id</p>
                 <p className="text-sm xs:text-base">created at</p>
-                <p className="text-nowrap text-xs xs:text-base">
-                  discount percentage
-                </p>
+                <p className="text-sm xs:text-base">status</p>
                 <p className="text-sm xs:text-base">total price</p>
               </div>
               <div className="w-1/2 space-y-2">
-                <p className="text-sm xs:text-base">7</p>
+                <p className="text-sm xs:text-base">#{orderDetails.order_id}</p>
                 <p className="text-nowrap text-xs xs:text-base">
-                  26 may 2025 - 2:22 pm
+                  {formatDate(orderDetails.created_at)}
                 </p>
-                <p className="text-sm xs:text-base">-</p>
-                <p className="text-sm xs:text-base">883 EGP</p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.status}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.total_price} EGP
+                </p>
               </div>
             </div>
           </div>
@@ -86,12 +158,12 @@ function OrderDetails() {
         <div className="mb-4 mt-8 xs:mb-0">
           <h2 className="text-3xl mb-0.5">products</h2>
           <p className="text-lightblack text-sm">
-            all items included in this oreder.
+            all items included in this order
           </p>
         </div>
         <div className="overflow-x-auto">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 ">
+            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2">
               <span className="text-sm whitespace-nowrap text-lightblack">
                 product
               </span>
@@ -102,25 +174,29 @@ function OrderDetails() {
                 size
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
-                color
-              </span>
-              <span className="text-sm whitespace-nowrap text-lightblack">
                 unit price
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
                 subtotal
               </span>
             </div>
-            {orders.map((order) => (
-              <StartupOrder
-                key={order.id}
-                id={`#${order.id}`}
-                customer={order.customer_name}
-                amount={`${order.amount} EGP`}
-                date={order.order_date}
-                status={order.status}
-              />
-            ))}
+            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 bg-gray-50">
+              <span className="text-sm whitespace-nowrap">
+                {orderDetails.product.name}
+              </span>
+              <span className="text-sm whitespace-nowrap">
+                {orderDetails.quantity}
+              </span>
+              <span className="text-sm whitespace-nowrap">
+                {orderDetails.product_size_id}
+              </span>
+              <span className="text-sm whitespace-nowrap">
+                {orderDetails.price} EGP
+              </span>
+              <span className="text-sm whitespace-nowrap">
+                {Number(orderDetails.price) * orderDetails.quantity} EGP
+              </span>
+            </div>
           </div>
         </div>
         <div className="flex flex-col lg:flex-row gap-2">
@@ -133,14 +209,24 @@ function OrderDetails() {
             </div>
             <div className="flex gap-2 mt-4">
               <div className="w-1/2 space-y-2">
-                <p>address</p>
-                <p>payment method</p>
-                <p>additional information</p>
+                <p className="text-sm xs:text-base">address</p>
+                <p className="text-sm xs:text-base">city</p>
+                <p className="text-sm xs:text-base">payment method</p>
               </div>
               <div className="w-1/2 space-y-2">
-                <p>2**b - hadayek el ahram</p>
-                <p>COD</p>
-                <p>-</p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.user.addresses.find(
+                    (addr) => addr.id === orderDetails.order.address_id
+                  )?.address || "-"}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.user.addresses.find(
+                    (addr) => addr.id === orderDetails.order.address_id
+                  )?.city || "-"}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {orderDetails.order.payment_method?.toUpperCase() || "COD"}
+                </p>
               </div>
             </div>
           </div>
@@ -152,7 +238,7 @@ function OrderDetails() {
               </p>
             </div>
             <div className="mt-4 xs:w-3/4">
-              <Invoice />
+              <StartupInvoice orderDetails={orderDetails} />
             </div>
           </div>
         </div>

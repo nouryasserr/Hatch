@@ -100,7 +100,7 @@ function App() {
           children: [
             { path: "AddProduct", element: <AddProduct /> },
             { path: "AddProduct2", element: <AddProduct2 /> },
-            { path: "OrderDetails", element: <OrderDetails /> },
+            { path: "OrderDetails/:id", element: <OrderDetails /> },
             { path: "Orders", element: <Orders /> },
             { path: "Overview", element: <Overview /> },
             { path: "ProductDetail/:id", element: <ProductDetail /> },

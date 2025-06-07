@@ -155,7 +155,7 @@ function Overview() {
             {orders.slice(0, 4).map((orderItem) => (
               <StartupOrder
                 key={orderItem.id}
-                id={`order #${orderItem.order_id}`}
+                id={`order #${orderItem.id}`}
                 customer={orderItem.order.user.name}
                 amount={`${orderItem.price} EGP`}
                 date={new Date(orderItem.created_at).toLocaleDateString()}

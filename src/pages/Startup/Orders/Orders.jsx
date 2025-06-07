@@ -93,7 +93,7 @@ function Orders() {
             {pendingOrders.map((orderItem) => (
               <StartupOrder
                 key={orderItem.id}
-                id={`order #${orderItem.order_id}`}
+                id={`order #${orderItem.id}`}
                 customer={orderItem.order.user.name}
                 amount={`${orderItem.price} EGP`}
                 date={new Date(orderItem.created_at).toLocaleDateString()}
@@ -130,7 +130,7 @@ function Orders() {
             {orders.map((orderItem) => (
               <StartupOrder
                 key={orderItem.id}
-                id={`order #${orderItem.order_id}`}
+                id={`order #${orderItem.id}`}
                 customer={orderItem.order.user.name}
                 amount={`${orderItem.price} EGP`}
                 date={new Date(orderItem.created_at).toLocaleDateString()}
