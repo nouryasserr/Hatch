@@ -5,7 +5,6 @@ import Loader from "../../../components/Loader/Loader";
 import SlimilarProducts from "../../../components/SimilarProducts/SlimilarProducts";
 import ReactImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
-import { CartContext } from "../../../context/Cart.context";
 import { UserContext } from "../../../context/User.context";
 import { WishlistContext } from "../../../context/Wishlist.context";
 import toast from "react-hot-toast";
@@ -14,10 +13,8 @@ function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useContext(UserContext);
-  const { addProductToCart } = useContext(CartContext);
-  const { wishlistInfo, addToWishlist, removeFromWishlist } =
+  const { addToWishlist, removeFromWishlist, isInWishlist } =
     useContext(WishlistContext);
-
   const [productDetails, setProductDetails] = useState(null);
   const [productsData, setProductsData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -29,25 +26,37 @@ function ProductDetails() {
     availableSizes: [],
     availableColors: [],
   });
-  const selectedSize = productDetails?.sizes?.find(
-    (item) =>
-      item.size.id === selectedOptions.sizeId &&
-      item.color.id === selectedOptions.colorId
-  );
-  const isInWishlist = wishlistInfo?.data?.some(
-    (item) => item.product.id === parseInt(id)
-  );
-
   const fetchProductDetails = useCallback(async () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(
         `http://127.0.0.1:8000/api/general/products/${id}`
       );
+      console.log("Product Details:", data.data);
+      console.log("Sizes:", data.data.sizes);
       setProductDetails(data.data);
+      if (data.data.sizes && data.data.sizes.length > 0) {
+        const sizes = data.data.sizes;
+        console.log("Processing sizes:", sizes);
+        const uniqueSizes = Array.from(
+          new Set(sizes.map((item) => JSON.stringify(item.size)))
+        ).map((str) => JSON.parse(str));
+        const uniqueColors = Array.from(
+          new Set(sizes.map((item) => JSON.stringify(item.color)))
+        ).map((str) => JSON.parse(str));
+
+        console.log("Unique Sizes:", uniqueSizes);
+        console.log("Unique Colors:", uniqueColors);
+
+        setSelectedOptions((prev) => ({
+          ...prev,
+          availableSizes: uniqueSizes,
+          availableColors: uniqueColors,
+        }));
+      }
     } catch (error) {
       toast.error("Failed to load product details");
-      console.error(error);
+      console.error("Error fetching product details:", error);
     } finally {
       setIsLoading(false);
     }
@@ -66,44 +75,60 @@ function ProductDetails() {
   }
   useEffect(() => {
     fetchProductDetails();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchProductDetails]);
+
   useEffect(() => {
     if (productDetails === null) return;
     getSimilarProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productDetails]);
-  useEffect(() => {
-    if (productDetails?.sizes?.length > 0) {
-      const sizes = [...new Set(productDetails.sizes.map((item) => item.size))];
-      const colors = [
-        ...new Set(productDetails.sizes.map((item) => item.color)),
-      ];
-
-      setSelectedOptions((prev) => ({
-        ...prev,
-        availableSizes: sizes,
-        availableColors: colors,
-        sizeId: sizes[0]?.id || null,
-        colorId: colors[0]?.id || null,
-      }));
-    }
-  }, [productDetails]);
   const handleAddToCart = async () => {
-    if (!selectedSize) {
-      toast.error("Please select size and color");
+    if (!token) {
+      toast.error("Please login first");
+      navigate("/Auth/Signin");
+      return;
+    }
+    if (!selectedOptions.sizeId || !selectedOptions.colorId) {
+      toast.error("Please select both size and color");
+      return;
+    }
+    const selectedVariant = productDetails?.sizes?.find(
+      (item) =>
+        item.size.id === selectedOptions.sizeId &&
+        item.color.id === selectedOptions.colorId
+    );
+    console.log("Selected Variant:", selectedVariant);
+    console.log("Selected Options:", selectedOptions);
+    console.log("Available Sizes:", selectedOptions.availableSizes);
+    console.log("Available Colors:", selectedOptions.availableColors);
+    if (!selectedVariant) {
+      toast.error("Selected combination is not available");
       return;
     }
     setIsAddingToCart(true);
     try {
-      await addProductToCart({
-        product_id: id,
-        size_id: selectedSize.id,
-        quantity: selectedOptions.quantity,
-      });
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/user/cart/add",
+        {
+          product_id: parseInt(id),
+          size_id: selectedOptions.sizeId,
+          color_id: selectedOptions.colorId,
+          quantity: selectedOptions.quantity || 1,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log("Add to cart response:", response.data);
       toast.success("Product added to cart successfully!");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to add to cart");
+      console.error("Add to cart error:", error.response?.data || error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to add to cart";
+      toast.error(errorMessage);
     } finally {
       setIsAddingToCart(false);
     }
@@ -121,7 +146,6 @@ function ProductDetails() {
       navigate("/Auth/Signin");
       return;
     }
-
     if (isInWishlist) {
       removeFromWishlist(parseInt(id));
     } else {
@@ -161,90 +185,71 @@ function ProductDetails() {
           </div>
           <h1 className="text-3xl mt-2">{productDetails.name}</h1>
           <h2 className="text-lg mb-4">
-            {selectedSize?.discounted_price ||
-              selectedSize?.price ||
-              productDetails.price}{" "}
-            EGP
-            {selectedSize?.discounted_price && selectedSize?.price && (
+            {productDetails.price} EGP
+            {productDetails.discounted_price && (
               <span className="text-secondary line-through ml-2">
-                {selectedSize.price} EGP
+                {productDetails.price} EGP
               </span>
             )}
           </h2>
-
-          <div className="mb-4">
-            <label className="text-xs mb-2 block">Size</label>
-            <div className="flex gap-4 flex-wrap">
-              {selectedOptions.availableSizes.map((size) => (
-                <label
-                  key={size.id}
-                  className="flex items-center gap-2 cursor-pointer"
-                  htmlFor={`size-${size.id}`}
-                >
-                  <input
-                    id={`size-${size.id}`}
-                    type="radio"
-                    name="size"
-                    checked={selectedOptions.sizeId === size.id}
-                    onChange={() =>
+          {selectedOptions.availableSizes.length > 0 && (
+            <div className="mb-4">
+              <label className="text-sm font-medium mb-2 block">
+                Select Size
+              </label>
+              <div className="flex gap-4 flex-wrap">
+                {selectedOptions.availableSizes.map((size) => (
+                  <button
+                    key={size.id}
+                    onClick={() => {
+                      console.log("Selecting size:", size);
                       setSelectedOptions((prev) => ({
                         ...prev,
                         sizeId: size.id,
-                      }))
-                    }
-                    className="hidden peer"
-                  />
-                  <div
-                    className={`py-2 w-12 text-sm text-center border ${
+                      }));
+                    }}
+                    className={`py-2 px-4 border rounded-md transition-colors ${
                       selectedOptions.sizeId === size.id
-                        ? "border-2 border-black text-black"
-                        : "border-lightblack text-lightblack"
+                        ? "border-black bg-black text-white"
+                        : "border-gray-300 hover:border-black"
                     }`}
-                    aria-label={`Size ${size.name}`}
                   >
                     {size.name}
-                  </div>
-                </label>
-              ))}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="mb-4">
-            <label className="text-xs mt-4 mb-2 block">Color</label>
-            <div className="flex gap-2 flex-wrap">
-              {selectedOptions.availableColors.map((color) => (
-                <label
-                  key={color.id}
-                  className="cursor-pointer"
-                  htmlFor={`color-${color.id}`}
-                >
-                  <input
-                    id={`color-${color.id}`}
-                    type="radio"
-                    name="color"
-                    checked={selectedOptions.colorId === color.id}
-                    onChange={() =>
+          )}
+          {selectedOptions.availableColors.length > 0 && (
+            <div className="mb-4">
+              <label className="text-sm font-medium mb-2 block">
+                Select Color
+              </label>
+              <div className="flex gap-4 flex-wrap">
+                {selectedOptions.availableColors.map((color) => (
+                  <button
+                    key={color.id}
+                    onClick={() => {
+                      console.log("Selecting color:", color);
                       setSelectedOptions((prev) => ({
                         ...prev,
                         colorId: color.id,
-                      }))
-                    }
-                    className="hidden peer"
-                  />
-                  <div
-                    className={`w-10 h-10 rounded-full border ${
+                      }));
+                    }}
+                    className={`w-10 h-10 rounded-full border-2 transition-all ${
                       selectedOptions.colorId === color.id
-                        ? "ring-1 ring-offset-1 ring-black"
-                        : "border-lightblack"
+                        ? "ring-2 ring-black ring-offset-2"
+                        : "border-gray-300 hover:border-black"
                     }`}
                     style={{ backgroundColor: color.code }}
-                    aria-label={`Color ${color.name}`}
+                    title={color.name}
                   />
-                </label>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
           <div className="mb-6">
-            <label className="text-xs mt-4 mb-2 block">Quantity</label>
+            <label className="text-sm font-medium mb-2 block">Quantity</label>
             <div className="flex items-center gap-4">
               <button
                 onClick={() =>
@@ -271,6 +276,28 @@ function ProductDetails() {
                 <i className="fa-solid fa-plus" />
               </button>
             </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 mt-6">
+            <button
+              onClick={handleAddToCart}
+              disabled={
+                !selectedOptions.sizeId ||
+                !selectedOptions.colorId ||
+                isAddingToCart
+              }
+              className={`w-full xs:w-auto bg-black text-sm font-light border border-black text-white rounded-full py-2 px-8 ${
+                !selectedOptions.sizeId ||
+                !selectedOptions.colorId ||
+                isAddingToCart
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-transparent hover:text-black"
+              } transition duration-300 ease-in-out`}
+            >
+              {isAddingToCart ? "Adding..." : "Add to cart"}
+            </button>
+            <button className="w-full xs:w-auto border text-sm font-light border-black rounded-full py-2 px-8 hover:bg-black hover:text-white transition duration-300 ease-in-out">
+              Buy Now
+            </button>
           </div>
           <div className="mt-6 flex gap-6 items-center">
             <button className="flex items-center gap-2 cursor-pointer text-lg font-light pl-4">
@@ -301,22 +328,6 @@ function ProductDetails() {
                 <i className="fa-solid fa-plus" aria-hidden="true" />
               </button>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 mt-6">
-            <button
-              onClick={handleAddToCart}
-              disabled={!selectedSize || isAddingToCart}
-              className={`w-full xs:w-auto bg-black text-sm font-light border border-black text-white rounded-full py-2 px-8 ${
-                !selectedSize || isAddingToCart
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-transparent hover:text-black"
-              } transition duration-300 ease-in-out`}
-            >
-              {isAddingToCart ? "Adding..." : "Add to cart"}
-            </button>
-            <button className="w-full xs:w-auto border text-sm font-light border-black rounded-full py-2 px-8 hover:bg-black hover:text-white transition duration-300 ease-in-out">
-              Buy Now
-            </button>
           </div>
         </div>
       </div>
