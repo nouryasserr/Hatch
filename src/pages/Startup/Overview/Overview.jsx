@@ -16,17 +16,16 @@ function Overview() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const [ordersResponse, productsResponse] = await Promise.all([
           axios.get("http://127.0.0.1:8000/api/startup/orders", {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
             },
           }),
           axios.get("http://127.0.0.1:8000/api/startup/products", {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
             },
           }),
         ]);
@@ -34,8 +33,9 @@ function Overview() {
         setOrders(ordersResponse.data.data);
         setProducts(productsResponse.data.data);
         setLoading(false);
-      } catch (err) {
-        setError(err.response?.data?.message || err.message);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError(error.message);
         setLoading(false);
       }
     };
@@ -45,20 +45,17 @@ function Overview() {
     }
   }, [token]);
 
-  if (loading) {
-    return <Loader />;
-  }
-
-  if (error) {
-    return (
-      <div className="w-full lg:w-5/6 float-end px-8 py-6">
-        <p className="text-red-500">Error loading data: {error}</p>
-      </div>
-    );
-  }
+  if (loading) return <Loader />;
+  if (error)
+    return <div className="text-center text-red-500">Error: {error}</div>;
 
   // Get only the first 4 products
   const displayProducts = products.slice(0, 4);
+  // Calculate total revenue
+  const totalRevenue = orders.reduce(
+    (sum, order) => sum + parseFloat(order.price),
+    0
+  );
 
   return (
     <>
@@ -75,14 +72,14 @@ function Overview() {
               <i className="fa-solid fa-circle text-green-500 text-xs"></i>
               <span>total product sold</span>
             </p>
-            <h2 className="text-3xl">21 product</h2>
+            <h2 className="text-3xl">{orders.length} product</h2>
           </div>
           <div className="grow space-y-2 md:space-y-6">
             <p className="space-x-3">
               <i className="fa-solid fa-circle text-green-500 text-xs"></i>
               <span>total revenues</span>
             </p>
-            <h2 className="text-3xl">15.000 EGP</h2>
+            <h2 className="text-3xl">{totalRevenue.toFixed(2)} EGP</h2>
           </div>
           <div className="grow space-y-2 md:space-y-6">
             <p className="space-x-3">
@@ -155,14 +152,14 @@ function Overview() {
                 status
               </span>
             </div>
-            {orders.map((order) => (
+            {orders.slice(0, 4).map((orderItem) => (
               <StartupOrder
-                key={order.id}
-                id={`#${order.id}`}
-                customer={order.customer_name}
-                amount={`${order.amount} EGP`}
-                date={order.order_date}
-                status={order.status}
+                key={orderItem.id}
+                id={`order #${orderItem.order_id}`}
+                customer={orderItem.order.user.name}
+                amount={`${orderItem.price} EGP`}
+                date={new Date(orderItem.created_at).toLocaleDateString()}
+                status={orderItem.order.status}
               />
             ))}
           </div>

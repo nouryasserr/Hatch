@@ -1,24 +1,50 @@
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import StartupOrder from "../../../components/StartupOrder/StartupOrder";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { StartupContext } from "../../../context/Startup.context";
+import Loader from "../../../components/Loader/Loader";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { token } = useContext(StartupContext);
+
   useEffect(() => {
-    async function fetchOrders() {
+    const fetchOrders = async () => {
       try {
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/startup/orders"
+          "http://127.0.0.1:8000/api/startup/orders",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         setOrders(response.data.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching orders:", error);
+        setError(error.message);
+        setLoading(false);
       }
+    };
+
+    if (token) {
+      fetchOrders();
     }
-    fetchOrders();
-  }, []);
+  }, [token]);
+
+  if (loading) return <Loader />;
+  if (error)
+    return <div className="text-center text-red-500">Error: {error}</div>;
+
+  const pendingOrders = orders.filter(
+    (order) => order.order.status === "PENDING"
+  );
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
@@ -38,11 +64,11 @@ function Orders() {
           <div className="flex gap-2 items-center">
             <h2 className="text-3xl mb-0.5">new orders</h2>
             <span className="bg-primary text-sm font-extralight text-white rounded-full py-0.5 px-4">
-              2
+              {pendingOrders.length}
             </span>
           </div>
           <NavLink className={"text-lightblack"}>
-            you have 2 new orders ready to review
+            you have {pendingOrders.length} new orders ready to review
           </NavLink>
         </div>
         <div className="overflow-x-auto mt-4">
@@ -60,18 +86,18 @@ function Orders() {
               <span className="text-sm whitespace-nowrap text-lightblack">
                 order date
               </span>
-              <span className="text-sm whitespace-nowrap text-lightblack hidden">
+              <span className="text-sm whitespace-nowrap text-lightblack">
                 status
               </span>
             </div>
-            {orders.map((order) => (
+            {pendingOrders.map((orderItem) => (
               <StartupOrder
-                key={order.id}
-                id={`#${order.id}`}
-                customer={order.customer_name}
-                amount={`${order.amount} EGP`}
-                date={order.order_date}
-                status={order.status}
+                key={orderItem.id}
+                id={`order #${orderItem.order_id}`}
+                customer={orderItem.order.user.name}
+                amount={`${orderItem.price} EGP`}
+                date={new Date(orderItem.created_at).toLocaleDateString()}
+                status={orderItem.order.status}
               />
             ))}
           </div>
@@ -97,18 +123,18 @@ function Orders() {
               <span className="text-sm whitespace-nowrap text-lightblack">
                 order date
               </span>
-              <span className="text-sm whitespace-nowrap text-lightblack hidden">
+              <span className="text-sm whitespace-nowrap text-lightblack">
                 status
               </span>
             </div>
-            {orders.map((order) => (
+            {orders.map((orderItem) => (
               <StartupOrder
-                key={order.id}
-                id={`#${order.id}`}
-                customer={order.customer_name}
-                amount={`${order.amount} EGP`}
-                date={order.order_date}
-                status={order.status}
+                key={orderItem.id}
+                id={`order #${orderItem.order_id}`}
+                customer={orderItem.order.user.name}
+                amount={`${orderItem.price} EGP`}
+                date={new Date(orderItem.created_at).toLocaleDateString()}
+                status={orderItem.order.status}
               />
             ))}
           </div>
