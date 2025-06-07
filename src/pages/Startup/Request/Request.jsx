@@ -1,4 +1,73 @@
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useContext } from "react";
+import { StartupContext } from "../../../context/Startup.context";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import toast from "react-hot-toast";
+
 function Request() {
+  const navigate = useNavigate();
+  const { token } = useContext(StartupContext);
+
+  const validate = Yup.object({
+    description: Yup.string()
+      .required("Description is required")
+      .min(3, "Description must be at least 3 characters"),
+    delivery_date: Yup.string()
+      .required("Delivery date is required")
+      .matches(
+        /^\d{4}-\d{2}-\d{2}$/,
+        "Delivery date must be in format YYYY-MM-DD"
+      ),
+    image: Yup.mixed().required("Image is required"),
+  });
+
+  async function sendDataToApi(values) {
+    const loadingToastId = toast.loading("Creating request...");
+    try {
+      const formData = new FormData();
+      formData.append("description", values.description);
+      formData.append("delivery_date", values.delivery_date);
+      formData.append("image", values.image);
+
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/startup/request",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data.success) {
+        toast.dismiss(loadingToastId);
+        toast.success("Request created successfully!");
+        navigate("/Startup/Factories");
+      } else {
+        throw new Error(response.data.message || "Failed to create request");
+      }
+    } catch (error) {
+      console.error("Error creating request:", error);
+      const errorMessage =
+        error.response?.data?.message || "Failed to create request";
+      toast.dismiss(loadingToastId);
+      toast.error(errorMessage);
+    }
+  }
+
+  const formik = useFormik({
+    initialValues: {
+      description: "",
+      delivery_date: "",
+      image: null,
+    },
+    validationSchema: validate,
+    onSubmit: sendDataToApi,
+  });
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
@@ -15,7 +84,7 @@ function Request() {
             tell us more about what you need
           </p>
         </div>
-        <form>
+        <form onSubmit={formik.handleSubmit}>
           <div className="mb-4">
             <label
               htmlFor="description"
@@ -30,8 +99,20 @@ function Request() {
               placeholder="enter description"
               name="description"
               id="description"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+              className={`border ${
+                formik.touched.description && formik.errors.description
+                  ? "border-secondary"
+                  : "border-blackmuted"
+              } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.description}
             />
+            {formik.touched.description && formik.errors.description && (
+              <p className="text-secondary text-xs mt-1">
+                {formik.errors.description}
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label
@@ -42,13 +123,25 @@ function Request() {
               <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
             </label>
             <input
-              type="text"
+              type="date"
               autoComplete="on"
               placeholder="2025-07-09"
               id="delivery_date"
               name="delivery_date"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+              className={`border ${
+                formik.touched.delivery_date && formik.errors.delivery_date
+                  ? "border-secondary"
+                  : "border-blackmuted"
+              } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.delivery_date}
             />
+            {formik.touched.delivery_date && formik.errors.delivery_date && (
+              <p className="text-secondary text-xs mt-1">
+                {formik.errors.delivery_date}
+              </p>
+            )}
           </div>
           <div className="mb-4">
             <label htmlFor="image" className="flex items-start gap-2 mb-2">
@@ -60,15 +153,32 @@ function Request() {
               autoComplete="on"
               id="image"
               name="image"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+              className={`border ${
+                formik.touched.image && formik.errors.image
+                  ? "border-secondary"
+                  : "border-blackmuted"
+              } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+              onChange={(event) => {
+                formik.setFieldValue("image", event.currentTarget.files[0]);
+              }}
+              onBlur={formik.handleBlur}
             />
+            {formik.touched.image && formik.errors.image && (
+              <p className="text-secondary text-xs mt-1">
+                {formik.errors.image}
+              </p>
+            )}
           </div>
           <button
-            className={
-              "w-full mt-4 bg-primary rounded-full py-1.5 px-6 text-white border border-primary hover:border-black hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"
-            }
+            type="submit"
+            disabled={formik.isSubmitting}
+            className={`w-full mt-4 ${
+              formik.isSubmitting
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-primary hover:border-black hover:bg-transparent hover:text-black"
+            } rounded-full py-1.5 px-6 text-white border border-primary transition duration-300 ease-in-out delay-150`}
           >
-            send request
+            {formik.isSubmitting ? "Sending..." : "send request"}
           </button>
         </form>
       </div>
