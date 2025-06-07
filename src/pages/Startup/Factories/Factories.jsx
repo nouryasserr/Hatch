@@ -1,6 +1,76 @@
 import { Link } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+import axios from "axios";
+import { StartupContext } from "../../../context/Startup.context";
+import Loader from "../../../components/Loader/Loader";
 
 function Factories() {
+  const [requests, setRequests] = useState([]);
+  const [responses, setResponses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { token } = useContext(StartupContext);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const [requestsResponse, responsesResponse] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/startup/request", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+          axios.get("http://127.0.0.1:8000/api/startup/factory/response", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+        ]);
+
+        setRequests(requestsResponse.data.data);
+        setResponses(responsesResponse.data.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [token]);
+
+  if (loading) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6 min-h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6">
+        <div className="text-red-500">Error loading data: {error}</div>
+      </div>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "long",
+    });
+  };
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
@@ -34,29 +104,41 @@ function Factories() {
                 request id
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
-                product
+                description
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
-                quantity
-              </span>
-              <span className="text-sm whitespace-nowrap text-lightblack">
-                deadline
+                delivery date
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
                 status
               </span>
             </div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 mb-4">
-              <Link to={"/Startup/RequestDetails"} className="text-sm">
-                request #12
-              </Link>
-              <p className="text-sm">hoodie</p>
-              <p className="text-sm">500 pcs</p>
-              <p className="text-sm">25 june</p>
-              <button className="text-sm bg-secondary text-white py-1  px-1.5">
-                Rejected
-              </button>
-            </div>
+            {requests.map((request) => (
+              <div
+                key={request.id}
+                className="min-w-[600px] flex justify-between items-center gap-4 mb-4"
+              >
+                <Link
+                  to={`/Startup/RequestDetails/${request.id}`}
+                  className="text-sm"
+                >
+                  request #{request.id}
+                </Link>
+                <p className="text-sm">{request.description}</p>
+                <p className="text-sm">{formatDate(request.delivery_date)}</p>
+                <p
+                  className={`text-sm py-1 px-2 ${
+                    request.status === "PENDING"
+                      ? "bg-yellow-500"
+                      : request.status === "APPROVED"
+                      ? "bg-green-500"
+                      : "bg-secondary"
+                  } text-white`}
+                >
+                  {request.status}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
         <div className="mb-4 mt-8 xs:mb-0">
@@ -78,21 +160,30 @@ function Factories() {
                 offer price
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
-                delivery
-              </span>
-              <span className="text-sm whitespace-nowrap text-lightblack">
                 status
               </span>
             </div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 mb-4">
-              <p className="text-sm">request #12</p>
-              <p className="text-sm">al shark grame</p>
-              <p className="text-sm">88 egp/unit</p>
-              <p className="text-sm">10 days</p>
-              <p className="text-sm bg-green-500 text-white py-1 px-2">
-                accepted
-              </p>
-            </div>
+            {responses.map((response) => (
+              <div
+                key={response.id}
+                className="min-w-[600px] flex justify-between items-center gap-4 mb-4"
+              >
+                <p className="text-sm">request #{response.request_id}</p>
+                <p className="text-sm">{response.factory.name}</p>
+                <p className="text-sm">{response.price} EGP</p>
+                <p
+                  className={`text-sm py-1 px-2 ${
+                    response.status === "PENDING"
+                      ? "bg-yellow-500"
+                      : response.status === "APPROVED"
+                      ? "bg-green-500"
+                      : "bg-secondary"
+                  } text-white`}
+                >
+                  {response.status}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
