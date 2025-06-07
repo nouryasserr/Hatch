@@ -1,4 +1,145 @@
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { useContext, useEffect, useState } from "react";
+import { StartupContext } from "../../../context/Startup.context";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import Loader from "../../../components/Loader/Loader";
+
 function SettingsProfile() {
+  const { token } = useContext(StartupContext);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    email: Yup.string().email("Invalid email").required("Email is required"),
+    phone: Yup.string().required("Phone is required"),
+    description: Yup.string().required("Description is required"),
+    "social_media_links[Facebook]": Yup.string().url("Invalid Facebook URL"),
+    "social_media_links[Instagram]": Yup.string().url("Invalid Instagram URL"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      phone: "",
+      description: "",
+      "social_media_links[Facebook]": "",
+      "social_media_links[Instagram]": "",
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      const loadingToast = toast.loading("Updating profile...");
+      try {
+        const response = await axios.put(
+          "http://127.0.0.1:8000/api/startup/profile",
+          {
+            ...values,
+            _method: "put",
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.success) {
+          toast.success(response.data.message);
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        toast.error(
+          error.response?.data?.message || "Failed to update profile"
+        );
+      } finally {
+        toast.dismiss(loadingToast);
+      }
+    },
+  });
+
+  const handleDelete = async () => {
+    if (
+      window.confirm(
+        "Are you sure you want to delete your profile? This action cannot be undone."
+      )
+    ) {
+      const loadingToast = toast.loading("Deleting profile...");
+      try {
+        const response = await axios.delete(
+          "http://127.0.0.1:8000/api/startup/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.success) {
+          toast.success("Profile deleted successfully");
+          navigate("/Auth/Signin");
+        }
+      } catch (error) {
+        console.error("Error deleting profile:", error);
+        toast.error(
+          error.response?.data?.message || "Failed to delete profile"
+        );
+      } finally {
+        toast.dismiss(loadingToast);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/startup/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.success) {
+          const { startup } = response.data.data;
+          formik.setValues({
+            name: startup.name || "",
+            email: startup.email || "",
+            phone: startup.phone || "",
+            description: startup.description || "",
+            "social_media_links[Facebook]":
+              startup.social_media_links?.Facebook || "",
+            "social_media_links[Instagram]":
+              startup.social_media_links?.Instagram || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        toast.error("Failed to load profile data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [token]);
+
+  if (loading) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6 min-h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
@@ -8,7 +149,7 @@ function SettingsProfile() {
             manage your startup public and private information
           </p>
         </div>
-        <form>
+        <form onSubmit={formik.handleSubmit}>
           <div className="flex flex-col lg:flex-row justify-between gap-6">
             <div className="w-full lg:w-1/2">
               <div className="mb-4">
@@ -28,10 +169,20 @@ function SettingsProfile() {
                     placeholder="startup name"
                     name="name"
                     id="name"
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                    className={`border ${
+                      formik.touched.name && formik.errors.name
+                        ? "border-secondary"
+                        : "border-blackmuted"
+                    } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+                    {...formik.getFieldProps("name")}
                   />
+                  {formik.touched.name && formik.errors.name && (
+                    <p className="text-secondary text-xs mt-1">
+                      {formik.errors.name}
+                    </p>
+                  )}
                 </div>
-                <div className="mb-4">
+                <div className="mb-8">
                   <label
                     htmlFor="description"
                     className="flex items-start gap-2 mb-2"
@@ -44,24 +195,18 @@ function SettingsProfile() {
                     placeholder="startup description"
                     id="description"
                     name="description"
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                    className={`border ${
+                      formik.touched.description && formik.errors.description
+                        ? "border-secondary"
+                        : "border-blackmuted"
+                    } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+                    {...formik.getFieldProps("description")}
                   />
-                </div>
-                <div className="mb-8">
-                  <label
-                    htmlFor="category"
-                    className="flex items-start gap-2 mb-2"
-                  >
-                    <span className="text-lg">category</span>
-                  </label>
-                  <input
-                    type="text"
-                    autoComplete="on"
-                    placeholder="clothes"
-                    id="category"
-                    name="category"
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                  />
+                  {formik.touched.description && formik.errors.description && (
+                    <p className="text-secondary text-xs mt-1">
+                      {formik.errors.description}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="mb-4">
@@ -82,7 +227,9 @@ function SettingsProfile() {
                   <h5 className="mb-2 text-lg">next renewal</h5>
                   <p className="text-sm">6 july 2025</p>
                 </div>
-                <button className="text-underline text-sm">change plan</button>
+                <button type="button" className="text-underline text-sm">
+                  change plan
+                </button>
               </div>
             </div>
             <div className="w-full lg:w-1/2">
@@ -107,8 +254,18 @@ function SettingsProfile() {
                     placeholder="contact@hanona.com"
                     id="email"
                     name="email"
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                    className={`border ${
+                      formik.touched.email && formik.errors.email
+                        ? "border-secondary"
+                        : "border-blackmuted"
+                    } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+                    {...formik.getFieldProps("email")}
                   />
+                  {formik.touched.email && formik.errors.email && (
+                    <p className="text-secondary text-xs mt-1">
+                      {formik.errors.email}
+                    </p>
+                  )}
                 </div>
                 <div className="mb-8">
                   <label
@@ -123,8 +280,18 @@ function SettingsProfile() {
                     placeholder="01019590580"
                     id="phone"
                     name="phone"
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                    className={`border ${
+                      formik.touched.phone && formik.errors.phone
+                        ? "border-secondary"
+                        : "border-blackmuted"
+                    } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+                    {...formik.getFieldProps("phone")}
                   />
+                  {formik.touched.phone && formik.errors.phone && (
+                    <p className="text-secondary text-xs mt-1">
+                      {formik.errors.phone}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="mb-4">
@@ -136,48 +303,76 @@ function SettingsProfile() {
               <div>
                 <div className="mb-4">
                   <label
-                    htmlFor="facebook"
+                    htmlFor="social_media_links[Facebook]"
                     className="flex items-start gap-2 mb-2"
                   >
-                    <span className="text-lg">facebook link</span>
+                    <span className="text-lg">facebook</span>
                   </label>
                   <input
                     type="text"
                     autoComplete="on"
                     placeholder="facebook.com"
-                    id="facebook"
-                    name="facebook"
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                    id="social_media_links[Facebook]"
+                    name="social_media_links[Facebook]"
+                    className={`border ${
+                      formik.touched["social_media_links[Facebook]"] &&
+                      formik.errors["social_media_links[Facebook]"]
+                        ? "border-secondary"
+                        : "border-blackmuted"
+                    } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+                    {...formik.getFieldProps("social_media_links[Facebook]")}
                   />
+                  {formik.touched["social_media_links[Facebook]"] &&
+                    formik.errors["social_media_links[Facebook]"] && (
+                      <p className="text-secondary text-xs mt-1">
+                        {formik.errors["social_media_links[Facebook]"]}
+                      </p>
+                    )}
                 </div>
                 <div className="mb-8">
                   <label
-                    htmlFor="instagram"
+                    htmlFor="social_media_links[Instagram]"
                     className="flex items-start gap-2 mb-2"
                   >
-                    <span className="text-lg">instagram link</span>
+                    <span className="text-lg">instagram</span>
                   </label>
                   <input
                     type="text"
                     autoComplete="on"
                     placeholder="instagram.com"
-                    id="instagram"
-                    name="instagram"
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                    id="social_media_links[Instagram]"
+                    name="social_media_links[Instagram]"
+                    className={`border ${
+                      formik.touched["social_media_links[Instagram]"] &&
+                      formik.errors["social_media_links[Instagram]"]
+                        ? "border-secondary"
+                        : "border-blackmuted"
+                    } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+                    {...formik.getFieldProps("social_media_links[Instagram]")}
                   />
+                  {formik.touched["social_media_links[Instagram]"] &&
+                    formik.errors["social_media_links[Instagram]"] && (
+                      <p className="text-secondary text-xs mt-1">
+                        {formik.errors["social_media_links[Instagram]"]}
+                      </p>
+                    )}
                 </div>
               </div>
             </div>
           </div>
           <button
-            className={
-              "w-full lg:w-1/2 mt-4 bg-primary rounded-full py-1.5 px-6 text-white border border-primary hover:border-black hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"
-            }
+            type="submit"
+            disabled={formik.isSubmitting}
+            className="w-full lg:w-1/2 mt-4 bg-primary rounded-full py-1.5 px-6 text-white border border-primary hover:border-black hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150"
           >
-            save changes
+            {formik.isSubmitting ? "Saving..." : "save changes"}
           </button>
-          <button className="w-full lg:w-1/2 block text-center mt-4 underline hover:no-underline transition duration-300 ease-in-out delay-150">
-            cancel
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="w-full lg:w-1/2 block text-center mt-4 text-secondary underline hover:no-underline transition duration-300 ease-in-out delay-150"
+          >
+            delete profile
           </button>
         </form>
       </div>
