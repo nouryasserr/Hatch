@@ -54,6 +54,7 @@ import Deals from "./pages/Factory/Deals/deals";
 import FactoryProfile from "./pages/Factory/FactoryProfile/FactoryProfile";
 import FactoryResponse from "./pages/Factory/FactoryResponse/FactoryResponse";
 import StartupRequests from "./pages/Factory/StartupRequests/StartupRequests";
+import SendOffer from "./pages/Factory/SendOffer/SendOffer";
 
 function App() {
   const router = createBrowserRouter([
@@ -133,6 +134,7 @@ function App() {
         { path: "FactoryLogin", element: <FactoryLogin /> },
         { path: "FactoryProfile", element: <FactoryProfile /> },
         { path: "FactoryResponse", element: <FactoryResponse /> },
+        { path: "SendOffer/:id", element: <SendOffer /> },
         { path: "StartupRequests", element: <StartupRequests /> },
       ],
     },

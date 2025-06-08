@@ -61,7 +61,7 @@ export default function Login() {
 
   return (
     <>
-      <div className="w-full lg:w-5/6 float-end px-8 py-6 space-y-8">
+      <div className="w-full lg:w-5/6 float-end px-8 py-12 space-y-8">
         <div>
           <h2 className="text-2xl sm:text-3xl mb-2">factory login</h2>
           <p className="text-xs text-slate-500">
@@ -77,7 +77,7 @@ export default function Login() {
               type="tel"
               autoComplete="on"
               placeholder="type here"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+              className="border border-blackmuted px-2 py-2 pb-2.5 text-sm placeholder:text-xs"
               value={formik.values.phone}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -92,7 +92,7 @@ export default function Login() {
             <label htmlFor="password" className="text-lg">
               password
             </label>
-            <div className="flex gap-2 items-center justify-between border border-slate-600 px-2 py-1.5 pb-2 focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
+            <div className="flex gap-2 items-center justify-between border border-slate-600 px-2 py-2 pb-2.5 text-sm focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="type here"
@@ -117,13 +117,6 @@ export default function Login() {
               <p className="text-red-500">*{inncorrectEmailOrPassword}</p>
             )}
           </div>
-          <button
-            type="button"
-            className="text-black underline cursor-pointer text-base"
-            onClick={() => setShowForget(true)}
-          >
-            forget password?
-          </button>
           <button
             type="submit"
             className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
