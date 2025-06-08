@@ -38,7 +38,6 @@ function Signup() {
     validationSchema: validate,
     onSubmit: sendDataToApi,
   });
-
   async function sendDataToApi(values) {
     const loadingToastId = toast.loading("creating account...");
     try {
@@ -70,7 +69,7 @@ function Signup() {
 
   return (
     <>
-      <div className="w-full lg:w-3/6 px-6 lg:pl-12 py-8 space-y-8">
+      <div className="w-full lg:w-3/6 px-6 lg:pl-12 py-4 space-y-6">
         <div>
           <h2 className="text-2xl sm:text-3xl mb-2">create an account</h2>
           <p className="text-xs text-slate-500">
@@ -78,11 +77,11 @@ function Signup() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 items-center">
-          <button className="flex gap-2 items-center justify-center border border-slate-600 rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer">
+          <button className="flex gap-2 items-center justify-center border border-lightblack rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer">
             <i className="fa-brands fa-apple text-xl"></i>
             <span className="text-sm font-medium">continue with apple</span>
           </button>
-          <button className="flex gap-2 items-center justify-center border border-slate-600 rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer">
+          <button className="flex gap-2 items-center justify-center border border-lightblack rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer">
             <i className="fa-brands fa-google text-lg"></i>
             <span className="text-sm font-medium"> continue with google </span>
           </button>
@@ -101,7 +100,7 @@ function Signup() {
               type="text"
               autoComplete="on"
               placeholder="type here"
-              className="border border-slate-600 px-2 py-1.5 pb-2 placeholder:text-xs"
+              className="border border-lightblack px-2 py-2 pb-2.5 text-sm placeholder:text-xs"
               value={formik.values.name}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -120,7 +119,7 @@ function Signup() {
               type="tel"
               autoComplete="on"
               placeholder="type your phone number"
-              className="border border-slate-600 px-2 py-1.5 pb-2 placeholder:text-xs"
+              className="border border-lightblack px-2 py-2 pb-2.5 text-sm placeholder:text-xs"
               value={formik.values.phone}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -139,7 +138,7 @@ function Signup() {
               type="email"
               autoComplete="on"
               placeholder="type here"
-              className="border border-slate-600 px-2 py-1.5 pb-2 placeholder:text-xs"
+              className="border border-lightblack px-2 py-2 pb-2.5 text-sm placeholder:text-xs"
               value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -154,7 +153,7 @@ function Signup() {
             <label htmlFor="password" className="text-lg">
               password
             </label>
-            <div className="flex gap-2 items-center justify-between border border-slate-600 px-2 py-1.5 pb-2 focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
+            <div className="flex gap-2 items-center justify-between border border-lightblack px-2 py-2 pb-2.5 text-sm focus-within:border-lightblack focus-within:border-2 focus-within:outline-none focus-within:rounded">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="type here"
@@ -180,7 +179,7 @@ function Signup() {
             <label htmlFor="password_confirmation" className="text-lg">
               confirm password
             </label>
-            <div className="flex gap-2 items-center justify-between border border-slate-600 px-2 py-1.5 pb-2 focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
+            <div className="flex gap-2 items-center justify-between border border-lightblack px-2 py-2 pb-2.5 text-sm focus-within:border-lightblack focus-within:border-2 focus-within:outline-none focus-within:rounded">
               <input
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="type here"
@@ -210,15 +209,15 @@ function Signup() {
           </div>
           <button
             type="submit"
-            className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
+            className="bg-primary border border-lightblack text-white rounded-full px-2 py-2 pb-2.5 text-sm w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
           >
             create account
           </button>
           <div className="flex justify-between gap-2 flex-wrap">
-            <p className="text-blackmuted text-sm">
-              already created?
+            <p className="text-lightblack text-sm">
+              already created?{" "}
               <span
-                className="text-black underline cursor-pointer text-base"
+                className="text-black underline cursor-pointer text-base hover:no-underline transition duration-200 ease-in-out"
                 onClick={() => navigate("/Auth/Signin")}
               >
                 login
@@ -226,7 +225,7 @@ function Signup() {
             </p>
             <p
               onClick={() => navigate("/Auth/Registeration")}
-              className="ttext-black underline cursor-pointer"
+              className="underline cursor-pointer hover:no-underline transition duration-200 ease-in-out"
             >
               join as a startup
             </p>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useFormik } from "formik";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { object, ref, string } from "yup";
@@ -9,13 +9,17 @@ import { UserContext } from "../../../context/User.context";
 function Registeration() {
   const { token } = useContext(UserContext);
   const navigate = useNavigate();
+  const toastShown = useRef(false);
+  const [categories, setCategories] = useState([]);
+
   useEffect(() => {
-    if (!token) {
+    if (!token && !toastShown.current) {
       toast.error("You need to login first");
+      toastShown.current = true;
       navigate("/Auth/Signin");
     }
   }, [token, navigate]);
-  const [categories, setCategories] = useState([]);
+
   useEffect(() => {
     async function fetchCategoris() {
       try {
@@ -34,6 +38,7 @@ function Registeration() {
     }
     fetchCategoris();
   }, []);
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [accountExistsError, setAccountExistsError] = useState(null);

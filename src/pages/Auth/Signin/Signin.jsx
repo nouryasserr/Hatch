@@ -30,7 +30,6 @@ function Signin() {
     onSubmit: sendDataToApi,
   });
   const [showForget, setShowForget] = useState(false);
-
   const handleGoogleLogin = async () => {
     try {
       setIsGoogleLoading(true);
@@ -42,9 +41,7 @@ function Signin() {
           },
         }
       );
-
       if (data.success && data.data?.url) {
-        // Redirect to Google's OAuth page
         window.location.href = data.data.url;
       } else {
         toast.error("Failed to initiate Google login");
@@ -56,7 +53,6 @@ function Signin() {
       setIsGoogleLoading(false);
     }
   };
-
   async function sendDataToApi(values) {
     const loadingToastId = toast.loading("logging in...");
     try {
@@ -76,18 +72,17 @@ function Signin() {
         }, 2000);
       } else {
         toast.dismiss(loadingToastId);
-        toast.error("Something went wrong.");
+        toast.error("something went wrong.");
       }
     } catch (error) {
-      console.log("error in login", error);
       const msg = setIncorrectEmailOrPassword(error?.response?.data?.message);
       toast.dismiss(loadingToastId);
-      toast.error(msg);
+      toast.error("try again", msg);
     }
   }
   return (
     <>
-      <div className="w-full lg:w-3/6 px-6 lg:pl-12 py-8 md:py-16 space-y-8">
+      <div className="w-full lg:w-3/6 px-6 lg:pl-12 py-4 space-y-6">
         <div>
           <h2 className="text-2xl sm:text-3xl mb-2">welcome back to hatch</h2>
           <p className="text-xs text-slate-500">
@@ -95,14 +90,14 @@ function Signin() {
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 items-center">
-          <button className="flex gap-2 items-center justify-center border border-slate-600 rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer">
+          <button className="flex gap-2 items-center justify-center border border-lightblack rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer">
             <i className="fa-brands fa-apple text-xl"></i>
             <span className="text-sm font-medium">continue with apple</span>
           </button>
           <button
             onClick={handleGoogleLogin}
             disabled={isGoogleLoading}
-            className="flex gap-2 items-center justify-center border border-slate-600 rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex gap-2 items-center justify-center border border-lightblack rounded-full px-5 py-1.5 w-full sm:w-1/2 hover:bg-black hover:text-white transition-all duration-200 ease-in-out cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <i className="fa-brands fa-google text-lg"></i>
             <span className="text-sm font-medium">
@@ -124,7 +119,7 @@ function Signin() {
               type="email"
               autoComplete="on"
               placeholder="type here"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+              className="border border-blackmuted px-2 py-2 pb-2.5 text-sm placeholder:text-xs"
               value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -139,7 +134,7 @@ function Signin() {
             <label htmlFor="password" className="text-lg">
               password
             </label>
-            <div className="flex gap-2 items-center justify-between border border-slate-600 px-2 py-1.5 pb-2 focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
+            <div className="flex gap-2 items-center justify-between border border-blackmuted px-2 py-2 pb-2.5 text-sm focus-within:border-blackmuted focus-within:border-2 focus-within:outline-none focus-within:rounded">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="type here"
@@ -158,29 +153,29 @@ function Signin() {
               ></i>
             </div>
             {formik.errors.password && formik.touched.password && (
-              <p className="text-red-500">*{formik.errors.password}</p>
+              <p className="text-secondary">*{formik.errors.password}</p>
             )}
             {inncorrectEmailOrPassword && (
-              <p className="text-red-500">*{inncorrectEmailOrPassword}</p>
+              <p className="text-secondary">*{inncorrectEmailOrPassword}</p>
             )}
           </div>
           <button
             type="button"
-            className="text-black underline cursor-pointer text-base"
+            className="text-black underline cursor-pointer hover:no-underline transition-all duration-200 ease-in-out"
             onClick={() => setShowForget(true)}
           >
             forget password?
           </button>
           <button
             type="submit"
-            className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
+            className="bg-primary border border-lightblack text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-transparent hover:text-black transition-all duration-200 ease-in-out"
           >
             login
           </button>
-          <p className="text-center text-slate-600 text-sm">
-            don't have an account?
+          <p className="text-center text-lightblack text-sm">
+            don't have an account?{" "}
             <span
-              className="text-black underline cursor-pointer text-base"
+              className="text-black underline cursor-pointer text-base hover:no-underline transition-all duration-200 ease-in-out"
               onClick={() => navigate("/Auth/Signup")}
             >
               create account
