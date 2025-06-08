@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import StartupOrder from "../../../components/StartupOrder/StartupOrder";
 import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { StartupContext } from "../../../context/Startup.context";
@@ -11,38 +10,49 @@ function Orders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { token } = useContext(StartupContext);
-
   useEffect(() => {
     const fetchOrders = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
       try {
         const response = await axios.get(
           "http://127.0.0.1:8000/api/startup/orders",
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
-        setOrders(response.data.data);
-        setLoading(false);
+        setOrders(response.data.data || []);
       } catch (error) {
         console.error("Error fetching orders:", error);
         setError(error.message);
+      } finally {
         setLoading(false);
       }
     };
-
-    if (token) {
-      fetchOrders();
-    }
+    fetchOrders();
   }, [token]);
 
-  if (loading) return <Loader />;
-  if (error)
-    return <div className="text-center text-red-500">Error: {error}</div>;
-
+  if (loading) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6 min-h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6">
+        <div className="text-red-500">Error loading orders: {error}</div>
+      </div>
+    );
+  }
   const pendingOrders = orders.filter(
-    (order) => order.order.status === "PENDING"
+    (order) => order.order?.status === "PENDING"
   );
 
   return (
@@ -90,15 +100,36 @@ function Orders() {
                 status
               </span>
             </div>
-            {pendingOrders.map((orderItem) => (
-              <StartupOrder
+            {orders.map((orderItem) => (
+              <div
                 key={orderItem.id}
-                id={`order #${orderItem.id}`}
-                customer={orderItem.order.user.name}
-                amount={`${orderItem.price} EGP`}
-                date={new Date(orderItem.created_at).toLocaleDateString()}
-                status={orderItem.order.status}
-              />
+                className="min-w-[600px] flex justify-between items-center gap-4 mb-4"
+              >
+                <Link
+                  to={`/Startup/OrderDetails/${orderItem.id}`}
+                  className="text-sm"
+                >
+                  order #{orderItem.id}
+                </Link>
+                <p className="text-sm">
+                  {orderItem.order?.user?.name || "N/A"}
+                </p>
+                <p className="text-sm">{orderItem.price || 0} EGP</p>
+                <p className="text-sm">
+                  {new Date(orderItem.created_at).toLocaleDateString()}
+                </p>
+                <p
+                  className={`text-sm py-1 px-2 ${
+                    orderItem.order?.status === "PENDING"
+                      ? "bg-yellow-500"
+                      : orderItem.order?.status === "APPROVED"
+                      ? "bg-green-500"
+                      : "bg-secondary"
+                  } text-white`}
+                >
+                  {orderItem.order?.status || "N/A"}
+                </p>
+              </div>
             ))}
           </div>
         </div>
@@ -110,7 +141,7 @@ function Orders() {
         </div>
         <div className="overflow-x-auto mt-4">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 ">
+            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2">
               <span className="text-sm whitespace-nowrap text-lightblack">
                 order id
               </span>
@@ -128,14 +159,35 @@ function Orders() {
               </span>
             </div>
             {orders.map((orderItem) => (
-              <StartupOrder
+              <div
                 key={orderItem.id}
-                id={`order #${orderItem.id}`}
-                customer={orderItem.order.user.name}
-                amount={`${orderItem.price} EGP`}
-                date={new Date(orderItem.created_at).toLocaleDateString()}
-                status={orderItem.order.status}
-              />
+                className="min-w-[600px] flex justify-between items-center gap-4 mb-4 px-4 py-2"
+              >
+                <Link
+                  to={`/Startup/OrderDetails/${orderItem.id}`}
+                  className="text-sm"
+                >
+                  order #{orderItem.id}
+                </Link>
+                <p className="text-sm">
+                  {orderItem.order?.user?.name || "N/A"}
+                </p>
+                <p className="text-sm">{orderItem.price || 0} EGP</p>
+                <p className="text-sm">
+                  {new Date(orderItem.created_at).toLocaleDateString()}
+                </p>
+                <p
+                  className={`text-sm py-1 px-2 ${
+                    orderItem.order?.status === "PENDING"
+                      ? "bg-yellow-500"
+                      : orderItem.order?.status === "APPROVED"
+                      ? "bg-green-500"
+                      : "bg-secondary"
+                  } text-white`}
+                >
+                  {orderItem.order?.status || "N/A"}
+                </p>
+              </div>
             ))}
           </div>
         </div>

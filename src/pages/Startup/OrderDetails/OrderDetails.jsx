@@ -57,7 +57,7 @@ function OrderDetails() {
     );
   }
 
-  if (!orderDetails) {
+  if (!orderDetails || !orderDetails.order) {
     return (
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
         <div className="text-gray-500">No order details found</div>
@@ -84,7 +84,7 @@ function OrderDetails() {
         <div className="flex justify-between gap-2 flex-wrap">
           <div>
             <h2 className="text-3xl mb-0.5">
-              order #{orderDetails.order_id} - details page
+              order #{orderDetails.order_id || id} - details page
             </h2>
             <p className="text-lightblack text-sm">
               this page shows full details of the selected order
@@ -112,16 +112,16 @@ function OrderDetails() {
               </div>
               <div className="w-1/2 space-y-2">
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.user.name}
+                  {orderDetails.order?.user?.name || "N/A"}
                 </p>
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.user.email}
+                  {orderDetails.order?.user?.email || "N/A"}
                 </p>
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.user.phone}
+                  {orderDetails.order?.user?.phone || "N/A"}
                 </p>
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.second_phone}
+                  {orderDetails.order?.second_phone || "N/A"}
                 </p>
               </div>
             </div>
@@ -141,15 +141,21 @@ function OrderDetails() {
                 <p className="text-sm xs:text-base">total price</p>
               </div>
               <div className="w-1/2 space-y-2">
-                <p className="text-sm xs:text-base">#{orderDetails.order_id}</p>
+                <p className="text-sm xs:text-base">
+                  #{orderDetails.order_id || id}
+                </p>
                 <p className="text-nowrap text-xs xs:text-base">
-                  {formatDate(orderDetails.created_at)}
+                  {orderDetails.created_at
+                    ? formatDate(orderDetails.created_at)
+                    : "N/A"}
                 </p>
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.status}
+                  {orderDetails.order?.status || "N/A"}
                 </p>
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.total_price} EGP
+                  {orderDetails.order?.total_price
+                    ? `${orderDetails.order.total_price} EGP`
+                    : "N/A"}
                 </p>
               </div>
             </div>
@@ -182,19 +188,23 @@ function OrderDetails() {
             </div>
             <div className="min-w-[600px] flex justify-between items-center gap-4">
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.product.name}
+                {orderDetails.product?.name || "N/A"}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.quantity} item
+                {orderDetails.quantity
+                  ? `${orderDetails.quantity} item`
+                  : "N/A"}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.order.status}
+                {orderDetails.order?.status || "N/A"}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.price} EGP
+                {orderDetails.price ? `${orderDetails.price} EGP` : "N/A"}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {Number(orderDetails.price) * orderDetails.quantity} EGP
+                {orderDetails.price && orderDetails.quantity
+                  ? `${Number(orderDetails.price) * orderDetails.quantity} EGP`
+                  : "N/A"}
               </span>
             </div>
           </div>
@@ -215,17 +225,25 @@ function OrderDetails() {
               </div>
               <div className="w-1/2 space-y-2">
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.user.addresses.find(
-                    (addr) => addr.id === orderDetails.order.address_id
-                  )?.address || "-"}
+                  {(() => {
+                    const addresses = orderDetails.order?.user?.addresses || [];
+                    const selectedAddress = addresses.find(
+                      (addr) => addr?.id === orderDetails.order?.address_id
+                    );
+                    return selectedAddress?.address || "N/A";
+                  })()}
                 </p>
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.user.addresses.find(
-                    (addr) => addr.id === orderDetails.order.address_id
-                  )?.city || "-"}
+                  {(() => {
+                    const addresses = orderDetails.order?.user?.addresses || [];
+                    const selectedAddress = addresses.find(
+                      (addr) => addr?.id === orderDetails.order?.address_id
+                    );
+                    return selectedAddress?.city || "N/A";
+                  })()}
                 </p>
                 <p className="text-sm xs:text-base">
-                  {orderDetails.order.payment_method?.toUpperCase() || "COD"}
+                  {orderDetails.order?.payment_method?.toUpperCase() || "COD"}
                 </p>
               </div>
             </div>
