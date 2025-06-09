@@ -44,7 +44,6 @@ import Dashboard from "./pages/Admin/Dashboard/Dashboard";
 import FactoryLogin from "./pages/Factory/FactoryLogin/FactoryLogin";
 import OutletWrapper from "./components/Layout/OutletWrapper";
 import GoogleCallback from "./pages/Auth/GoogleCallback/GoogleCallback";
-import ChoosePlan from "./pages/Startup/ChoosePlan/ChoosePlan";
 import Factories from "./pages/Startup/Factories/Factories";
 import Request from "./pages/Startup/Request/Request";
 import RequestDetails from "./pages/Startup/RequestDetails/RequestDetails";
@@ -106,14 +105,6 @@ function App() {
           ),
         },
         {
-          path: "ChoosePlan",
-          element: (
-            <GuestRoute>
-              <ChoosePlan />
-            </GuestRoute>
-          ),
-        },
-        {
           element: (
             <ProtectedRoute>
               <StartupLayout />
@@ -171,7 +162,7 @@ function App() {
         { path: "FactoryDetails", element: <FactoryDetails /> },
         { path: "ViewStartup", element: <ViewStartup /> },
         { path: "ViewStartupRequest", element: <ViewStartupRequest /> },
-        { path: "ViewUser", element: <ViewUser /> },
+        { path: "ViewUser/:id", element: <ViewUser /> },
       ],
     },
     {
