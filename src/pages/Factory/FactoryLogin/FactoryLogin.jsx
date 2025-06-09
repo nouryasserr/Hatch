@@ -3,105 +3,129 @@ import { useNavigate } from "react-router-dom";
 import { FactoryContext } from "../../../context/Factory.context";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useFormik } from "formik";
+import { object, string } from "yup";
 
 export default function Login() {
+  let { setToken } = useContext(FactoryContext);
+  const [inncorrectEmailOrPassword, setIncorrectEmailOrPassword] =
+    useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { setToken } = useContext(FactoryContext);
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
+  const validate = object({
+    phone: string()
+      .required("phone is required")
+      .matches(/^\d{10}$/, "phone must be a 10-digit number"),
+    password: string()
+      .required("password is required")
+      .min(8, "password must be at least 8 characters")
+      .max(15, "password must be at most 15 characters"),
   });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const toastId = toast.loading("Signing in...");
-
+  const formik = useFormik({
+    initialValues: {
+      phone: "",
+      password: "",
+    },
+    validationSchema: validate,
+    onSubmit: sendDataToApi,
+  });
+  const [showForget, setShowForget] = useState(false);
+  async function sendDataToApi(values) {
+    const loadingToastId = toast.loading("logging in...");
     try {
       const options = {
         url: "http://127.0.0.1:8000/api/factory/login",
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        data: formData,
+        data: values,
       };
-
-      const { data } = await axios.request(options);
-
-      if (data.success) {
-        localStorage.setItem("factoryToken", data.token);
-        setToken(data.token);
-        navigate("/Factory/Overview");
-        toast.success("Welcome to Factory Dashboard!");
+      let { data } = await axios(options);
+      if (data.data?.token) {
+        localStorage.setItem("factoryToken", data.data.token);
+        setToken(data.data.token);
+        toast.dismiss(loadingToastId);
+        toast.success("logged in successfully!");
+        setTimeout(() => {
+          navigate("/Factory/FactoryProfile");
+        }, 2000);
       } else {
-        toast.error(data.message || "Failed to sign in");
+        toast.dismiss(loadingToastId);
+        toast.error("Something went wrong.");
       }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.errors?.[
-          Object.keys(error.response.data.errors)[0]
-        ]?.[0] ||
-        "An error occurred while signing in";
-      toast.error(errorMessage);
-    } finally {
-      toast.dismiss(toastId);
+      console.log("error in login", error);
+      const msg = setIncorrectEmailOrPassword(error?.response?.data?.message);
+      toast.dismiss(loadingToastId);
+      toast.error(msg);
     }
-  };
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
+    <>
+      <div className="w-full lg:w-5/6 float-end px-8 py-12 space-y-8">
         <div>
-          <h2 className="text-center text-3xl font-extrabold text-gray-900">
-            Factory Login
-          </h2>
+          <h2 className="text-2xl sm:text-3xl mb-2">factory login</h2>
+          <p className="text-xs text-slate-500">
+            login using your registered factory credentials
+          </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email
+        <form className="space-y-4" onSubmit={formik.handleSubmit}>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="phone" className="text-lg">
+              phone number
             </label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              type="tel"
+              autoComplete="on"
+              placeholder="type here"
+              className="border border-blackmuted px-2 py-2 pb-2.5 text-sm placeholder:text-xs"
+              value={formik.values.phone}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              name="phone"
+              id="phone"
             />
+            {formik.errors.phone && formik.touched.phone && (
+              <p className="text-secondary">*{formik.errors.phone}</p>
+            )}
           </div>
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
+          <div className="flex flex-col gap-2">
+            <label htmlFor="password" className="text-lg">
+              password
             </label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            />
+            <div className="flex gap-2 items-center justify-between border border-slate-600 px-2 py-2 pb-2.5 text-sm focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="type here"
+                className="outline-none placeholder:text-xs w-full"
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="password"
+                id="password"
+              />
+              <i
+                className={`fa-regular ${
+                  showPassword ? "fa-eye-slash" : "fa-eye"
+                } cursor-pointer`}
+                onClick={() => setShowPassword((prev) => !prev)}
+              ></i>
+            </div>
+            {formik.errors.password && formik.touched.password && (
+              <p className="text-red-500">*{formik.errors.password}</p>
+            )}
+            {inncorrectEmailOrPassword && (
+              <p className="text-red-500">*{inncorrectEmailOrPassword}</p>
+            )}
           </div>
           <button
             type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
           >
-            Sign In
+            login
           </button>
         </form>
       </div>
-    </div>
+      {showForget && <ForgetPassword onClose={() => setShowForget(false)} />}
+    </>
   );
 }

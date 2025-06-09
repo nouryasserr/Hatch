@@ -66,7 +66,7 @@ function Registeration() {
       Facebook: string().url("invalid URL format"),
       Instagram: string().url("invalid URL format"),
     }).required("social media links are required"),
-    category_id: string().required("category is required"),
+    categories_id: string().required("category is required"),
     payment_method: string()
       .required("payment method is required")
       .min(3, "payment method must be at least 3 characters")
@@ -88,7 +88,7 @@ function Registeration() {
         Facebook: "",
         Instagram: "",
       },
-      category_id: "",
+      categories_id: "",
       payment_method: "",
       payment_account: "",
     },
@@ -315,15 +315,15 @@ function Registeration() {
             ))}
           </div>
           <div className="flex flex-col gap-2">
-            <label htmlFor="category_id" className="text-lg">
+            <label htmlFor="categories_id" className="text-lg">
               category
             </label>
             <div className="relative">
               <select
-                name="category_id"
-                id="category_id"
+                name="categories_id"
+                id="categories_id"
                 className="appearance-none border border-blackmuted px-2 py-1.5 pb-2 w-full"
-                value={formik.values.category_id}
+                value={formik.values.categories_id}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
               >
@@ -331,7 +331,7 @@ function Registeration() {
                   select a category
                 </option>
                 {categories.map((subcat) => (
-                  <option key={subcat.id} value={subcat.category_id}>
+                  <option key={subcat.id} value={subcat.categories_id}>
                     {subcat.category.name} - {subcat.name}
                   </option>
                 ))}

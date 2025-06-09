@@ -30,8 +30,8 @@ function Overview() {
           }),
         ]);
 
-        setOrders(ordersResponse.data.data);
-        setProducts(productsResponse.data.data);
+        setOrders(ordersResponse.data.data || []);
+        setProducts(productsResponse.data.data || []);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -48,12 +48,9 @@ function Overview() {
   if (loading) return <Loader />;
   if (error)
     return <div className="text-center text-red-500">Error: {error}</div>;
-
-  // Get only the first 4 products
   const displayProducts = products.slice(0, 4);
-  // Calculate total revenue
   const totalRevenue = orders.reduce(
-    (sum, order) => sum + parseFloat(order.price),
+    (sum, order) => sum + parseFloat(order.price || 0),
     0
   );
 
@@ -156,10 +153,10 @@ function Overview() {
               <StartupOrder
                 key={orderItem.id}
                 id={`order #${orderItem.id}`}
-                customer={orderItem.order.user.name}
-                amount={`${orderItem.price} EGP`}
+                customer={orderItem.order?.user?.name || "N/A"}
+                amount={`${orderItem.price || 0} EGP`}
                 date={new Date(orderItem.created_at).toLocaleDateString()}
-                status={orderItem.order.status}
+                status={orderItem.order?.status || "N/A"}
               />
             ))}
           </div>

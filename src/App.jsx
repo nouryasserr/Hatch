@@ -41,7 +41,6 @@ import StartupProvider from "./context/Startup.provider";
 import FactoryProvider from "./context/Factory.provider";
 import AdminProvider from "./context/Admin.provider";
 import Dashboard from "./pages/Admin/Dashboard/Dashboard";
-import Main from "./pages/Factory/Main/Main";
 import FactoryLogin from "./pages/Factory/FactoryLogin/FactoryLogin";
 import OutletWrapper from "./components/Layout/OutletWrapper";
 import GoogleCallback from "./pages/Auth/GoogleCallback/GoogleCallback";
@@ -50,6 +49,12 @@ import Factories from "./pages/Startup/Factories/Factories";
 import Request from "./pages/Startup/Request/Request";
 import RequestDetails from "./pages/Startup/RequestDetails/RequestDetails";
 import SettingsProfile from "./pages/Startup/SettingsProfile/SettingsProfile";
+import FactoryLayout from "./components/Layout/FactoryLayout";
+import Deals from "./pages/Factory/Deals/deals";
+import FactoryProfile from "./pages/Factory/FactoryProfile/FactoryProfile";
+import FactoryResponse from "./pages/Factory/FactoryResponse/FactoryResponse";
+import StartupRequests from "./pages/Factory/StartupRequests/StartupRequests";
+import SendOffer from "./pages/Factory/SendOffer/SendOffer";
 
 function App() {
   const router = createBrowserRouter([
@@ -121,21 +126,17 @@ function App() {
       path: "/Factory",
       element: (
         <FactoryProvider>
-          <GuestRoute></GuestRoute>
+          <FactoryLayout />
         </FactoryProvider>
       ),
-      children: [{ path: "FactoryLogin", element: <FactoryLogin /> }],
-    },
-    {
-      path: "/Factory",
-      element: (
-        <FactoryProvider>
-          <ProtectedRoute>
-            <StartupLayout />
-          </ProtectedRoute>
-        </FactoryProvider>
-      ),
-      children: [{ path: "Main", element: <Main /> }],
+      children: [
+        { path: "Deals", element: <Deals /> },
+        { path: "FactoryLogin", element: <FactoryLogin /> },
+        { path: "FactoryProfile", element: <FactoryProfile /> },
+        { path: "FactoryResponse", element: <FactoryResponse /> },
+        { path: "SendOffer/:id", element: <SendOffer /> },
+        { path: "StartupRequests", element: <StartupRequests /> },
+      ],
     },
     {
       path: "/Admin",
