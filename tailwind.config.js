@@ -8,6 +8,7 @@ export default {
         secondary: "#ff0000",
         blackmuted: "#404040",
         lightblack: "#757575",
+        lightgray: "#8E8F94",
       },
     },
     screens: {
