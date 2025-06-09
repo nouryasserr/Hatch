@@ -55,6 +55,19 @@ import FactoryProfile from "./pages/Factory/FactoryProfile/FactoryProfile";
 import FactoryResponse from "./pages/Factory/FactoryResponse/FactoryResponse";
 import StartupRequests from "./pages/Factory/StartupRequests/StartupRequests";
 import SendOffer from "./pages/Factory/SendOffer/SendOffer";
+import AdminLayout from "./components/Layout/AdminLayout";
+import AddCategory from "./pages/Admin/AddCategory/AddCategory";
+import AddFactory from "./pages/Admin/AddFactory/AddFactory";
+import AddSubCategory from "./pages/Admin/AddSubCategory/AddSubCategory";
+import AdminLogin from "./pages/Admin/AdminLogin/AdminLogin";
+import AllCategories from "./pages/Admin/AllCategories/AllCategories";
+import AllFactories from "./pages/Admin/AllFactories/AllFactories";
+import AllStartups from "./pages/Admin/AllStartups/AllStartups";
+import AllUsers from "./pages/Admin/AllUsers/AllUsers";
+import FactoryDetails from "./pages/Admin/FactoryDetails/FactoryDetails";
+import ViewStartup from "./pages/Admin/ViewStartup/ViewStartup";
+import ViewStartupRequest from "./pages/Admin/ViewStartupRequest/ViewStartupRequest";
+import ViewUser from "./pages/Admin/ViewUser/ViewUser";
 
 function App() {
   const router = createBrowserRouter([
@@ -142,12 +155,24 @@ function App() {
       path: "/Admin",
       element: (
         <AdminProvider>
-          <ProtectedRoute>
-            <StartupLayout />
-          </ProtectedRoute>
+          <AdminLayout />
         </AdminProvider>
       ),
-      children: [{ path: "Dashboard", element: <Dashboard /> }],
+      children: [
+        { path: "AddCategory", element: <AddCategory /> },
+        { path: "AddFactory", element: <AddFactory /> },
+        { path: "AddSubCategory", element: <AddSubCategory /> },
+        { path: "AdminLogin", element: <AdminLogin /> },
+        { path: "AllCategories", element: <AllCategories /> },
+        { path: "AllFactories", element: <AllFactories /> },
+        { path: "AllStartups", element: <AllStartups /> },
+        { path: "AllUsers", element: <AllUsers /> },
+        { path: "Dashboard", element: <Dashboard /> },
+        { path: "FactoryDetails", element: <FactoryDetails /> },
+        { path: "ViewStartup", element: <ViewStartup /> },
+        { path: "ViewStartupRequest", element: <ViewStartupRequest /> },
+        { path: "ViewUser", element: <ViewUser /> },
+      ],
     },
     {
       path: "/User",
