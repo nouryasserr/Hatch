@@ -127,7 +127,7 @@ function AddProduct() {
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
         <div>
-          <h2 className="text-3xl mb-0.5">Add New Product</h2>
+          <h2 className="text-3xl mb-0.5">add New Product</h2>
           <p className="text-lightblack text-sm">
             Let's bring your product to life!
           </p>
