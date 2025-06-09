@@ -122,7 +122,7 @@ function Dashboard() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col lg:flex-row gap-8 mt-8 lg:mt-16">
+        <div className="flex flex-col lg:flex-row gap-8 mt-8 lg:mt-12">
           <div className="lg:w-1/2">
             <div className="mb-4 xs:mb-0">
               <h2 className="text-2xl xs:text-3xl mb-0.5">startups overview</h2>
