@@ -163,7 +163,7 @@ function App() {
         { path: "Dashboard", element: <Dashboard /> },
         { path: "EditCategory/:id", element: <EditCategory /> },
         { path: "EditSubCategory/:id", element: <EditSubCategory /> },
-        { path: "FactoryDetails", element: <FactoryDetails /> },
+        { path: "FactoryDetails/:id", element: <FactoryDetails /> },
         { path: "ViewStartup", element: <ViewStartup /> },
         { path: "ViewStartupRequest", element: <ViewStartupRequest /> },
         { path: "ViewUser/:id", element: <ViewUser /> },

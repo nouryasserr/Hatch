@@ -242,14 +242,14 @@ function FactoryProfile() {
                 </p>
               </div>
               <div className="flex gap-2 mt-4">
-                <div className="w-1/2 space-y-2">
+                <div className="w-1/2 space-y-4">
                   <p className="text-sm xs:text-base">name:</p>
                   <p className="text-sm xs:text-base">email:</p>
                   <p className="text-sm xs:text-base">phone:</p>
                   <p className="text-sm xs:text-base">created at:</p>
                   <p className="text-sm xs:text-base">description</p>
                 </div>
-                <div className="w-1/2 space-y-2">
+                <div className="w-1/2 space-y-4">
                   <p className="text-sm xs:text-base">{profile.name}</p>
                   <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
                     {profile.email}
@@ -274,7 +274,7 @@ function FactoryProfile() {
                 </p>
               </div>
               <div className="flex gap-2 mt-4">
-                <div className="w-1/2 space-y-2">
+                <div className="w-1/2 space-y-4">
                   <p className="text-sm xs:text-base">payment method:</p>
                   <p className="text-sm xs:text-base text-nowrap overflow-hidden text-ellipsis">
                     payment account:
@@ -283,7 +283,7 @@ function FactoryProfile() {
                   <p className="text-sm xs:text-base">paid orders no:</p>
                   <p className="text-sm xs:text-base">total revenue:</p>
                 </div>
-                <div className="w-1/2 space-y-2">
+                <div className="w-1/2 space-y-4">
                   <p className="text-sm xs:text-base">
                     {profile.payment_methods || "-"}
                   </p>
