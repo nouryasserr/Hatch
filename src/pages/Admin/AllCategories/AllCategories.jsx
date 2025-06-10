@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { AdminContext } from "../../../context/Admin.context";
+import Loader from "../../../components/Loader/Loader";
 
 function AllCategories() {
   const { token } = useContext(AdminContext);
@@ -13,7 +14,7 @@ function AllCategories() {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [token]);
 
   const fetchData = async () => {
     try {
@@ -54,6 +55,7 @@ function AllCategories() {
       return;
 
     try {
+      setLoading(true);
       await axios.delete(`http://127.0.0.1:8000/api/admin/category/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -63,6 +65,8 @@ function AllCategories() {
     } catch (err) {
       console.error("Failed to delete category:", err);
       setError("Failed to delete category. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -71,6 +75,7 @@ function AllCategories() {
       return;
 
     try {
+      setLoading(true);
       await axios.delete(`http://127.0.0.1:8000/api/admin/subcategory/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -80,15 +85,13 @@ function AllCategories() {
     } catch (err) {
       console.error("Failed to delete subcategory:", err);
       setError("Failed to delete subcategory. Please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
   if (loading) {
-    return (
-      <div className="w-full lg:w-5/6 float-end px-8 py-8">
-        <p>Loading...</p>
-      </div>
-    );
+    return <Loader />;
   }
 
   if (error) {
@@ -108,7 +111,7 @@ function AllCategories() {
             manage all categories classifications
           </p>
         </div>
-        <div className="mt-8 mb-4 flex flex-col xs:flex-row justify-between xs:items-center">
+        <div className="mt-8 mb-4 gap-4 flex flex-col sm:flex-row justify-between sm:items-center">
           <div className="mb-4 xs:mb-0">
             <h2 className="text-2xl xs:text-3xl mb-0.5">categories</h2>
             <p className="text-lightgray text-xs pt-0.5 xs:text-sm">
@@ -170,7 +173,7 @@ function AllCategories() {
             )}
           </div>
         </div>
-        <div className="mt-8 mb-4 flex flex-col xs:flex-row justify-between xs:items-center">
+        <div className="mt-8 mb-4 gap-4 flex flex-col sm:flex-row justify-between sm:items-center">
           <div className="mb-4 xs:mb-0">
             <h2 className="text-2xl xs:text-3xl mb-0.5">subcategories</h2>
             <p className="text-lightgray text-xs pt-0.5 xs:text-sm">
