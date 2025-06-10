@@ -64,11 +64,11 @@ export default function Login() {
       <div className="w-full lg:w-5/6 float-end px-8 py-12 space-y-8">
         <div>
           <h2 className="text-2xl sm:text-3xl mb-2">factory login</h2>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-lightgray">
             login using your registered factory credentials
           </p>
         </div>
-        <form className="space-y-4" onSubmit={formik.handleSubmit}>
+        <form className="space-y-4 md:w-1/2" onSubmit={formik.handleSubmit}>
           <div className="flex flex-col gap-2">
             <label htmlFor="phone" className="text-lg">
               phone number
@@ -92,7 +92,7 @@ export default function Login() {
             <label htmlFor="password" className="text-lg">
               password
             </label>
-            <div className="flex gap-2 items-center justify-between border border-slate-600 px-2 py-2 pb-2.5 text-sm focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
+            <div className="flex gap-2 items-center justify-between border border-lightblack px-2 py-2 pb-2.5 text-sm focus-within:border-lightblack focus-within:border-2 focus-within:outline-none focus-within:rounded">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="type here"
@@ -111,15 +111,15 @@ export default function Login() {
               ></i>
             </div>
             {formik.errors.password && formik.touched.password && (
-              <p className="text-red-500">*{formik.errors.password}</p>
+              <p className="text-secondary">*{formik.errors.password}</p>
             )}
             {inncorrectEmailOrPassword && (
-              <p className="text-red-500">*{inncorrectEmailOrPassword}</p>
+              <p className="text-secondary">*{inncorrectEmailOrPassword}</p>
             )}
           </div>
           <button
             type="submit"
-            className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
+            className="bg-primary border border-lightblack text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
           >
             login
           </button>
