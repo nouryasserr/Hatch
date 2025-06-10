@@ -87,7 +87,7 @@ function FactoryResponse() {
         <div>
           <h2 className="text-3xl mb-0.5">factory responses</h2>
           <p className="text-lightblack text-sm">
-            responses this factory has sent to startup requests
+            responses you have sent to startup requests
           </p>
         </div>
         {!responses || responses.length === 0 ? (
