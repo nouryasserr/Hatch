@@ -1,51 +1,58 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { useState, useEffect, useContext } from "react";
 import { AdminContext } from "../../../context/Admin.context";
 
-function AddSubCategory() {
+function EditCategory() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const { token } = useContext(AdminContext);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(null);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchCategory = async () => {
       try {
+        setLoading(true);
         const response = await axios.get(
-          "http://127.0.0.1:8000/api/admin/category/?sort_by=id&sort_direction=asc",
+          `http://127.0.0.1:8000/api/admin/category/${id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setCategories(response.data.data);
+        setCategory(response.data.data);
+        setError(null);
       } catch (error) {
-        console.error("Failed to fetch categories:", error);
-        setError("Failed to fetch categories. Please try again.");
+        console.error("Failed to fetch category:", error);
+        setError("Failed to fetch category. Please try again.");
+        setCategory(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchCategories();
-  }, [token]);
+    if (token) {
+      fetchCategory();
+    }
+  }, [id, token]);
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      category_id: "",
+      name: category?.name || "",
       image: null,
     },
+    enableReinitialize: true,
     validationSchema: Yup.object({
       name: Yup.string()
-        .required("Subcategory name is required")
-        .min(2, "Subcategory name must be at least 2 characters")
-        .max(50, "Subcategory name must be at most 50 characters"),
-      category_id: Yup.string().required("Category is required"),
-      image: Yup.mixed().required("Logo is required"),
+        .required("Category name is required")
+        .min(2, "Category name must be at least 2 characters")
+        .max(50, "Category name must be at most 50 characters"),
+      image: Yup.mixed(),
     }),
     onSubmit: async (values) => {
       try {
@@ -54,11 +61,13 @@ function AddSubCategory() {
 
         const formData = new FormData();
         formData.append("name", values.name);
-        formData.append("category_id", values.category_id);
-        formData.append("image", values.image);
+        if (values.image) {
+          formData.append("image", values.image);
+        }
+        formData.append("_method", "put");
 
         await axios.post(
-          "http://127.0.0.1:8000/api/admin/subcategory",
+          `http://127.0.0.1:8000/api/admin/category/${id}`,
           formData,
           {
             headers: {
@@ -72,7 +81,7 @@ function AddSubCategory() {
       } catch (error) {
         setError(
           error.response?.data?.message ||
-            "Failed to create subcategory. Please try again."
+            "Failed to update category. Please try again."
         );
       } finally {
         setLoading(false);
@@ -89,57 +98,50 @@ function AddSubCategory() {
     formik.setFieldValue("image", null);
   };
 
+  if (loading) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-8">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-8">
+        <p className="text-secondary">{error}</p>
+      </div>
+    );
+  }
+
+  if (!category) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-8">
+        <p>Category not found.</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-8">
         <div>
-          <h1 className="text-2xl xs:text-4xl">add new subcategory</h1>
+          <h1 className="text-2xl xs:text-4xl">edit category</h1>
           <p className="text-lightgray text-xs pt-0.5 xs:text-sm">
             manage all categories classifications
           </p>
         </div>
-        {error && <p className="text-secondary mt-4">{error}</p>}
         <form className="mt-8" onSubmit={formik.handleSubmit}>
           <div className="xs:w-2/3">
             <div className="w-full mb-4">
-              <label
-                htmlFor="subcategory-category"
-                className="flex items-start gap-2 mb-2"
-              >
-                <span className="text-lg">select category</span>
-                <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-              </label>
-              <select
-                id="subcategory-category"
-                {...formik.getFieldProps("category_id")}
-                className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-              >
-                <option value="">Select a category</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              {formik.touched.category_id && formik.errors.category_id && (
-                <p className="text-secondary text-sm mt-1">
-                  {formik.errors.category_id}
-                </p>
-              )}
-            </div>
-            <div className="w-full mb-4">
-              <label
-                htmlFor="subcategory-name"
-                className="flex items-start gap-2 mb-2"
-              >
-                <span className="text-lg">subcategory name</span>
+              <label htmlFor="name" className="flex items-start gap-2 mb-2">
+                <span className="text-lg">category name</span>
                 <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
               </label>
               <input
-                id="subcategory-name"
                 type="text"
                 autoComplete="on"
-                placeholder="enter subcategory name"
+                placeholder="enter category name"
                 {...formik.getFieldProps("name")}
                 className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
               />
@@ -150,18 +152,17 @@ function AddSubCategory() {
               )}
             </div>
             <div className="w-full mb-4">
-              <label
-                htmlFor="subcategory-logo"
-                className="flex items-start gap-2"
-              >
+              <label htmlFor="logo" className="flex items-start gap-2">
                 <span className="text-lg">upload logo</span>
-                <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+                {!category?.image && (
+                  <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+                )}
               </label>
               <p className="text-xs text-lightgray mb-4">
                 make sure your logo is clear and high quality
               </p>
               <label
-                htmlFor="subcategory-logo"
+                htmlFor="file-upload"
                 className="flex flex-col items-center justify-center h-80 w-full border border-blackmuted text-black text-center cursor-pointer"
               >
                 <svg
@@ -181,18 +182,20 @@ function AddSubCategory() {
                   drop files here or click to upload
                 </span>
                 <input
-                  id="subcategory-logo"
+                  id="file-upload"
                   type="file"
                   accept="image/*"
                   onChange={handleFileChange}
                   className="hidden"
                 />
               </label>
-              {formik.values.image && (
+              {(formik.values.image || category?.image) && (
                 <div className="text-sm flex items-center justify-between gap-4 flex-wrap mt-4">
                   <span className="flex items-center gap-2">
-                    <i className="fa-solid fa-paperclip"></i>{" "}
-                    {formik.values.image.name}
+                    <i className="fa-solid fa-paperclip"></i>
+                    {formik.values.image
+                      ? formik.values.image.name
+                      : "Current logo"}
                   </span>
                   <button
                     type="button"
@@ -229,4 +232,4 @@ function AddSubCategory() {
   );
 }
 
-export default AddSubCategory;
+export default EditCategory;

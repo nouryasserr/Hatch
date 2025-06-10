@@ -67,6 +67,8 @@ import FactoryDetails from "./pages/Admin/FactoryDetails/FactoryDetails";
 import ViewStartup from "./pages/Admin/ViewStartup/ViewStartup";
 import ViewStartupRequest from "./pages/Admin/ViewStartupRequest/ViewStartupRequest";
 import ViewUser from "./pages/Admin/ViewUser/ViewUser";
+import EditCategory from "./pages/Admin/EditCategory/EditCategory";
+import EditSubCategory from "./pages/Admin/EditSubCategory/EditSubCategory";
 
 function App() {
   const router = createBrowserRouter([
@@ -159,6 +161,8 @@ function App() {
         { path: "AllStartups", element: <AllStartups /> },
         { path: "AllUsers", element: <AllUsers /> },
         { path: "Dashboard", element: <Dashboard /> },
+        { path: "EditCategory/:id", element: <EditCategory /> },
+        { path: "EditSubCategory/:id", element: <EditSubCategory /> },
         { path: "FactoryDetails", element: <FactoryDetails /> },
         { path: "ViewStartup", element: <ViewStartup /> },
         { path: "ViewStartupRequest", element: <ViewStartupRequest /> },
