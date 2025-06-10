@@ -7,6 +7,7 @@ function AllFactories() {
   const [factories, setFactories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(null);
   const { token } = useContext(AdminContext);
 
   const fetchFactories = async () => {
@@ -33,6 +34,40 @@ function AllFactories() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDelete = async (factoryId) => {
+    if (!window.confirm("Are you sure you want to delete this factory?")) {
+      return;
+    }
+
+    try {
+      setDeleteLoading(factoryId);
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/admin/factory/${factoryId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        setFactories(factories.filter((factory) => factory.id !== factoryId));
+      } else {
+        throw new Error(data.message || "Failed to delete factory");
+      }
+    } catch (err) {
+      setError(`Failed to delete factory: ${err.message}`);
+    } finally {
+      setDeleteLoading(null);
     }
   };
 
@@ -70,11 +105,7 @@ function AllFactories() {
             add new factory
           </NavLink>
         </div>
-        {error && (
-          <div className="text-red-500 mb-4">
-            Error loading factories: {error}
-          </div>
-        )}
+        {error && <div className="text-red-500 mb-4">Error: {error}</div>}
         <div className="overflow-x-auto mt-4">
           <div>
             <div className="min-w-[600px] grid grid-cols-6 items-center gap-4">
@@ -110,8 +141,12 @@ function AllFactories() {
                   >
                     view
                   </NavLink>
-                  <button className="text-sm whitespace-nowrap bg-secondary text-white rounded-sm py-1 px-4 border border-lightblack hover:bg-transparent hover:text-black transition duration-300">
-                    delete
+                  <button
+                    onClick={() => handleDelete(factory.id)}
+                    disabled={deleteLoading === factory.id}
+                    className="text-sm whitespace-nowrap bg-secondary text-white rounded-sm py-1 px-4 border border-lightblack hover:bg-transparent hover:text-black transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {deleteLoading === factory.id ? "Deleting..." : "delete"}
                   </button>
                 </div>
               </div>
