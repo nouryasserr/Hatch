@@ -26,8 +26,12 @@ function Categories() {
         <h3 className="text-2xl md:text-4xl mb-2">Categories</h3>
         <p>{categories.length} category</p>
         <div className="flex flex-wrap gap-6 mt-8 text-black">
-          {categories.map((subcategory) => (
-            <Category key={subcategory.id} subcategory={subcategory} />
+          {categories.map((subcategory, index) => (
+            <Category
+              key={subcategory.id}
+              subcategory={subcategory}
+              index={index}
+            />
           ))}
         </div>
       </div>

@@ -1,4 +1,4 @@
-function Category({ subcategory }) {
+function Category({ subcategory, index }) {
   const subcategoryImageUrl = subcategory.image
     ? `http://127.0.0.1:8000/${subcategory.image}`
     : null;
@@ -13,7 +13,7 @@ function Category({ subcategory }) {
 
   return (
     <>
-      <div className="grow overflow-hidden">
+      <div className="grow overflow-hidden min-w-64">
         <img
           src={imageUrl}
           alt={`${subcategory.name} category`}
@@ -22,9 +22,7 @@ function Category({ subcategory }) {
             e.target.src = "https://placehold.co/250x300?text=Category+Image";
           }}
         />
-        <p className="mt-2">
-          {subcategory.id < 10 ? `0${subcategory.id}` : subcategory.id}
-        </p>
+        <p className="mt-2">{(index + 1).toString().padStart(2, "0")}</p>
         <h6>{subcategory.name}</h6>
       </div>
     </>

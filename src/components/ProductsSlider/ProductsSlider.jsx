@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import ProductCard from "../ProductCard/ProductCard";
 import Loader from "../Loader/Loader";
 import useWindowSize from "../../Hooks/useWindowSize";
@@ -16,20 +16,31 @@ function ProductsSlider({ productsData }) {
   } else if (windowWidth >= 640) {
     productsPerPage = 2;
   }
-  const totalPages = Math.ceil(
-    (productsData?.data?.length || 0) / productsPerPage
-  );
+
+  // Limit total products to 5 slides worth of products
+  const maxProducts = productsPerPage * 5;
+
+  const limitedProducts = useMemo(() => {
+    if (!productsData?.data) return [];
+    return productsData.data.slice(0, maxProducts);
+  }, [productsData, maxProducts]);
+
+  const totalPages = Math.ceil(limitedProducts.length / productsPerPage);
+
   const handleNext = () => {
     if (currentPage < totalPages - 1) setCurrentPage(currentPage + 1);
   };
+
   const handlePrev = () => {
     if (currentPage > 0) setCurrentPage(currentPage - 1);
   };
+
   const startIndex = currentPage * productsPerPage;
-  const displayedProducts = productsData?.data?.slice(
+  const displayedProducts = limitedProducts.slice(
     startIndex,
     startIndex + productsPerPage
   );
+
   return (
     <>
       <div className="flex justify-center">
@@ -46,22 +57,32 @@ function ProductsSlider({ productsData }) {
           </div>
         )}
       </div>
-      <div className="mx-6 lg:mx-12 mt-8 md:mt-16 flex items-center justify-end gap-4 text-sm lg:text-xl">
-        <i
-          onClick={handlePrev}
-          className="fa-solid fa-arrow-left border border-black py-1.5 px-6 rounded-full hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150 cursor-pointer"
-        ></i>
-        <p className="text-lightblack ">
-          <span className="underline text-black">
-            {String(currentPage + 1).padStart(2, "0")}
-          </span>
-          /{String(totalPages).padStart(2, "0")}
-        </p>
-        <i
-          onClick={handleNext}
-          className="fa-solid fa-arrow-right border border-black bg-black text-white py-1.5 px-6 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out delay-150 cursor-pointer"
-        ></i>
-      </div>
+      {totalPages > 1 && (
+        <div className="mx-6 lg:mx-12 mt-8 md:mt-16 flex items-center justify-end gap-4 text-sm lg:text-xl">
+          <i
+            onClick={handlePrev}
+            className={`fa-solid fa-arrow-left border border-black py-1.5 px-6 rounded-full ${
+              currentPage > 0
+                ? "hover:bg-black hover:text-white cursor-pointer"
+                : "opacity-50 cursor-not-allowed"
+            } transition duration-300 ease-in-out delay-150`}
+          ></i>
+          <p className="text-lightblack ">
+            <span className="underline text-black">
+              {String(currentPage + 1).padStart(2, "0")}
+            </span>
+            /{String(totalPages).padStart(2, "0")}
+          </p>
+          <i
+            onClick={handleNext}
+            className={`fa-solid fa-arrow-right border border-black py-1.5 px-6 rounded-full ${
+              currentPage < totalPages - 1
+                ? "bg-black text-white hover:bg-transparent hover:text-black cursor-pointer"
+                : "opacity-50 cursor-not-allowed"
+            } transition duration-300 ease-in-out delay-150`}
+          ></i>
+        </div>
+      )}
     </>
   );
 }

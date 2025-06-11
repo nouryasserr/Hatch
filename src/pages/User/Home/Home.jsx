@@ -486,8 +486,12 @@ function Home() {
           </p>
         </div>
         <div className="flex flex-wrap gap-6 mt-16 text-white">
-          {categories.slice(0, 10).map((subcategory) => (
-            <Category key={subcategory.id} subcategory={subcategory} />
+          {categories.slice(0, 10).map((subcategory, index) => (
+            <Category
+              key={subcategory.id}
+              subcategory={subcategory}
+              index={index}
+            />
           ))}
         </div>
         <NavLink to="/User/Categories" className={"flex justify-end mt-8"}>

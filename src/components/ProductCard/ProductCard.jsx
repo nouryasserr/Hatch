@@ -72,7 +72,7 @@ function ProductCard({ productInfo }) {
 
   return (
     <>
-      <div className="relative overflow-hidden">
+      <div className="grow relative overflow-hidden">
         {isNewProduct() && (
           <span className="absolute right-1 top-3 bg-primary text-white font-extralight px-2.5 py-0.5 rounded-sm">
             New
@@ -86,7 +86,7 @@ function ProductCard({ productInfo }) {
                 : "https://placehold.co/300x350?text=Product+Image"
             }
             alt={name}
-            className="object-contain object-center h-52 w-full rounded-t"
+            className="object-cover object-center h-52 w-full rounded-t"
             onError={(e) => {
               e.target.src = "https://placehold.co/300x350?text=Product+Image";
             }}
@@ -120,7 +120,7 @@ function ProductCard({ productInfo }) {
           <button
             disabled={isDisabled}
             onClick={handleAddToCart}
-            className={`text-sm font-light py-1.5 px-2 rounded-full w-full transition duration-300 ease-in-out delay-150 ${
+            className={`text-sm font-light py-1.5 px-6 rounded-full w-full transition duration-300 ease-in-out delay-150 ${
               isDisabled
                 ? "bg-lightblack text-blackmuted cursor-not-allowed"
                 : "bg-black border border-black text-white hover:bg-transparent hover:text-black"

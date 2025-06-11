@@ -175,7 +175,15 @@ function Registeration() {
     social_media_links: object({
       Facebook: string().url("invalid URL format"),
       Instagram: string().url("invalid URL format"),
-    }).required("social media links are required"),
+    })
+      .required("social media links are required")
+      .test(
+        "at-least-one-social",
+        "At least one social media link is required",
+        function (value) {
+          return value && (value.Facebook || value.Instagram);
+        }
+      ),
     categories_id: number()
       .required("category is required")
       .test("valid-category", "Invalid category selected", function (value) {
@@ -244,6 +252,15 @@ function Registeration() {
       return;
     }
 
+    // Clean up social media links - remove empty values
+    const cleanSocialMediaLinks = {};
+    if (values.social_media_links.Facebook) {
+      cleanSocialMediaLinks.Facebook = values.social_media_links.Facebook;
+    }
+    if (values.social_media_links.Instagram) {
+      cleanSocialMediaLinks.Instagram = values.social_media_links.Instagram;
+    }
+
     const loadingToastId = toast.loading("creating request...");
     try {
       const options = {
@@ -256,7 +273,7 @@ function Registeration() {
           password: values.password,
           password_confirmation: values.password_confirmation,
           description: values.description,
-          social_media_links: values.social_media_links,
+          social_media_links: cleanSocialMediaLinks,
           categories_id: selectedCategory.category_id,
           package_id: selectedPkg.package_id,
           payment_method: values.payment_method,

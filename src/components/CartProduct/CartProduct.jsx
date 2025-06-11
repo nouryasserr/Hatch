@@ -18,12 +18,10 @@ function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
       return "https://placehold.co/100x100?text=Product+Image";
     }
 
-    // If the URL already contains the full path, return it as is
     if (imagePath.startsWith("http")) {
       return imagePath;
     }
 
-    // Otherwise, prepend the base URL
     return `http://127.0.0.1:8000/${imagePath}`;
   };
 
