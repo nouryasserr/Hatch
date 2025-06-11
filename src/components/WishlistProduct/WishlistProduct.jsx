@@ -12,6 +12,23 @@ function WishlistProduct({ wishlistItem }) {
   const hasDiscount =
     product.discounted_price && product.discounted_price < product.price;
 
+  const getImageUrl = (images) => {
+    if (!images || images.length === 0) {
+      return "https://placehold.co/300x350?text=Product+Image";
+    }
+
+    const mainImage = images.find((img) => img.is_main) || images[0];
+    const imageUrl = mainImage.url;
+
+    // If the URL already contains the full path, return it as is
+    if (imageUrl.startsWith("http")) {
+      return imageUrl;
+    }
+
+    // Otherwise, prepend the base URL
+    return `http://127.0.0.1:8000/${imageUrl}`;
+  };
+
   return (
     <div className="border-t border-slate-300 py-6">
       <div className="flex flex-col sm:flex-row gap-4">
@@ -20,10 +37,7 @@ function WishlistProduct({ wishlistItem }) {
           className="w-full sm:w-1/4"
         >
           <img
-            src={
-              product.images?.[0] ||
-              "https://placehold.co/300x350?text=Product+Image"
-            }
+            src={getImageUrl(product.images)}
             alt={product.name}
             className="w-full h-48 sm:h-32 object-cover rounded"
             onError={(e) => {

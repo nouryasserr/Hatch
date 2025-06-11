@@ -130,9 +130,9 @@ function Overview() {
             view order history
           </NavLink>
         </div>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mt-4">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 ">
+            <div className="min-w-[600px] grid grid-cols-5 items-center gap-4">
               <span className="text-sm whitespace-nowrap text-lightblack">
                 order id
               </span>

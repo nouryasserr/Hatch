@@ -38,7 +38,16 @@ function Factories() {
         setResponses(responsesResponse.data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError(error.message);
+        if (error.response?.status === 422) {
+          setError(
+            "Access denied: Your package does not allow this action. Please upgrade your package to access this feature."
+          );
+        } else {
+          setError(
+            error.response?.data?.message ||
+              "Failed to load data. Please try again later."
+          );
+        }
       } finally {
         setLoading(false);
       }
@@ -58,7 +67,9 @@ function Factories() {
   if (error) {
     return (
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
-        <div className="text-red-500">Error loading data: {error}</div>
+        <div className="flex flex-col items-center justify-center text-center p-8">
+          <div className="text-secondary text-lg mb-4">{error}</div>
+        </div>
       </div>
     );
   }

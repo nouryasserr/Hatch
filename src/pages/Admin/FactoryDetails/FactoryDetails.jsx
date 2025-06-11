@@ -2,11 +2,13 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AdminContext } from "../../../context/Admin.context";
 import Loader from "../../../components/Loader/Loader";
+import axios from "axios";
 
 function FactoryDetails() {
   const { id } = useParams();
   const { token } = useContext(AdminContext);
   const [factory, setFactory] = useState(null);
+  const [responses, setResponses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -45,8 +47,33 @@ function FactoryDetails() {
       }
     }
 
+    async function fetchFactoryResponses() {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/admin/responses/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.success) {
+          // If the response is a single object, wrap it in an array
+          const responsesData = Array.isArray(response.data.data)
+            ? response.data.data
+            : [response.data.data];
+          setResponses(responsesData);
+        }
+      } catch (err) {
+        console.error("Error fetching responses:", err);
+      }
+    }
+
     if (id && token) {
       fetchFactoryDetails();
+      fetchFactoryResponses();
     }
   }, [id, token]);
 
@@ -85,7 +112,7 @@ function FactoryDetails() {
         <div className="flex flex-col lg:flex-row gap-8 mt-8">
           <div className="lg:w-1/2">
             <div className="mb-4 xs:mb-0">
-              <h3 className="text-2xl mb-0.5">Basic Information</h3>
+              <h3 className="text-2xl mb-0.5">basic information</h3>
               <p className="text-lightgray text-xs xs:text-sm">
                 general profile and contact data
               </p>
@@ -149,6 +176,63 @@ function FactoryDetails() {
               </div>
             </div>
           </div>
+        </div>
+        <div className="mb-4 xs:mb-0 mt-8">
+          <h3 className="text-2xl mb-0.5">factory responses</h3>
+          <p className="text-lightgray text-xs xs:text-sm">
+            responses this factory has sent to startup requests
+          </p>
+        </div>
+        <div className="flex flex-col lg:flex-row gap-8 mt-4 flex-wrap">
+          {responses.map((response) => (
+            <div key={response.id} className="lg:w-1/2">
+              <div className="mb-4 xs:mb-0">
+                <h3 className="text-2xl mb-0.5">
+                  startup: {response.request?.startup?.name || "N/A"}
+                </h3>
+                <p className="text-lightgray text-xs xs:text-sm">
+                  offer sent by the factory
+                </p>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <div className="w-1/2 space-y-4">
+                  <p className="text-sm xs:text-base">price offer:</p>
+                  <p className="text-sm xs:text-base">request description:</p>
+                  <p className="text-sm xs:text-base text-nowrap overflow-hidden text-ellipsis">
+                    delivery date:
+                  </p>
+                  <p className="text-sm xs:text-base">sent at:</p>
+                  <p className="text-sm xs:text-base">status:</p>
+                  <p className="text-sm xs:text-base">message:</p>
+                </div>
+                <div className="w-1/2 space-y-4">
+                  <p className="text-sm xs:text-base">{response.price} egp</p>
+                  <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
+                    {response.request?.description || "N/A"}
+                  </p>
+                  <p className="text-nowrap text-xs xs:text-base">
+                    {response.request?.delivery_date
+                      ? new Date(
+                          response.request.delivery_date
+                        ).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                  <p className="text-sm xs:text-base">
+                    {new Date(response.created_at).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm xs:text-base">{response.status}</p>
+                  <p className="text-sm xs:text-base text-nowrap overflow-hidden text-ellipsis line-clamp-3">
+                    {response.description}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
+          {responses.length === 0 && (
+            <div className="w-full text-center text-gray-500">
+              No responses found for this factory
+            </div>
+          )}
         </div>
       </div>
     </>

@@ -1,4 +1,4 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { Link, Links, NavLink, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AdminContext } from "../../../context/Admin.context";
 import Loader from "../../../components/Loader/Loader";
@@ -210,7 +210,7 @@ function AllFactories() {
           </NavLink>
         </div>
         {error && (
-          <div className="text-red-500 mb-4 p-3 bg-red-50 rounded-md">
+          <div className="text-secondary mb-4 p-3 bg-red-50 rounded-md">
             {error}
           </div>
         )}
@@ -231,7 +231,7 @@ function AllFactories() {
               </span>
             </div>
             {factories.length === 0 && !error ? (
-              <div className="text-center py-4 text-gray-500">
+              <div className="text-center py-4 text-lightblaxk">
                 No factories found
               </div>
             ) : (
@@ -240,9 +240,12 @@ function AllFactories() {
                   key={factory.id}
                   className="min-w-[600px] grid grid-cols-7 items-center gap-4 mt-3"
                 >
-                  <span className="text-sm whitespace-nowrap">
+                  <Link
+                    to={`/Admin/FactoryDetails/${factory.id}`}
+                    className="text-sm whitespace-nowrap"
+                  >
                     {factory.id}
-                  </span>
+                  </Link>
                   <span className="col-span-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                     {factory.name}
                   </span>

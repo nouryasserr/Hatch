@@ -69,6 +69,8 @@ import ViewStartupRequest from "./pages/Admin/ViewStartupRequest/ViewStartupRequ
 import ViewUser from "./pages/Admin/ViewUser/ViewUser";
 import EditCategory from "./pages/Admin/EditCategory/EditCategory";
 import EditSubCategory from "./pages/Admin/EditSubCategory/EditSubCategory";
+import Payment from "./pages/User/Payment/Payment";
+import EditProduct from "./pages/Startup/EditProduct/EditProduct";
 
 function App() {
   const router = createBrowserRouter([
@@ -115,6 +117,7 @@ function App() {
           children: [
             { path: "AddProduct", element: <AddProduct /> },
             { path: "AddProduct2", element: <AddProduct2 /> },
+            { path: "EditProduct/:id", element: <EditProduct /> },
             { path: "Factories", element: <Factories /> },
             { path: "OrderDetails/:id", element: <OrderDetails /> },
             { path: "Orders", element: <Orders /> },
@@ -164,7 +167,7 @@ function App() {
         { path: "EditCategory/:id", element: <EditCategory /> },
         { path: "EditSubCategory/:id", element: <EditSubCategory /> },
         { path: "FactoryDetails/:id", element: <FactoryDetails /> },
-        { path: "ViewStartup", element: <ViewStartup /> },
+        { path: "ViewStartup/:id", element: <ViewStartup /> },
         { path: "ViewStartupRequest", element: <ViewStartupRequest /> },
         { path: "ViewUser/:id", element: <ViewUser /> },
       ],
@@ -191,6 +194,7 @@ function App() {
         { path: "Checkout", element: <Checkout /> },
         { path: "Contact", element: <Contact /> },
         { path: "FreshDrops", element: <FreshDrops /> },
+        { path: "Payment", element: <Payment /> },
         { path: "ProductDetails/:id", element: <ProductDetails /> },
         { path: "Sale", element: <Sale /> },
         { path: "UserAccount", element: <UserAccount /> },

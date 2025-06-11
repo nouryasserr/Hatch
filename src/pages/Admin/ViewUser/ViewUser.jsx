@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { AdminContext } from "../../../context/Admin.context";
 import axios from "axios";
@@ -61,7 +61,6 @@ function ViewUser() {
 
   const handleDeleteUser = async () => {
     try {
-      // First check if user can be deleted
       const checkResponse = await axios.get(
         `http://127.0.0.1:8000/api/admin/user/${id}/checkDestroy`,
         {
@@ -76,18 +75,15 @@ function ViewUser() {
 
       let confirmMessage = "Are you sure you want to delete this user?";
 
-      // If user is a startup owner, show special confirmation
       if (userData.role === "OWNER") {
         confirmMessage =
           "Warning: This user is registered as a startup owner. Deleting this user might cause issues with their startup account. Are you absolutely sure you want to delete this user?";
       }
 
-      // Ask for confirmation
       if (!window.confirm(confirmMessage)) {
         return;
       }
 
-      // Proceed with deletion
       const response = await axios.delete(
         `http://127.0.0.1:8000/api/admin/user/${id}`,
         {
@@ -105,9 +101,7 @@ function ViewUser() {
     } catch (error) {
       console.error("Error:", error);
 
-      // Handle different types of errors
       if (error.response) {
-        // Server responded with an error
         if (error.response.status === 500 && userData.role === "OWNER") {
           toast.error(
             "Cannot delete this user because they have an active startup account. Please delete their startup account first from the startups page."
@@ -119,10 +113,8 @@ function ViewUser() {
           );
         }
       } else if (error.request) {
-        // Request was made but no response received
         toast.error("No response from server. Please check your connection.");
       } else {
-        // Something else went wrong
         toast.error("An error occurred while trying to delete the user.");
       }
     }

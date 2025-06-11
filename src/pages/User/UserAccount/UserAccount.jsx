@@ -29,6 +29,43 @@ function UserAccount() {
     };
   }, [token, getUserProfile]);
 
+  const renderStartupLink = () => {
+    if (!userProfile.startup) {
+      return (
+        <NavLink
+          to="/Auth/Registeration"
+          className="w-fit cursor-pointer text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"
+        >
+          join as a startup
+        </NavLink>
+      );
+    }
+
+    if (userProfile.startup.status === "HOLD") {
+      return (
+        <NavLink
+          to={"/User/Payment"}
+          className="w-fit cursor-pointer text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"
+        >
+          complete startup payment
+        </NavLink>
+      );
+    }
+
+    if (userProfile.startup.status === "APPROVED") {
+      return (
+        <NavLink
+          to="/Startup/Login"
+          className="w-fit cursor-pointer text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"
+        >
+          go to startup dashboard
+        </NavLink>
+      );
+    }
+
+    return null;
+  };
+
   if (!token) {
     return <NotSignedIn />;
   }
@@ -91,12 +128,7 @@ function UserAccount() {
         )}
       </div>
       <div className="flex gap-4 items-center flex-wrap mt-8">
-        <NavLink
-          to={"/Auth/Registeration"}
-          className="w-fit cursor-pointer text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"
-        >
-          join as a startup
-        </NavLink>
+        {renderStartupLink()}
         <button
           onClick={handleLogout}
           className="w-fit cursor-pointer text-secondary text-sm underline hover:no-underline transition duration-300 ease-in-out delay-150"

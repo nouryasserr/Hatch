@@ -4,12 +4,15 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { object, ref, string } from "yup";
+import Otp from "../../../components/Otp/Otp";
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
   const [accountExistsError, setAccountExistsError] = useState(null);
+  const [showOtp, setShowOtp] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
   const validate = object({
     name: string()
       .required("first name is required")
@@ -50,20 +53,34 @@ function Signup() {
       console.log("data of registration", data);
       if (data) {
         toast.dismiss(loadingToastId);
-        toast.success("Account created successfully!");
-        setTimeout(() => {
-          navigate("/Auth/Signin");
-        }, 2000);
+        toast.success(
+          "Account created successfully! Please verify your email."
+        );
+        setRegisteredEmail(values.email);
+        setShowOtp(true);
       } else {
         toast.dismiss(loadingToastId);
         toast.error("Something went wrong.");
       }
     } catch (error) {
       console.log("error in registeration", error);
-      const msg = error?.response?.data?.message;
-      setAccountExistsError(msg);
       toast.dismiss(loadingToastId);
-      toast.error(msg);
+
+      if (
+        error.response?.status === 500 &&
+        error.response?.data?.message?.includes("Duplicate entry")
+      ) {
+        const errorMsg =
+          "This email is already registered. Please use a different email or try signing in.";
+        setAccountExistsError(errorMsg);
+        toast.error(errorMsg);
+      } else {
+        const msg =
+          error.response?.data?.message ||
+          "An error occurred during registration";
+        setAccountExistsError(msg);
+        toast.error(msg);
+      }
     }
   }
 
@@ -232,6 +249,9 @@ function Signup() {
           </div>
         </form>
       </div>
+      {showOtp && (
+        <Otp onClose={() => setShowOtp(false)} email={registeredEmail} />
+      )}
     </>
   );
 }

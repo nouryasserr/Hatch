@@ -1,13 +1,22 @@
 function Category({ subcategory }) {
+  const subcategoryImageUrl = subcategory.image
+    ? `http://127.0.0.1:8000/${subcategory.image}`
+    : null;
+  const categoryImageUrl = subcategory.category?.image
+    ? `http://127.0.0.1:8000/${subcategory.category.image}`
+    : null;
+
+  const imageUrl =
+    subcategoryImageUrl ||
+    categoryImageUrl ||
+    "https://placehold.co/250x300?text=Category+Image";
+
   return (
     <>
       <div className="grow overflow-hidden">
         <img
-          src={
-            subcategory.image?.[0] ||
-            "https://placehold.co/250x300?text=Category+Image"
-          }
-          alt="category"
+          src={imageUrl}
+          alt={`${subcategory.name} category`}
           className="object-cover object-center h-64 w-full rounded"
           onError={(e) => {
             e.target.src = "https://placehold.co/250x300?text=Category+Image";

@@ -81,9 +81,11 @@ function ProductCard({ productInfo }) {
         <Link to={`/User/ProductDetails/${id}`}>
           <img
             src={
-              images?.[0] || "https://placehold.co/300x350?text=Product+Image"
+              images?.length > 0 && images[0]?.url
+                ? `http://127.0.0.1:8000/${images[0].url}`
+                : "https://placehold.co/300x350?text=Product+Image"
             }
-            alt="product"
+            alt={name}
             className="object-contain object-center h-52 w-full rounded-t"
             onError={(e) => {
               e.target.src = "https://placehold.co/300x350?text=Product+Image";

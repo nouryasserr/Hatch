@@ -4,6 +4,7 @@ import { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import Loader from "../../../components/Loader/Loader";
 import { StartupContext } from "../../../context/Startup.context";
+import toast from "react-hot-toast";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -23,10 +24,19 @@ function Products() {
             },
           }
         );
-        setProducts(response.data.data);
-        setLoading(false);
+        if (response.data.success) {
+          setProducts(response.data.data);
+        } else {
+          throw new Error(response.data.message || "Failed to fetch products");
+        }
       } catch (err) {
-        setError(err.response?.data?.message || err.message);
+        const errorMessage =
+          err.response?.status === 422
+            ? "Access denied: Your package does not allow this action. Please upgrade your package to access this feature."
+            : err.response?.data?.message || err.message;
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } finally {
         setLoading(false);
       }
     };
@@ -36,14 +46,33 @@ function Products() {
     }
   }, [token]);
 
+  const handleProductDelete = (productId) => {
+    setProducts(products.filter((product) => product.id !== productId));
+  };
+
   if (loading) {
-    return <Loader />;
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-6 min-h-screen flex items-center justify-center">
+        <Loader />
+      </div>
+    );
   }
 
   if (error) {
     return (
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
-        <p className="text-red-500">Error loading products: {error}</p>
+        <div className="flex flex-col items-center justify-center text-center p-8">
+          <div className="text-secondary text-lg mb-4">{error}</div>
+          {error.includes("package") && (
+            <NavLink
+              to="/user/packages"
+              className="border border-black p-2 px-4 flex items-center gap-2 h-fit hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150"
+            >
+              <i className="fa-solid fa-arrow-up"></i>
+              <span>Upgrade Package</span>
+            </NavLink>
+          )}
+        </div>
       </div>
     );
   }
@@ -69,7 +98,11 @@ function Products() {
         </div>
         <div className="flex gap-4 flex-wrap">
           {products.map((product) => (
-            <StartupProduct key={product.id} product={product} />
+            <StartupProduct
+              key={product.id}
+              product={product}
+              onDelete={handleProductDelete}
+            />
           ))}
         </div>
       </div>

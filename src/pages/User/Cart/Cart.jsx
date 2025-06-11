@@ -14,6 +14,9 @@ function Cart() {
   const [checkedProductIds, setCheckedProductIds] = useState([]);
   const { getCartProducts, cartInfo, removeProduct, clearCart } =
     useContext(CartContext);
+  const [productsData, setProductsData] = useState(null);
+  const [isLoadingSimilar, setIsLoadingSimilar] = useState(false);
+
   function handleCheckboxChange(productId, isChecked) {
     if (isChecked) {
       const newChecked = [...checkedProductIds, productId];
@@ -27,6 +30,7 @@ function Cart() {
       setIsSelectAll(false);
     }
   }
+
   const handleDeleteSelected = async () => {
     if (isSelectAll || checkedProductIds.length === cartInfo.data.data.length) {
       try {
@@ -48,29 +52,94 @@ function Cart() {
       }
     }
   };
+
   useEffect(() => {
     getCartProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const [productsData, setProductsData] = useState(null);
-  async function getProducts() {
-    try {
-      const options = {
-        url: "http://127.0.0.1:8000/api/general/products",
-        method: "GET",
-      };
-      let { data } = await axios.request(options);
-      setProductsData(data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
+
+  // Fetch similar products based on the category of the first item in cart
+  const getSimilarProducts = async (categoryId) => {
+    if (!categoryId) {
+      console.log("No category ID provided");
+      return;
     }
-  }
+
+    console.log("Fetching similar products for category:", categoryId);
+    setIsLoadingSimilar(true);
+
+    try {
+      const { data } = await axios.get(
+        `http://127.0.0.1:8000/api/general/products`,
+        {
+          params: {
+            category_id: categoryId,
+          },
+        }
+      );
+
+      console.log("API Response:", data);
+
+      if (!data || !data.data) {
+        console.log("No data received from API");
+        setProductsData(null);
+        return;
+      }
+
+      // Filter out the current cart items from similar products
+      const cartItemIds = cartInfo.data.data.map((item) => item.id);
+      console.log("Cart item IDs:", cartItemIds);
+
+      let similarProducts = Array.isArray(data.data)
+        ? data.data
+        : Object.values(data.data);
+      console.log("Similar products before filtering:", similarProducts.length);
+
+      similarProducts = similarProducts.filter(
+        (product) => !cartItemIds.includes(product.id)
+      );
+      console.log("Similar products after filtering:", similarProducts.length);
+
+      const filteredData = {
+        ...data,
+        data: similarProducts,
+      };
+
+      console.log("Final filtered data:", filteredData);
+      setProductsData(filteredData);
+    } catch (error) {
+      console.error("Error fetching similar products:", error);
+      setProductsData(null);
+    } finally {
+      setIsLoadingSimilar(false);
+    }
+  };
+
   useEffect(() => {
-    getProducts();
-  }, []);
+    if (cartInfo?.data?.data?.length > 0) {
+      const firstItem = cartInfo.data.data[0];
+      console.log("First cart item:", firstItem);
+
+      // Get category ID from sub_category
+      const categoryId = firstItem?.sub_category?.category_id;
+      console.log("Category ID from first item:", categoryId);
+
+      if (categoryId) {
+        getSimilarProducts(categoryId);
+      } else {
+        console.log("Cart item structure:", {
+          sub_category: firstItem?.sub_category,
+          category: firstItem?.sub_category?.category,
+          raw_item: firstItem,
+        });
+      }
+    }
+  }, [cartInfo?.data?.data]);
+
   if (!cartInfo) return <Loader />;
   if (!cartInfo.data || !cartInfo.data.data || cartInfo.data.data.length === 0)
     return <EmptyCart />;
+
   return (
     <>
       <div className="px-6 md:pl-6 lg:pl-12 pt-2 md:pt-16 w-full md:w-3/5">
@@ -126,7 +195,7 @@ function Cart() {
           <OrderSummary />
         </div>
       </div>
-      <div className="px-6 lg:px-12 pt-16 ">
+      <div className="px-6 lg:px-12 pt-16">
         <div className="pb-4 flex justify-between">
           <h4 className="text-3xl">similar products</h4>
           <NavLink
@@ -137,10 +206,14 @@ function Cart() {
           </NavLink>
         </div>
         <div className="pb-12">
-          {!productsData ? (
+          {isLoadingSimilar ? (
             <Loader />
-          ) : (
+          ) : productsData?.data && productsData.data.length > 0 ? (
             <SlimilarProducts productsData={productsData} />
+          ) : (
+            <p className="text-center text-gray-500">
+              No similar products found
+            </p>
           )}
         </div>
       </div>

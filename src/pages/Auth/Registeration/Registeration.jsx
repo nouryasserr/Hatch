@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import { useContext, useEffect, useState, useRef } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { object, ref, string } from "yup";
+import { object, ref, string, number } from "yup";
 import { UserContext } from "../../../context/User.context";
 
 function Registeration() {
@@ -13,6 +13,9 @@ function Registeration() {
   const [categories, setCategories] = useState([]);
   const [billingCycle, setBillingCycle] = useState("quarterly");
   const [selectedPackage, setSelectedPackage] = useState("pro_supply");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [accountExistsError, setAccountExistsError] = useState(null);
 
   const PACKAGE_PRICES = {
     starter: 600,
@@ -133,6 +136,13 @@ function Registeration() {
         let { data } = await axios(options);
         if (data) {
           setCategories(data.data);
+          console.log(
+            "Available categories:",
+            data.data.map((cat) => ({
+              id: cat.id,
+              name: `${cat.category.name} - ${cat.name}`,
+            }))
+          );
         }
       } catch (error) {
         console.log("error in fetching categories", error);
@@ -142,9 +152,6 @@ function Registeration() {
     fetchCategoris();
   }, []);
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [accountExistsError, setAccountExistsError] = useState(null);
   const validate = object({
     name: string()
       .required("first name is required")
@@ -169,7 +176,18 @@ function Registeration() {
       Facebook: string().url("invalid URL format"),
       Instagram: string().url("invalid URL format"),
     }).required("social media links are required"),
-    categories_id: string().required("category is required"),
+    categories_id: number()
+      .required("category is required")
+      .test("valid-category", "Invalid category selected", function (value) {
+        console.log("Validating category ID:", value);
+        console.log(
+          "Available category IDs:",
+          categories.map((cat) => cat.id)
+        );
+        const isValid = categories.some((cat) => cat.id === value);
+        console.log("Is category valid?", isValid);
+        return isValid;
+      }),
     payment_method: string()
       .required("payment method is required")
       .min(3, "payment method must be at least 3 characters")
@@ -196,32 +214,75 @@ function Registeration() {
       payment_account: "",
     },
     validationSchema: validate,
-    onSubmit: sendDataToApi,
+    onSubmit: (values) => {
+      console.log("Form submitted with values:", values);
+      console.log("Selected package:", selectedPackage);
+      console.log("Billing cycle:", billingCycle);
+      sendDataToApi(values);
+    },
   });
 
   async function sendDataToApi(values) {
+    console.log("Starting API request...");
     if (!token) {
       toast.error("You need to login first");
       navigate("/Auth/Signin");
       return;
     }
+
+    const selectedPkg = packages.find((pkg) => pkg.id === selectedPackage);
+    if (!selectedPkg) {
+      toast.error("Please select a package");
+      return;
+    }
+
+    const selectedCategory = categories.find(
+      (cat) => cat.id === Number(values.categories_id)
+    );
+    if (!selectedCategory) {
+      toast.error("Selected category is not valid");
+      return;
+    }
+
     const loadingToastId = toast.loading("creating request...");
     try {
       const options = {
         url: "http://127.0.0.1:8000/api/user/startup/register",
         method: "POST",
         data: {
-          ...values,
-          package_id: packages.find((pkg) => pkg.id === selectedPackage)
-            ?.package_id,
+          name: values.name,
+          phone: values.phone,
+          email: values.email,
+          password: values.password,
+          password_confirmation: values.password_confirmation,
+          description: values.description,
+          social_media_links: values.social_media_links,
+          categories_id: selectedCategory.category_id,
+          package_id: selectedPkg.package_id,
+          payment_method: values.payment_method,
+          payment_account: values.payment_account,
+          billing_cycle: billingCycle,
         },
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       };
+
+      console.log("Selected category details:", {
+        subcategory_id: selectedCategory.id,
+        subcategory_name: selectedCategory.name,
+        category_id: selectedCategory.category_id,
+        category_name: selectedCategory.category.name,
+      });
+      console.log(
+        "Sending registration data:",
+        JSON.stringify(options.data, null, 2)
+      );
+
       let { data } = await axios(options);
-      console.log("data of registration", data);
+      console.log("Registration response:", data);
+
       if (data) {
         toast.dismiss(loadingToastId);
         toast.success(
@@ -236,10 +297,40 @@ function Registeration() {
       }
     } catch (error) {
       console.log("error in registeration", error);
+      console.log("Error response data:", error.response?.data);
+      const errorDetails = {
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        message: error.response?.data?.message,
+        errors: error.response?.data?.errors,
+        validationErrors: error.response?.data?.errors || {},
+      };
+      console.log("Full error response:", error.response);
+      console.log("Error details:", errorDetails);
+
+      if (errorDetails.validationErrors) {
+        Object.entries(errorDetails.validationErrors).forEach(
+          ([field, errors]) => {
+            console.log(`Validation error for ${field}:`, errors);
+            if (Array.isArray(errors)) {
+              errors.forEach((error) => toast.error(`${field}: ${error}`));
+            } else if (typeof errors === "string") {
+              toast.error(`${field}: ${errors}`);
+            }
+          }
+        );
+      }
+
       const msg = error?.response?.data?.message;
-      setAccountExistsError(msg);
+      if (msg) {
+        console.log("Error message from API:", msg);
+        toast.error(msg);
+      } else {
+        toast.error("An error occurred during registration");
+      }
+
+      setAccountExistsError(error?.response?.data?.message);
       toast.dismiss(loadingToastId);
-      toast.error(msg);
     }
   }
   if (!token) {
@@ -266,6 +357,7 @@ function Registeration() {
             quarterly
           </span>
           <button
+            type="button"
             className="relative w-14 h-7 border border-lightblack rounded-full py-0.5 px-1 transition-colors duration-300"
             onClick={() =>
               setBillingCycle((prev) =>
@@ -295,6 +387,7 @@ function Registeration() {
             {packages.map((pkg) => (
               <button
                 key={pkg.id}
+                type="button"
                 className={`w-full text-left p-6 rounded-xl border transition-all ${
                   selectedPackage === pkg.id
                     ? "border-lightblack bg-black opacity-95 text-white"
@@ -371,272 +464,290 @@ function Registeration() {
                 <span className="text-2xl">{calculatePrice()} EGP</span>
                 <span className="text-lightblack text-sm">/{billingCycle}</span>
               </div>
-              <button className="w-full xs:w-auto grow bg-black border border-black text-white py-3 rounded-lg hover:bg-transparent hover:text-black transition ease-in-out duration-300 dealy-150">
+              <button
+                type="button"
+                className="w-full xs:w-auto grow bg-black border border-black text-white py-3 rounded-lg hover:bg-transparent hover:text-black transition ease-in-out duration-300 dealy-150"
+                onClick={() => {
+                  const element = document.querySelector("form");
+                  if (element) {
+                    element.scrollIntoView({ behavior: "smooth" });
+                  }
+                }}
+              >
                 Choose plan
               </button>
             </div>
           </div>
         </div>
-      </div>
-      <div className="w-full lg:w-3/6 px-6 lg:pl-12 py-8 space-y-8">
-        <div>
-          <h2 className="text-2xl sm:text-3xl mb-2">join us as a startup</h2>
-          <p className="text-xs text-slate-500">
-            create an account to start showcasing your products and services to
-            a wider audience.
-          </p>
-        </div>
-        <form className="space-y-4" onSubmit={formik.handleSubmit}>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="name" className="text-lg">
-              startup name
-            </label>
-            <input
-              type="text"
-              autoComplete="on"
-              placeholder="type here"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-              value={formik.values.name}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="name"
-              id="name"
-            />
-            {formik.errors.name && formik.touched.name && (
-              <p className="text-secondary">*{formik.errors.name}</p>
-            )}
+
+        <div className="w-full px-6 lg:pl-12 py-8 space-y-8">
+          <div>
+            <h2 className="text-2xl sm:text-3xl mb-2">join us as a startup</h2>
+            <p className="text-xs text-slate-500">
+              create an account to start showcasing your products and services
+              to a wider audience.
+            </p>
           </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="phone" className="text-lg">
-              phone number
-            </label>
-            <input
-              type="tel"
-              autoComplete="on"
-              placeholder="type your phone number"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-              value={formik.values.phone}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="phone"
-              id="phone"
-            />
-            {formik.errors.phone && formik.touched.phone && (
-              <p className="text-secondary">*{formik.errors.phone}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-lg">
-              email
-            </label>
-            <input
-              type="email"
-              autoComplete="on"
-              placeholder="type here"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="email"
-              id="email"
-            />
-            {formik.errors.email && formik.touched.email && (
-              <p className="text-secondary">*{formik.errors.email}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="password" className="text-lg">
-              password
-            </label>
-            <div className="flex gap-2 items-center justify-between border border-blackmuted px-2 py-1.5 pb-2 focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
+          <form className="space-y-4" onSubmit={formik.handleSubmit} noValidate>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="name" className="text-lg">
+                startup name
+              </label>
               <input
-                type={showPassword ? "text" : "password"}
+                type="text"
+                autoComplete="on"
                 placeholder="type here"
-                className="outline-none placeholder:text-xs w-full"
-                value={formik.values.password}
+                className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+                value={formik.values.name}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-                name="password"
-                id="password"
+                name="name"
+                id="name"
               />
-              <i
-                className={`fa-regular ${
-                  showPassword ? "fa-eye-slash" : "fa-eye"
-                } cursor-pointer`}
-                onClick={() => setShowPassword((prev) => !prev)}
-              ></i>
-            </div>
-            {formik.errors.password && formik.touched.password && (
-              <p className="text-secondary">*{formik.errors.password}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="password_confirmation" className="text-lg">
-              confirm password
-            </label>
-            <div className="flex gap-2 items-center justify-between border border-blackmuted px-2 py-1.5 pb-2 focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="type here"
-                className="outline-none placeholder:text-xs w-full"
-                value={formik.values.password_confirmation}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                name="password_confirmation"
-                id="password_confirmation"
-              />
-              <i
-                className={`fa-regular ${
-                  showConfirmPassword ? "fa-eye-slash" : "fa-eye"
-                } cursor-pointer`}
-                onClick={() => setShowConfirmPassword((prev) => !prev)}
-              ></i>
-            </div>
-            {formik.errors.password_confirmation &&
-              formik.touched.password_confirmation && (
-                <p className="text-secondary">
-                  *{formik.errors.password_confirmation}
-                </p>
+              {formik.errors.name && formik.touched.name && (
+                <p className="text-secondary">*{formik.errors.name}</p>
               )}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="description" className="text-lg">
-              description
-            </label>
-            <input
-              type="text"
-              autoComplete="on"
-              placeholder="type here (about your startup)"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-              value={formik.values.description}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="description"
-              id="description"
-            />
-            {formik.errors.description && formik.touched.description && (
-              <p className="text-secondary">*{formik.errors.description}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-2 space-y-2">
-            {["Facebook", "Instagram"].map((platform) => (
-              <div key={platform} className="flex flex-col gap-2">
-                <label
-                  htmlFor={`social_media_links[${platform}]`}
-                  className="text-lg"
-                >
-                  {platform.toLowerCase()} link
-                </label>
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="phone" className="text-lg">
+                phone number
+              </label>
+              <input
+                type="tel"
+                autoComplete="on"
+                placeholder="type your phone number"
+                className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+                value={formik.values.phone}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="phone"
+                id="phone"
+              />
+              {formik.errors.phone && formik.touched.phone && (
+                <p className="text-secondary">*{formik.errors.phone}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="email" className="text-lg">
+                email
+              </label>
+              <input
+                type="email"
+                autoComplete="on"
+                placeholder="type here"
+                className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="email"
+                id="email"
+              />
+              {formik.errors.email && formik.touched.email && (
+                <p className="text-secondary">*{formik.errors.email}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="password" className="text-lg">
+                password
+              </label>
+              <div className="flex gap-2 items-center justify-between border border-blackmuted px-2 py-1.5 pb-2 focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
                 <input
-                  type="text"
-                  autoComplete="on"
+                  type={showPassword ? "text" : "password"}
                   placeholder="type here"
-                  className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-                  value={formik.values.social_media_links?.[platform] || ""}
+                  className="outline-none placeholder:text-xs w-full"
+                  value={formik.values.password}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  name={`social_media_links[${platform}]`}
-                  id={`social_media_links[${platform}]`}
+                  name="password"
+                  id="password"
                 />
-                {formik.errors.social_media_links?.[platform] &&
-                  formik.touched.social_media_links?.[platform] && (
-                    <p className="text-secondary">
-                      *{formik.errors.social_media_links[platform]}
-                    </p>
-                  )}
+                <i
+                  className={`fa-regular ${
+                    showPassword ? "fa-eye-slash" : "fa-eye"
+                  } cursor-pointer`}
+                  onClick={() => setShowPassword((prev) => !prev)}
+                ></i>
               </div>
-            ))}
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="categories_id" className="text-lg">
-              category
-            </label>
-            <div className="relative">
-              <select
-                name="categories_id"
-                id="categories_id"
-                className="appearance-none border border-blackmuted px-2 py-1.5 pb-2 w-full"
-                value={formik.values.categories_id}
+              {formik.errors.password && formik.touched.password && (
+                <p className="text-secondary">*{formik.errors.password}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="password_confirmation" className="text-lg">
+                confirm password
+              </label>
+              <div className="flex gap-2 items-center justify-between border border-blackmuted px-2 py-1.5 pb-2 focus-within:border-slate-600 focus-within:border-2 focus-within:outline-none focus-within:rounded">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  placeholder="type here"
+                  className="outline-none placeholder:text-xs w-full"
+                  value={formik.values.password_confirmation}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  name="password_confirmation"
+                  id="password_confirmation"
+                />
+                <i
+                  className={`fa-regular ${
+                    showConfirmPassword ? "fa-eye-slash" : "fa-eye"
+                  } cursor-pointer`}
+                  onClick={() => setShowConfirmPassword((prev) => !prev)}
+                ></i>
+              </div>
+              {formik.errors.password_confirmation &&
+                formik.touched.password_confirmation && (
+                  <p className="text-secondary">
+                    *{formik.errors.password_confirmation}
+                  </p>
+                )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="description" className="text-lg">
+                description
+              </label>
+              <input
+                type="text"
+                autoComplete="on"
+                placeholder="type here (about your startup)"
+                className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+                value={formik.values.description}
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
-              >
-                <option value="" disabled>
-                  select a category
-                </option>
-                {categories.map((subcat) => (
-                  <option key={subcat.id} value={subcat.id}>
-                    {subcat.category.name} - {subcat.name}
-                  </option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-black">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="payment_method" className="text-lg">
-              payment method
-            </label>
-            <input
-              type="text"
-              autoComplete="on"
-              placeholder="type here"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-              value={formik.values.payment_method}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="payment_method"
-              id="payment_method"
-            />
-            {formik.errors.payment_method && formik.touched.payment_method && (
-              <p className="text-secondary">*{formik.errors.payment_method}</p>
-            )}
-          </div>
-          <div className="pb-6 flex flex-col gap-2">
-            <label htmlFor="payment_account" className="text-lg">
-              payment account
-            </label>
-            <input
-              type="text"
-              autoComplete="on"
-              placeholder="type here"
-              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
-              value={formik.values.payment_account}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              name="payment_account"
-              id="payment_account"
-            />
-            {formik.errors.payment_account &&
-              formik.touched.payment_account && (
-                <p className="text-secondary">
-                  *{formik.errors.payment_account}
-                </p>
+                name="description"
+                id="description"
+              />
+              {formik.errors.description && formik.touched.description && (
+                <p className="text-secondary">*{formik.errors.description}</p>
               )}
-            {accountExistsError && (
-              <p className="text-secondary">*{accountExistsError}</p>
-            )}
-          </div>
-          <button
-            type="submit"
-            className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
-          >
-            send request
-          </button>
-        </form>
+            </div>
+            <div className="flex flex-col gap-2 space-y-2">
+              {["Facebook", "Instagram"].map((platform) => (
+                <div key={platform} className="flex flex-col gap-2">
+                  <label
+                    htmlFor={`social_media_links[${platform}]`}
+                    className="text-lg"
+                  >
+                    {platform.toLowerCase()} link
+                  </label>
+                  <input
+                    type="text"
+                    autoComplete="on"
+                    placeholder="type here"
+                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+                    value={formik.values.social_media_links?.[platform] || ""}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    name={`social_media_links[${platform}]`}
+                    id={`social_media_links[${platform}]`}
+                  />
+                  {formik.errors.social_media_links?.[platform] &&
+                    formik.touched.social_media_links?.[platform] && (
+                      <p className="text-secondary">
+                        *{formik.errors.social_media_links[platform]}
+                      </p>
+                    )}
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="categories_id" className="text-lg">
+                category
+              </label>
+              <div className="relative">
+                <select
+                  name="categories_id"
+                  id="categories_id"
+                  className="appearance-none border border-blackmuted px-2 py-1.5 pb-2 w-full"
+                  value={formik.values.categories_id}
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    formik.setFieldValue("categories_id", value);
+                  }}
+                  onBlur={formik.handleBlur}
+                >
+                  <option value="">select a category</option>
+                  {categories.map((subcat) => (
+                    <option key={subcat.id} value={subcat.id}>
+                      {subcat.category.name} - {subcat.name}
+                    </option>
+                  ))}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-black">
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
+              {formik.errors.categories_id && formik.touched.categories_id && (
+                <p className="text-secondary">*{formik.errors.categories_id}</p>
+              )}
+            </div>
+            <div className="flex flex-col gap-2">
+              <label htmlFor="payment_method" className="text-lg">
+                payment method
+              </label>
+              <input
+                type="text"
+                autoComplete="on"
+                placeholder="type here"
+                className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+                value={formik.values.payment_method}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="payment_method"
+                id="payment_method"
+              />
+              {formik.errors.payment_method &&
+                formik.touched.payment_method && (
+                  <p className="text-secondary">
+                    *{formik.errors.payment_method}
+                  </p>
+                )}
+            </div>
+            <div className="pb-6 flex flex-col gap-2">
+              <label htmlFor="payment_account" className="text-lg">
+                payment account
+              </label>
+              <input
+                type="text"
+                autoComplete="on"
+                placeholder="type here"
+                className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs"
+                value={formik.values.payment_account}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                name="payment_account"
+                id="payment_account"
+              />
+              {formik.errors.payment_account &&
+                formik.touched.payment_account && (
+                  <p className="text-secondary">
+                    *{formik.errors.payment_account}
+                  </p>
+                )}
+              {accountExistsError && (
+                <p className="text-secondary">*{accountExistsError}</p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="bg-black border border-black text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-white hover:text-black transition-all duration-200 ease-in-out cursor-pointer"
+              disabled={formik.isSubmitting}
+            >
+              {formik.isSubmitting ? "Sending request..." : "send request"}
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );

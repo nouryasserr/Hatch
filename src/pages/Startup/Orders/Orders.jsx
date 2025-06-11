@@ -83,7 +83,7 @@ function Orders() {
         </div>
         <div className="overflow-x-auto mt-4">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4">
+            <div className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2">
               <span className="text-sm whitespace-nowrap text-lightblack">
                 order id
               </span>
@@ -103,7 +103,7 @@ function Orders() {
             {orders.map((orderItem) => (
               <div
                 key={orderItem.id}
-                className="min-w-[600px] flex justify-between items-center gap-4 mb-4"
+                className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2"
               >
                 <Link
                   to={`/Startup/OrderDetails/${orderItem.id}`}
@@ -119,7 +119,7 @@ function Orders() {
                   {new Date(orderItem.created_at).toLocaleDateString()}
                 </p>
                 <p
-                  className={`text-sm py-1 px-2 ${
+                  className={`w-fit text-sm py-1 px-2 ${
                     orderItem.order?.status === "PENDING"
                       ? "bg-yellow-500"
                       : orderItem.order?.status === "APPROVED"
@@ -141,7 +141,7 @@ function Orders() {
         </div>
         <div className="overflow-x-auto mt-4">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 px-4 py-2">
+            <div className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2">
               <span className="text-sm whitespace-nowrap text-lightblack">
                 order id
               </span>
@@ -161,7 +161,7 @@ function Orders() {
             {orders.map((orderItem) => (
               <div
                 key={orderItem.id}
-                className="min-w-[600px] flex justify-between items-center gap-4 mb-4 px-4 py-2"
+                className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2"
               >
                 <Link
                   to={`/Startup/OrderDetails/${orderItem.id}`}
@@ -177,7 +177,7 @@ function Orders() {
                   {new Date(orderItem.created_at).toLocaleDateString()}
                 </p>
                 <p
-                  className={`text-sm py-1 px-2 ${
+                  className={`w-fit text-sm py-1 px-2 ${
                     orderItem.order?.status === "PENDING"
                       ? "bg-yellow-500"
                       : orderItem.order?.status === "APPROVED"

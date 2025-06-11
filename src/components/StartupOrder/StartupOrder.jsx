@@ -8,9 +8,9 @@ function StartupOrder({ id, customer, amount, date, status }) {
       case "APPROVED":
         return "bg-green-500";
       case "CANCELLED":
-        return "bg-red-500";
+        return "bg-secondary";
       default:
-        return "bg-gray-500";
+        return "bg-lightblack";
     }
   };
   const orderId = id.split("#")[1];
@@ -20,7 +20,7 @@ function StartupOrder({ id, customer, amount, date, status }) {
       <NavLink
         to={`/Startup/OrderDetails/${orderId}`}
         className={({ isActive }) =>
-          `min-w-[600px] flex justify-between items-center gap-4 px-4 py-2 border-b hover:bg-gray-50 transition-colors duration-200 ${
+          `min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2 ${
             isActive ? "bg-gray-50" : ""
           }`
         }
@@ -30,7 +30,7 @@ function StartupOrder({ id, customer, amount, date, status }) {
         <span className="text-sm whitespace-nowrap">{amount}</span>
         <span className="text-sm whitespace-nowrap">{date}</span>
         <span
-          className={`text-sm whitespace-nowrap py-1 px-2 rounded-sm text-white ${getStatusStyle(
+          className={`w-fit text-sm whitespace-nowrap py-1 px-2 rounded-sm text-white ${getStatusStyle(
             status
           )}`}
         >

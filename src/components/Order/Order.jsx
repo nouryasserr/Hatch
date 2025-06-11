@@ -8,19 +8,49 @@ function Order({ orderInfo }) {
   };
 
   const displayItem = orderInfo.order_items[0]?.product;
+  const fallbackImage = "https://placehold.co/300x350?text=Product+Image";
+
+  const getImageUrl = (product) => {
+    if (!product) return fallbackImage;
+
+    // Handle case where image is an array of objects
+    if (product.images && Array.isArray(product.images)) {
+      // Try to find the main image first
+      const mainImage = product.images.find((img) => img.is_main)?.url;
+      if (mainImage) {
+        return mainImage.startsWith("http")
+          ? mainImage
+          : `http://127.0.0.1:8000${mainImage}`;
+      }
+
+      // If no main image, use the first image
+      const firstImage = product.images[0]?.url;
+      if (firstImage) {
+        return firstImage.startsWith("http")
+          ? firstImage
+          : `http://127.0.0.1:8000${firstImage}`;
+      }
+    }
+
+    // Handle case where image is a direct path string
+    if (typeof product.image === "string") {
+      return product.image.startsWith("http")
+        ? product.image
+        : `http://127.0.0.1:8000${product.image}`;
+    }
+
+    return fallbackImage;
+  };
 
   return (
     <div className="flex items-start gap-4">
       <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded">
         <img
-          src={
-            displayItem?.images?.[0] ||
-            "https://placehold.co/300x350?text=Product+Image"
-          }
+          src={getImageUrl(displayItem)}
           alt={displayItem?.name || "Product Image"}
           className="w-full h-full object-cover"
           onError={(e) => {
-            e.target.src = "https://placehold.co/300x350?text=Product+Image";
+            e.target.src = fallbackImage;
           }}
         />
       </div>

@@ -1,9 +1,259 @@
+import { useContext, useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { AdminContext } from "../../../context/Admin.context";
+import axios from "axios";
+import Loader from "../../../components/Loader/Loader";
+import toast from "react-hot-toast";
+
 function ViewStartup() {
+  const { token } = useContext(AdminContext);
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [startupData, setStartupData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchStartupData = async () => {
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/admin/startups/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log("Startup data:", response.data);
+        setStartupData(response.data.data);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching startup data:", error);
+        setError(error.message);
+        setLoading(false);
+      }
+    };
+
+    if (token && id) {
+      fetchStartupData();
+    }
+  }, [token, id]);
+
+  const handleAccept = async () => {
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/admin/startup/${id}/accept`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      toast.success("Startup has been approved successfully");
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/admin/startups/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setStartupData(response.data.data);
+    } catch (error) {
+      console.error("Error accepting startup:", error);
+      toast.error(error.response?.data?.message || "Failed to approve startup");
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/admin/startup/${id}/reject`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      toast.success("Startup has been rejected successfully");
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/admin/startups/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setStartupData(response.data.data);
+    } catch (error) {
+      console.error("Error rejecting startup:", error);
+      toast.error(error.response?.data?.message || "Failed to reject startup");
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this startup?")) {
+      return;
+    }
+
+    try {
+      await axios.delete(`http://127.0.0.1:8000/api/admin/startups/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      toast.success("Startup has been deleted successfully");
+      navigate("/admin/startups");
+    } catch (error) {
+      console.error("Error deleting startup:", error);
+      toast.error(error.response?.data?.message || "Failed to delete startup");
+    }
+  };
+
+  const handleBlockUnblock = async () => {
+    try {
+      await axios.put(
+        `http://127.0.0.1:8000/api/admin/startup/${id}/block`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const action = startupData.status === "blocked" ? "unblocked" : "blocked";
+      toast.success(`Startup has been ${action} successfully`);
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/admin/startups/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setStartupData(response.data.data);
+    } catch (error) {
+      console.error("Error blocking/unblocking startup:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to update startup status"
+      );
+    }
+  };
+
+  const handleAcceptUpdateRequest = async () => {
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/admin/startup/${id}/approve`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      toast.success("Update request has been approved successfully");
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/admin/startups/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setStartupData(response.data.data);
+    } catch (error) {
+      console.error("Error approving update request:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to approve update request"
+      );
+    }
+  };
+
+  const handleRejectUpdateRequest = async () => {
+    try {
+      await axios.post(
+        `http://127.0.0.1:8000/api/admin/startup/${id}/decline`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      toast.success("Update request has been rejected successfully");
+      // Refresh startup data
+      const response = await axios.get(
+        `http://127.0.0.1:8000/api/admin/startups/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setStartupData(response.data.data);
+    } catch (error) {
+      console.error("Error rejecting update request:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to reject update request"
+      );
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-8">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-8">
+        <div className="text-red-500">Error loading startup data: {error}</div>
+      </div>
+    );
+  }
+
+  if (!startupData) {
+    return (
+      <div className="w-full lg:w-5/6 float-end px-8 py-8">
+        <div className="text-gray-500">No startup data found</div>
+      </div>
+    );
+  }
+
+  // Parse social media links if needed
+  const socialMediaLinks = startupData.social_media_links
+    ? typeof startupData.social_media_links === "string"
+      ? JSON.parse(startupData.social_media_links)
+      : startupData.social_media_links
+    : {};
+
+  console.log("Social media links:", socialMediaLinks);
+
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-8">
         <div>
-          <h1 className="text-2xl xs:text-4xl">startup #5 - hatch</h1>
+          <h1 className="text-2xl xs:text-4xl">
+            startup #{startupData.id} - {startupData.name}
+          </h1>
           <p className="text-lightgray text-xs pt-0.5 xs:text-sm">
             view full startup info, plan details, performance, and actions
           </p>
@@ -22,22 +272,21 @@ function ViewStartup() {
                 <p className="text-sm xs:text-base">category:</p>
                 <p className="text-sm xs:text-base">status:</p>
                 <p className="text-sm xs:text-base">registered at:</p>
-                <p className="text-sm xs:text-base">logo:</p>
                 <p className="text-sm xs:text-base">description:</p>
               </div>
               <div className="w-1/2 space-y-4 text-end sm:text-start">
-                <p className="text-sm xs:text-base">hatch</p>
+                <p className="text-sm xs:text-base">{startupData.name}</p>
                 <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
-                  clothes
+                  {startupData.category?.name || "N/A"}
                 </p>
-                <p className="text-sm xs:text-base">APPROVED</p>
-                <p className="text-sm xs:text-base">2025-05-04</p>
-                <p className="text-sm xs:text-base underline hover:no-underline transition">
-                  view logo
+                <p className="text-sm xs:text-base">
+                  {startupData.status?.toUpperCase()}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {new Date(startupData.created_at).toLocaleDateString()}
                 </p>
                 <p className="text-sm xs:text-base overflow-hidden text-ellipsis line-clamp-3">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Tenetur ipsum doloremque qui voluptatibus?
+                  {startupData.description}
                 </p>
               </div>
             </div>
@@ -58,17 +307,27 @@ function ViewStartup() {
               </div>
               <div className="w-1/2 space-y-4 text-end sm:text-start">
                 <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
-                  hanaahanyy7@gmail.com
+                  {startupData.email || startupData.user?.email || "N/A"}
                 </p>
                 <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
-                  980.474.7933
+                  {startupData.phone || "N/A"}
                 </p>
-                <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
-                  http:facebook.com
-                </p>
-                <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
-                  http:instagram.com
-                </p>
+                <a
+                  href={socialMediaLinks.Facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-sm xs:text-base text-nowrap overflow-hidden text-ellipsis hover:underline"
+                >
+                  {socialMediaLinks.Facebook || "N/A"}
+                </a>
+                <a
+                  href={socialMediaLinks.Instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block text-sm xs:text-base text-nowrap overflow-hidden text-ellipsis hover:underline"
+                >
+                  {socialMediaLinks.Instagram || "N/A"}
+                </a>
               </div>
             </div>
           </div>
@@ -90,9 +349,17 @@ function ViewStartup() {
                 <p className="text-sm xs:text-base">renewal date:</p>
               </div>
               <div className="w-1/2 space-y-4 text-end sm:text-start">
-                <p className="text-sm xs:text-base">pro</p>
-                <p className="text-sm xs:text-base">visa</p>
-                <p className="text-sm xs:text-base">2025-05-04</p>
+                <p className="text-sm xs:text-base text-nowrap overflow-hidden text-ellipsis">
+                  {startupData.package?.name || "N/A"}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {startupData.payment_method || "N/A"}
+                </p>
+                <p className="text-sm xs:text-base">
+                  {startupData.package_ends_at
+                    ? new Date(startupData.package_ends_at).toLocaleDateString()
+                    : "N/A"}
+                </p>
               </div>
             </div>
           </div>
@@ -111,9 +378,11 @@ function ViewStartup() {
                 <p className="text-sm xs:text-base">orders no:</p>
               </div>
               <div className="w-1/2 space-y-4 text-end sm:text-start">
-                <p className="text-sm xs:text-base">12,400 EGP</p>
+                <p className="text-sm xs:text-base">
+                  {startupData.total_revenue || 0} EGP
+                </p>
                 <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
-                  98
+                  {startupData.products?.length || 0}
                 </p>
               </div>
             </div>
@@ -138,11 +407,31 @@ function ViewStartup() {
                 total revenue
               </span>
             </div>
-            <div className="min-w-[600px] grid grid-cols-3 items-center gap-4 mt-3">
-              <span className="text-sm whitespace-nowrap">hoodie</span>
-              <span className="text-sm whitespace-nowrap">15</span>
-              <span className="text-sm whitespace-nowrap">6,000 EGP</span>
-            </div>
+            {startupData.products?.map((product) => (
+              <div
+                key={product.id}
+                className="min-w-[600px] grid grid-cols-3 items-center gap-4 mt-3"
+              >
+                <span className="text-sm whitespace-nowrap">
+                  {product.name}
+                </span>
+                <span className="text-sm whitespace-nowrap">
+                  {product.total_sales || 0}
+                </span>
+                <span className="text-sm whitespace-nowrap">
+                  {product.total_revenue || 0} EGP
+                </span>
+              </div>
+            ))}
+            {(!startupData.products || startupData.products.length === 0) && (
+              <div className="min-w-[600px] grid grid-cols-3 items-center gap-4 mt-3">
+                <span className="text-sm whitespace-nowrap text-gray-500">
+                  No products found
+                </span>
+                <span></span>
+                <span></span>
+              </div>
+            )}
           </div>
         </div>
         <div className="mb-4 xs:mb-0 mt-8">
@@ -152,48 +441,104 @@ function ViewStartup() {
           </p>
         </div>
         <div className="flex flex-wrap gap-4 mt-4">
-          <div>
-            <img
-              src={"#"}
-              alt="product"
-              className="object-contain object-center h-62 w-full rounded-t"
-              onError={(e) => {
-                e.target.src =
-                  "https://placehold.co/250x200?text=Product+Image";
-              }}
-            />
-            <div className="flex justify-between px-1.5 py-2">
-              <p className="text-xs text-lightblack">category: stars</p>
-              <p className="text-xs text-lightblack">stock: 2</p>
-            </div>
-            <div className="px-1.5">
-              <div className="flex justify-between gap-4">
-                <h4 className="text-xl font-medium line-clamp-1">name</h4>
-                <h5 className="text-lightblack text-lg text-nowrap">500 EGP</h5>
+          {startupData.products?.map((product) => (
+            <div key={product.id}>
+              <img
+                src={product.image}
+                alt={product.name}
+                className="object-contain object-center h-62 w-full rounded-t"
+                onError={(e) => {
+                  e.target.src =
+                    "https://placehold.co/250x200?text=Product+Image";
+                }}
+              />
+              <div className="flex justify-between px-1.5 py-2">
+                <p className="text-xs text-lightblack">
+                  category: {product.category?.name || "N/A"}
+                </p>
+                <p className="text-xs text-lightblack">
+                  stock: {product.stock || 0}
+                </p>
+              </div>
+              <div className="px-1.5">
+                <div className="flex justify-between gap-4">
+                  <h4 className="text-xl font-medium line-clamp-1">
+                    {product.name}
+                  </h4>
+                  <h5 className="text-lightblack text-lg text-nowrap">
+                    {product.price || 0} EGP
+                  </h5>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
+          {(!startupData.products || startupData.products.length === 0) && (
+            <p className="text-gray-500">No products found</p>
+          )}
         </div>
-        <div className="lg:w-1/2 mt-8">
-          <div className="mb-4 xs:mb-0">
+        <div className="mt-8">
+          <div className="mb-4">
             <h2 className="text-2xl xs:text-3xl mb-0.5">actions</h2>
             <p className="text-lightgray text-xs xs:text-sm">
-              take direct actions on this startup account
+              manage startup status and requests
             </p>
           </div>
-          <div className="grid xs:grid-cols-2 gap-4 mt-4">
-            <button className="text-sm px-4 py-2 rounded-sm text-white bg-green-500 border border-lightblack hover:bg-transparent hover:text-black transition duration-300">
-              accept
-            </button>
-            <button className="text-sm px-4 py-2 rounded-sm text-white bg-secondary border border border-lightblack hover:bg-transparent hover:text-black transition duration-300">
-              reject
-            </button>
-            <button className="text-sm px-4 py-2 rounded-sm text-white bg-secondary border border-lightblack hover:bg-transparent hover:text-black transition duration-300">
-              delete
-            </button>
-            <button className="text-sm px-4 py-2 rounded-sm text-white bg-primary border border border-lightblack hover:bg-transparent hover:text-black transition duration-300">
-              block
-            </button>
+          <div className="flex flex-wrap gap-4">
+            {startupData.status === "PENDING" && (
+              <>
+                <button
+                  onClick={handleAccept}
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                  Accept Request
+                </button>
+                <button
+                  onClick={handleReject}
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Reject Request
+                </button>
+              </>
+            )}
+
+            {startupData.pending_updates && (
+              <>
+                <button
+                  onClick={handleAcceptUpdateRequest}
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                >
+                  Approve Update
+                </button>
+                <button
+                  onClick={handleRejectUpdateRequest}
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                >
+                  Reject Update
+                </button>
+              </>
+            )}
+
+            {startupData.status !== "pending" && (
+              <>
+                <button
+                  onClick={handleBlockUnblock}
+                  className={`px-4 py-2 ${
+                    startupData.status === "blocked"
+                      ? "bg-yellow-500"
+                      : "bg-primary"
+                  } text-white rounded-sm`}
+                >
+                  {startupData.status === "blocked" ? "Unblock" : "Block"}{" "}
+                  Startup
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="px-4 py-2 bg-secondary text-white rounded-sm"
+                >
+                  Delete Startup
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>

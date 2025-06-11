@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -69,6 +69,10 @@ function AddProduct2() {
       .integer("Stock must be an integer")
       .min(0, "Stock cannot be negative"),
     sub_category_id: Yup.number().required("Category is required"),
+    discount_percentage: Yup.number()
+      .min(0, "Discount cannot be negative")
+      .max(100, "Discount cannot exceed 100%")
+      .nullable(),
     has_sizes: Yup.boolean(),
     colors: Yup.array().when("has_sizes", {
       is: true,
@@ -106,6 +110,7 @@ function AddProduct2() {
       price: "",
       stock: "",
       sub_category_id: "",
+      discount_percentage: "",
       has_sizes: false,
       colors: [{ name: "" }],
       sizes: [{ color_index: 0, size_id: "", price: "", stock: "" }],
@@ -119,6 +124,9 @@ function AddProduct2() {
       formData.append("price", values.price);
       formData.append("stock", values.stock);
       formData.append("sub_category_id", values.sub_category_id);
+      if (values.discount_percentage) {
+        formData.append("discount_percentage", values.discount_percentage);
+      }
       formData.append("has_sizes", values.has_sizes ? "1" : "0");
 
       if (values.has_sizes) {
@@ -217,302 +225,308 @@ function AddProduct2() {
                 </p>
               </div>
               <div>
-                <div className="mb-4">
-                  <label
-                    htmlFor="product-name"
-                    className="flex items-start gap-2 mb-2"
-                  >
-                    <span className="text-lg">product name</span>
-                    <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                  </label>
-                  <input
-                    type="text"
-                    id="product-name"
-                    name="name"
-                    autoComplete="off"
-                    value={formik.values.name}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                    placeholder="enter product name"
-                  />
-                  {formik.touched.name && formik.errors.name && (
-                    <div className="text-red-500 text-sm">
-                      {formik.errors.name}
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-4">
-                  <label
-                    htmlFor="product-description"
-                    className="flex items-start gap-2 mb-2"
-                  >
-                    <span className="text-lg">product description</span>
-                    <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                  </label>
-                  <input
-                    type="text"
-                    id="product-description"
-                    name="description"
-                    autoComplete="off"
-                    value={formik.values.description}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                    placeholder="enter product description"
-                  />
-                  {formik.touched.description && formik.errors.description && (
-                    <div className="text-red-500 text-sm">
-                      {formik.errors.description}
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-8">
-                  <label
-                    htmlFor="product-category"
-                    className="flex items-start gap-2 mb-2"
-                  >
-                    <span className="text-lg">category</span>
-                    <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                  </label>
-                  <select
-                    id="product-category"
-                    name="sub_category_id"
-                    autoComplete="off"
-                    value={formik.values.sub_category_id}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className="border border-blackmuted px-2 py-1.5 pb-2 focus:outline-none focus:border-2 w-full"
-                  >
-                    <option value="">Select category</option>
-                    {subCategories.map((subcat) => (
-                      <option key={subcat.id} value={subcat.id}>
-                        {subcat.category.name} - {subcat.name}
-                      </option>
-                    ))}
-                  </select>
-                  {formik.touched.sub_category_id &&
-                    formik.errors.sub_category_id && (
-                      <div className="text-red-500 text-sm">
-                        {formik.errors.sub_category_id}
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <label htmlFor="name" className="block mb-1">
+                      product name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      className={`w-full border ${
+                        formik.touched.name && formik.errors.name
+                          ? "border-secondary"
+                          : "border-lightblack"
+                      } p-2 outline-none focus:border-black transition duration-300 ease-in-out delay-150`}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.name}
+                    />
+                    {formik.touched.name && formik.errors.name && (
+                      <div className="text-secondary text-sm">
+                        {formik.errors.name}
                       </div>
                     )}
-                </div>
-              </div>
+                  </div>
 
-              <div className="mb-2">
-                <h4 className="text-xl mb-0.5">have sizes and colors?</h4>
-              </div>
-              <div
-                className="flex gap-16 mb-8 text-lg"
-                role="radiogroup"
-                aria-label="Product has sizes and colors"
-              >
-                <div className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    id="has-sizes-yes"
-                    name="has_sizes"
-                    autoComplete="off"
-                    checked={formik.values.has_sizes === true}
-                    onChange={() => {
-                      formik.setFieldValue("has_sizes", true);
-                      formik.setFieldValue("colors[0].name", "");
-                      formik.setFieldValue("sizes[0].size_id", "");
-                      formik.setFieldValue("sizes[0].price", "");
-                      formik.setFieldValue("sizes[0].stock", "");
-                    }}
-                  />
-                  <label htmlFor="has-sizes-yes">yes</label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="radio"
-                    id="has-sizes-no"
-                    name="has_sizes"
-                    autoComplete="off"
-                    checked={formik.values.has_sizes === false}
-                    onChange={() => formik.setFieldValue("has_sizes", false)}
-                  />
-                  <label htmlFor="has-sizes-no">no</label>
-                </div>
-              </div>
-
-              <div>
-                <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                  <div className="w-full">
+                  <div className="mb-8">
                     <label
-                      htmlFor="product-price"
+                      htmlFor="product-category"
                       className="flex items-start gap-2 mb-2"
                     >
-                      <span className="text-lg">price</span>
+                      <span className="text-lg">category</span>
+                      <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+                    </label>
+                    <select
+                      id="product-category"
+                      name="sub_category_id"
+                      autoComplete="off"
+                      value={formik.values.sub_category_id}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className="border border-blackmuted px-2 py-1.5 pb-2 focus:outline-none focus:border-2 w-full"
+                    >
+                      <option value="">Select category</option>
+                      {subCategories.map((subcat) => (
+                        <option key={subcat.id} value={subcat.id}>
+                          {subcat.category.name} - {subcat.name}
+                        </option>
+                      ))}
+                    </select>
+                    {formik.touched.sub_category_id &&
+                      formik.errors.sub_category_id && (
+                        <div className="text-red-500 text-sm">
+                          {formik.errors.sub_category_id}
+                        </div>
+                      )}
+                  </div>
+                </div>
+
+                <div className="mb-2">
+                  <h4 className="text-xl mb-0.5">have sizes and colors?</h4>
+                </div>
+                <div
+                  className="flex gap-16 mb-8 text-lg"
+                  role="radiogroup"
+                  aria-label="Product has sizes and colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="has-sizes-yes"
+                      name="has_sizes"
+                      autoComplete="off"
+                      checked={formik.values.has_sizes === true}
+                      onChange={() => {
+                        formik.setFieldValue("has_sizes", true);
+                        formik.setFieldValue("colors[0].name", "");
+                        formik.setFieldValue("sizes[0].size_id", "");
+                        formik.setFieldValue("sizes[0].price", "");
+                        formik.setFieldValue("sizes[0].stock", "");
+                      }}
+                    />
+                    <label htmlFor="has-sizes-yes">yes</label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      id="has-sizes-no"
+                      name="has_sizes"
+                      autoComplete="off"
+                      checked={formik.values.has_sizes === false}
+                      onChange={() => formik.setFieldValue("has_sizes", false)}
+                    />
+                    <label htmlFor="has-sizes-no">no</label>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                    <div className="w-full">
+                      <label
+                        htmlFor="product-price"
+                        className="flex items-start gap-2 mb-2"
+                      >
+                        <span className="text-lg">price</span>
+                        <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+                      </label>
+                      <input
+                        type="number"
+                        id="product-price"
+                        name="price"
+                        autoComplete="off"
+                        value={formik.values.price}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                        placeholder="enter product price"
+                      />
+                      {formik.touched.price && formik.errors.price && (
+                        <div className="text-red-500 text-sm">
+                          {formik.errors.price}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="w-full mb-4">
+                    <label
+                      htmlFor="discount_percentage"
+                      className="flex items-start gap-2 mb-2"
+                    >
+                      <span className="text-lg">discount percentage</span>
+                      <span className="text-sm text-lightblack">
+                        (optional)
+                      </span>
+                    </label>
+                    <input
+                      type="number"
+                      id="discount_percentage"
+                      name="discount_percentage"
+                      autoComplete="off"
+                      value={formik.values.discount_percentage}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                      placeholder="enter discount percentage (0-100)"
+                      min="0"
+                      max="100"
+                      step="0.01"
+                    />
+                    {formik.touched.discount_percentage &&
+                      formik.errors.discount_percentage && (
+                        <div className="text-red-500 text-sm">
+                          {formik.errors.discount_percentage}
+                        </div>
+                      )}
+                  </div>
+
+                  <div className="w-full mb-4">
+                    <label
+                      htmlFor="product-stock"
+                      className="flex items-start gap-2 mb-2"
+                    >
+                      <span className="text-lg">stock</span>
                       <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
                     </label>
                     <input
                       type="number"
-                      id="product-price"
-                      name="price"
+                      id="product-stock"
+                      name="stock"
                       autoComplete="off"
-                      value={formik.values.price}
+                      value={formik.values.stock}
                       onChange={formik.handleChange}
                       onBlur={formik.handleBlur}
                       className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                      placeholder="enter product price"
+                      placeholder="enter stock quantity"
                     />
-                    {formik.touched.price && formik.errors.price && (
+                    {formik.touched.stock && formik.errors.stock && (
                       <div className="text-red-500 text-sm">
-                        {formik.errors.price}
+                        {formik.errors.stock}
                       </div>
                     )}
                   </div>
-                </div>
 
-                <div className="w-full mb-4">
-                  <label
-                    htmlFor="product-stock"
-                    className="flex items-start gap-2 mb-2"
-                  >
-                    <span className="text-lg">stock</span>
-                    <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                  </label>
-                  <input
-                    type="number"
-                    id="product-stock"
-                    name="stock"
-                    autoComplete="off"
-                    value={formik.values.stock}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                    placeholder="enter stock quantity"
-                  />
-                  {formik.touched.stock && formik.errors.stock && (
-                    <div className="text-red-500 text-sm">
-                      {formik.errors.stock}
-                    </div>
+                  {formik.values.has_sizes && (
+                    <>
+                      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                        <div className="w-full">
+                          <label
+                            htmlFor="product-size"
+                            className="flex items-start gap-2 mb-2"
+                          >
+                            <span className="text-lg">size</span>
+                            <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+                          </label>
+                          <select
+                            id="product-size"
+                            name="sizes[0].size_id"
+                            autoComplete="off"
+                            value={formik.values.sizes[0].size_id}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="border border-blackmuted px-2 py-1.5 pb-2 focus:outline-none focus:border-2 w-full"
+                          >
+                            <option value="">Select size</option>
+                            {availableSizes.map((size) => (
+                              <option key={size.id} value={size.id}>
+                                {size.size}
+                              </option>
+                            ))}
+                          </select>
+                          {formik.touched.sizes?.[0]?.size_id &&
+                            formik.errors.sizes?.[0]?.size_id && (
+                              <div className="text-red-500 text-sm">
+                                {formik.errors.sizes[0].size_id}
+                              </div>
+                            )}
+                        </div>
+                        <div className="w-full">
+                          <label
+                            htmlFor="product-color"
+                            className="flex items-start gap-2 mb-2"
+                          >
+                            <span className="text-lg">color</span>
+                            <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+                          </label>
+                          <input
+                            type="text"
+                            id="product-color"
+                            name="colors[0].name"
+                            autoComplete="off"
+                            value={formik.values.colors[0].name}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                            placeholder="enter color name"
+                          />
+                          {formik.touched.colors?.[0]?.name &&
+                            formik.errors.colors?.[0]?.name && (
+                              <div className="text-red-500 text-sm">
+                                {formik.errors.colors[0].name}
+                              </div>
+                            )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+                        <div className="w-full">
+                          <label
+                            htmlFor="variant-price"
+                            className="flex items-start gap-2 mb-2"
+                          >
+                            <span className="text-lg">variant price</span>
+                            <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+                          </label>
+                          <input
+                            type="number"
+                            id="variant-price"
+                            name="sizes[0].price"
+                            autoComplete="off"
+                            value={formik.values.sizes[0].price}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                            placeholder="enter variant price"
+                          />
+                          {formik.touched.sizes?.[0]?.price &&
+                            formik.errors.sizes?.[0]?.price && (
+                              <div className="text-red-500 text-sm">
+                                {formik.errors.sizes[0].price}
+                              </div>
+                            )}
+                        </div>
+                        <div className="w-full">
+                          <label
+                            htmlFor="variant-stock"
+                            className="flex items-start gap-2 mb-2"
+                          >
+                            <span className="text-lg">variant stock</span>
+                            <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+                          </label>
+                          <input
+                            type="number"
+                            id="variant-stock"
+                            name="sizes[0].stock"
+                            autoComplete="off"
+                            value={formik.values.sizes[0].stock}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                            className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
+                            placeholder="enter variant stock"
+                          />
+                          {formik.touched.sizes?.[0]?.stock &&
+                            formik.errors.sizes?.[0]?.stock && (
+                              <div className="text-red-500 text-sm">
+                                {formik.errors.sizes[0].stock}
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    </>
                   )}
                 </div>
-
-                {formik.values.has_sizes && (
-                  <>
-                    <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                      <div className="w-full">
-                        <label
-                          htmlFor="product-size"
-                          className="flex items-start gap-2 mb-2"
-                        >
-                          <span className="text-lg">size</span>
-                          <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                        </label>
-                        <select
-                          id="product-size"
-                          name="sizes[0].size_id"
-                          autoComplete="off"
-                          value={formik.values.sizes[0].size_id}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="border border-blackmuted px-2 py-1.5 pb-2 focus:outline-none focus:border-2 w-full"
-                        >
-                          <option value="">Select size</option>
-                          {availableSizes.map((size) => (
-                            <option key={size.id} value={size.id}>
-                              {size.size}
-                            </option>
-                          ))}
-                        </select>
-                        {formik.touched.sizes?.[0]?.size_id &&
-                          formik.errors.sizes?.[0]?.size_id && (
-                            <div className="text-red-500 text-sm">
-                              {formik.errors.sizes[0].size_id}
-                            </div>
-                          )}
-                      </div>
-                      <div className="w-full">
-                        <label
-                          htmlFor="product-color"
-                          className="flex items-start gap-2 mb-2"
-                        >
-                          <span className="text-lg">color</span>
-                          <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                        </label>
-                        <input
-                          type="text"
-                          id="product-color"
-                          name="colors[0].name"
-                          autoComplete="off"
-                          value={formik.values.colors[0].name}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                          placeholder="enter color name"
-                        />
-                        {formik.touched.colors?.[0]?.name &&
-                          formik.errors.colors?.[0]?.name && (
-                            <div className="text-red-500 text-sm">
-                              {formik.errors.colors[0].name}
-                            </div>
-                          )}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col sm:flex-row gap-4 mb-4">
-                      <div className="w-full">
-                        <label
-                          htmlFor="variant-price"
-                          className="flex items-start gap-2 mb-2"
-                        >
-                          <span className="text-lg">variant price</span>
-                          <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                        </label>
-                        <input
-                          type="number"
-                          id="variant-price"
-                          name="sizes[0].price"
-                          autoComplete="off"
-                          value={formik.values.sizes[0].price}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                          placeholder="enter variant price"
-                        />
-                        {formik.touched.sizes?.[0]?.price &&
-                          formik.errors.sizes?.[0]?.price && (
-                            <div className="text-red-500 text-sm">
-                              {formik.errors.sizes[0].price}
-                            </div>
-                          )}
-                      </div>
-                      <div className="w-full">
-                        <label
-                          htmlFor="variant-stock"
-                          className="flex items-start gap-2 mb-2"
-                        >
-                          <span className="text-lg">variant stock</span>
-                          <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                        </label>
-                        <input
-                          type="number"
-                          id="variant-stock"
-                          name="sizes[0].stock"
-                          autoComplete="off"
-                          value={formik.values.sizes[0].stock}
-                          onChange={formik.handleChange}
-                          onBlur={formik.handleBlur}
-                          className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                          placeholder="enter variant stock"
-                        />
-                        {formik.touched.sizes?.[0]?.stock &&
-                          formik.errors.sizes?.[0]?.stock && (
-                            <div className="text-red-500 text-sm">
-                              {formik.errors.sizes[0].stock}
-                            </div>
-                          )}
-                      </div>
-                    </div>
-                  </>
-                )}
               </div>
             </div>
 

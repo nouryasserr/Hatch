@@ -2,8 +2,9 @@ import { useContext } from "react";
 import { CartContext } from "../../context/Cart.context";
 
 function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
-  const { id, images, name, price, sub_category, quantity } = cartProductInfo;
+  const { id, image, name, price, sub_category, quantity } = cartProductInfo;
   let { increaseQuantity, removeProductFromCart } = useContext(CartContext);
+
   const handleDecreaseQuantity = () => {
     if (quantity <= 1) {
       console.log("Minimum quantity is 1");
@@ -11,6 +12,21 @@ function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
     }
     removeProductFromCart({ product_id: id });
   };
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) {
+      return "https://placehold.co/100x100?text=Product+Image";
+    }
+
+    // If the URL already contains the full path, return it as is
+    if (imagePath.startsWith("http")) {
+      return imagePath;
+    }
+
+    // Otherwise, prepend the base URL
+    return `http://127.0.0.1:8000/${imagePath}`;
+  };
+
   return (
     <>
       <div className="px-6 md:pl-6 lg:pl-12">
@@ -24,11 +40,13 @@ function CartProduct({ cartProductInfo, onCheckboxChange, checked }) {
               className="hidden xs:block w-6 lg:w-8 h-6 lg:h-8 appearance-none border-2 border-black rounded checked:bg-black checked:border-black checked:after:content-['✔'] checked:after:text-white checked:after:text-lg checked:after:flex checked:after:justify-center checked:after:items-center"
             />
             <img
-              src={
-                images?.[0] || "https://placehold.co/100x100?text=Product+Image"
-              }
-              alt="product"
-              className="w-28 lg:w-48"
+              src={getImageUrl(image)}
+              alt={name}
+              className="w-28 lg:w-48 object-contain"
+              onError={(e) => {
+                e.target.src =
+                  "https://placehold.co/100x100?text=Product+Image";
+              }}
             />
             <div>
               <p className="text-lightblack text-xs lg:text-sm lg:mb-2">
