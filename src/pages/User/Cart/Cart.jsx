@@ -57,8 +57,6 @@ function Cart() {
     getCartProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // Fetch similar products based on the category of the first item in cart
   const getSimilarProducts = async (categoryId) => {
     if (!categoryId) {
       console.log("No category ID provided");
@@ -85,8 +83,6 @@ function Cart() {
         setProductsData(null);
         return;
       }
-
-      // Filter out the current cart items from similar products
       const cartItemIds = cartInfo.data.data.map((item) => item.id);
       console.log("Cart item IDs:", cartItemIds);
 
@@ -119,8 +115,6 @@ function Cart() {
     if (cartInfo?.data?.data?.length > 0) {
       const firstItem = cartInfo.data.data[0];
       console.log("First cart item:", firstItem);
-
-      // Get category ID from sub_category
       const categoryId = firstItem?.sub_category?.category_id;
       console.log("Category ID from first item:", categoryId);
 
@@ -134,6 +128,7 @@ function Cart() {
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cartInfo?.data?.data]);
 
   if (!cartInfo) return <Loader />;

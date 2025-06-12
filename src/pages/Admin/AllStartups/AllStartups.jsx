@@ -12,36 +12,14 @@ function AllStartups() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchStartups = async () => {
-      try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/admin/startups",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        setStartups(response.data.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching startups:", error);
-        setError(error.message);
-        setLoading(false);
-      }
-    };
-
-    if (token) {
-      fetchStartups();
-    }
+    fetchStartups();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
-  const handleAccept = async (id) => {
+  const fetchStartups = async () => {
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/startup/${id}/accept`,
-        {},
+      const response = await axios.get(
+        "http://127.0.0.1:8000/api/admin/startups",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -49,26 +27,24 @@ function AllStartups() {
           },
         }
       );
-
-      if (response.data.success) {
-        toast.success("Startup has been approved successfully");
-        setStartups((prevStartups) =>
-          prevStartups.map((startup) =>
-            startup.id === id ? { ...startup, status: "APPROVED" } : startup
-          )
-        );
-      }
+      setStartups(response.data.data);
+      setLoading(false);
     } catch (error) {
-      console.error("Error accepting startup:", error);
-      toast.error(error.response?.data?.message || "Failed to approve startup");
+      console.error("Error fetching startups:", error);
+      setError(error.message);
+      setLoading(false);
     }
   };
 
-  const handleReject = async (id) => {
+  const handleDeleteStartup = async (startupId) => {
     try {
-      const response = await axios.post(
-        `http://127.0.0.1:8000/api/admin/startup/${id}/reject`,
-        {},
+      const confirmMessage = "Are you sure you want to delete this startup?";
+      if (!window.confirm(confirmMessage)) {
+        return;
+      }
+
+      const response = await axios.delete(
+        `http://127.0.0.1:8000/api/admin/startup/${startupId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -78,49 +54,50 @@ function AllStartups() {
       );
 
       if (response.data.success) {
-        toast.success("Startup has been rejected successfully");
-        setStartups((prevStartups) =>
-          prevStartups.map((startup) =>
-            startup.id === id ? { ...startup, status: "REJECTED" } : startup
-          )
-        );
+        toast.success("Startup deleted successfully");
+        fetchStartups();
       }
     } catch (error) {
-      console.error("Error rejecting startup:", error);
-      toast.error(error.response?.data?.message || "Failed to reject startup");
+      console.error("Error:", error);
+      if (error.response?.status === 500) {
+        toast.error(
+          "Cannot delete this startup. Please make sure all related data is handled first."
+        );
+      } else {
+        toast.error(
+          error.response?.data?.message ||
+            "Failed to delete startup. Please try again later."
+        );
+      }
     }
   };
 
   const getStatusColor = (status) => {
-    switch (status?.toUpperCase()) {
+    switch (status) {
+      case "PENDING":
+        return "text-yellow-500";
       case "APPROVED":
         return "text-green-500";
       case "REJECTED":
-        return "text-secondary";
-      case "PENDING":
-        return "text-primary";
-      case "SUSPENDED":
-        return "text-yellow-500";
+        return "text-red-500";
       default:
-        return "text-lightblack";
+        return "text-black";
     }
   };
 
-  if (loading) {
+  if (loading)
     return (
       <div className="w-full lg:w-5/6 float-end px-8 py-8">
         <Loader />
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
       <div className="w-full lg:w-5/6 float-end px-8 py-8">
         <div className="text-red-500">Error loading startups: {error}</div>
       </div>
     );
-  }
 
   return (
     <>
@@ -141,9 +118,9 @@ function AllStartups() {
           <div>
             <div className="min-w-[800px] grid grid-cols-8 items-center gap-4">
               <span className="text-sm whitespace-nowrap text-lightblack">
-                id
+                startup id
               </span>
-              <span className="col-span-2 text-sm whitespace-nowrap text-lightblack">
+              <span className="text-sm whitespace-nowrap text-lightblack">
                 name
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
@@ -155,22 +132,17 @@ function AllStartups() {
               <span className="text-sm whitespace-nowrap text-lightblack">
                 package
               </span>
-              <span className="col-span-2 text-sm whitespace-nowrap text-lightblack">
+              <span className="col-span-3 text-sm whitespace-nowrap text-lightblack">
                 actions
               </span>
             </div>
-            {startups?.map((startup) => (
+            {startups?.map((startup, index) => (
               <div
                 key={startup.id}
                 className="min-w-[850px] grid grid-cols-8 items-center gap-4 mt-3"
               >
-                <Link
-                  to={`/Admin/ViewStartup/${startup.id}`}
-                  className="text-sm whitespace-nowrap"
-                >
-                  {startup.id}
-                </Link>
-                <span className="col-span-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+                <span className="text-sm whitespace-nowrap">{index + 1}</span>
+                <span className="text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                   {startup.name}
                 </span>
                 <span className="text-sm whitespace-nowrap">
@@ -186,23 +158,19 @@ function AllStartups() {
                 <span className="text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                   {startup.package?.name || "N/A"}
                 </span>
-                <div className="col-span-2 flex gap-2">
-                  {startup.status === "PENDING" && (
-                    <>
-                      <button
-                        onClick={() => handleAccept(startup.id)}
-                        className="w-fit text-sm whitespace-nowrap bg-green-500 text-white rounded-sm py-1 px-4 border border-lightblack hover:bg-transparent hover:text-black transition duration-300"
-                      >
-                        accept
-                      </button>
-                      <button
-                        onClick={() => handleReject(startup.id)}
-                        className="w-fit text-sm whitespace-nowrap bg-secondary text-white rounded-sm py-1 px-4 border border-lightblack hover:bg-transparent hover:text-black transition duration-300"
-                      >
-                        reject
-                      </button>
-                    </>
-                  )}
+                <div className="col-span-3 flex gap-2">
+                  <Link
+                    to={`/Admin/ViewStartup/${startup.id}`}
+                    className="w-fit text-sm whitespace-nowrap bg-primary text-white rounded-sm py-1 px-4 border border-lightblack hover:bg-transparent hover:text-black transition duration-300"
+                  >
+                    view
+                  </Link>
+                  <button
+                    onClick={() => handleDeleteStartup(startup.id)}
+                    className="w-fit text-sm whitespace-nowrap bg-secondary text-white rounded-sm py-1 px-4 border border-lightblack hover:bg-transparent hover:text-black transition duration-300"
+                  >
+                    delete
+                  </button>
                 </div>
               </div>
             ))}

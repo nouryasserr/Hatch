@@ -72,9 +72,9 @@ function ProductCard({ productInfo }) {
 
   return (
     <>
-      <div className="grow relative overflow-hidden">
+      <div className="relative overflow-hidden">
         {isNewProduct() && (
-          <span className="absolute right-1 top-3 bg-primary text-white font-extralight px-2.5 py-0.5 rounded-sm">
+          <span className="absolute right-2 top-2 bg-primary text-white font-extralight px-2.5 py-0.5 rounded-sm">
             New
           </span>
         )}
@@ -86,7 +86,7 @@ function ProductCard({ productInfo }) {
                 : "https://placehold.co/300x350?text=Product+Image"
             }
             alt={name}
-            className="object-cover object-center h-52 w-full rounded-t"
+            className="object-cover object-center h-64 w-full rounded-t"
             onError={(e) => {
               e.target.src = "https://placehold.co/300x350?text=Product+Image";
             }}

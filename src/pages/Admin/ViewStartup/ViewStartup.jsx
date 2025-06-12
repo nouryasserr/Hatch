@@ -195,7 +195,6 @@ function ViewStartup() {
         }
       );
       toast.success("Update request has been rejected successfully");
-      // Refresh startup data
       const response = await axios.get(
         `http://127.0.0.1:8000/api/admin/startups/${id}`,
         {
@@ -212,6 +211,23 @@ function ViewStartup() {
         error.response?.data?.message || "Failed to reject update request"
       );
     }
+  };
+
+  const getImageUrl = (product) => {
+    if (
+      product.images &&
+      Array.isArray(product.images) &&
+      product.images.length > 0
+    ) {
+      const mainImage =
+        product.images.find((img) => img.is_main) || product.images[0];
+      const imageUrl = mainImage.url;
+      if (imageUrl.startsWith("http")) {
+        return imageUrl;
+      }
+      return `http://127.0.0.1:8000/${imageUrl}`;
+    }
+    return "https://placehold.co/250x200?text=Product+Image";
   };
 
   if (loading) {
@@ -237,8 +253,6 @@ function ViewStartup() {
       </div>
     );
   }
-
-  // Parse social media links if needed
   const socialMediaLinks = startupData.social_media_links
     ? typeof startupData.social_media_links === "string"
       ? JSON.parse(startupData.social_media_links)
@@ -428,8 +442,6 @@ function ViewStartup() {
                 <span className="text-sm whitespace-nowrap text-gray-500">
                   No products found
                 </span>
-                <span></span>
-                <span></span>
               </div>
             )}
           </div>
@@ -440,24 +452,28 @@ function ViewStartup() {
             all active products listed under this startup
           </p>
         </div>
-        <div className="flex flex-wrap gap-4 mt-4">
+        <div className="flex gap-4 flex-wrap mt-4">
           {startupData.products?.map((product) => (
-            <div key={product.id}>
-              <img
-                src={product.image}
-                alt={product.name}
-                className="object-contain object-center h-62 w-full rounded-t"
-                onError={(e) => {
-                  e.target.src =
-                    "https://placehold.co/250x200?text=Product+Image";
-                }}
-              />
+            <div key={product.id} className="w-64 overflow-hidden">
+              <div className="h-52 w-full">
+                <img
+                  src={getImageUrl(product)}
+                  alt={product.name}
+                  className="object-cover object-center h-full w-full rounded-t"
+                  onError={(e) => {
+                    e.target.src =
+                      "https://placehold.co/250x200?text=Product+Image";
+                    e.target.className =
+                      "object-contain object-center h-full w-full rounded-t";
+                  }}
+                />
+              </div>
               <div className="flex justify-between px-1.5 py-2">
                 <p className="text-xs text-lightblack">
-                  category: {product.category?.name || "N/A"}
+                  category: {product.category?.name || "no category"}
                 </p>
                 <p className="text-xs text-lightblack">
-                  stock: {product.stock || 0}
+                  quantity: {product.stock || 0}
                 </p>
               </div>
               <div className="px-1.5">
@@ -473,7 +489,7 @@ function ViewStartup() {
             </div>
           ))}
           {(!startupData.products || startupData.products.length === 0) && (
-            <p className="text-gray-500">No products found</p>
+            <p className="text-lightblack">No products found</p>
           )}
         </div>
         <div className="mt-8">

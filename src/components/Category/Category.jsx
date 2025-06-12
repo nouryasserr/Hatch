@@ -17,7 +17,7 @@ function Category({ subcategory, index }) {
         <img
           src={imageUrl}
           alt={`${subcategory.name} category`}
-          className="object-cover object-center h-64 w-full rounded"
+          className="object-cover object-center h-80 w-full rounded"
           onError={(e) => {
             e.target.src = "https://placehold.co/250x300?text=Category+Image";
           }}

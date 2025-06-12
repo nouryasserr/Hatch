@@ -29,7 +29,7 @@ function Navbar() {
   return (
     <>
       {token && (
-        <div className="bg-black py-0.5 px-6">
+        <div className="bg-black py-1 px-6">
           <p className="text-sm text-white overflow-hidden text-nowrap text-center">
             FREE SHIPPING ON ORDERS OVER 3000 EGP! SHOP NOW AND ENJOY STYLISH
             FASHION DELIVERED STRAIGHT TO YOUR DOORSTEP AT NO EXTRA COST.
@@ -142,7 +142,9 @@ function Navbar() {
                   {cartInfo === null ? (
                     <i className="fa-solid fa-info text-xs"></i>
                   ) : (
-                    <span className="text-xs">{cartInfo.totalItems}</span>
+                    <span className="text-xs">
+                      {cartInfo?.data?.totalItems}
+                    </span>
                   )}
                 </div>
               </button>

@@ -11,35 +11,23 @@ function Order({ orderInfo }) {
   const fallbackImage = "https://placehold.co/300x350?text=Product+Image";
 
   const getImageUrl = (product) => {
-    if (!product) return fallbackImage;
-
-    // Handle case where image is an array of objects
-    if (product.images && Array.isArray(product.images)) {
-      // Try to find the main image first
-      const mainImage = product.images.find((img) => img.is_main)?.url;
-      if (mainImage) {
-        return mainImage.startsWith("http")
-          ? mainImage
-          : `http://127.0.0.1:8000${mainImage}`;
-      }
-
-      // If no main image, use the first image
-      const firstImage = product.images[0]?.url;
-      if (firstImage) {
-        return firstImage.startsWith("http")
-          ? firstImage
-          : `http://127.0.0.1:8000${firstImage}`;
-      }
+    if (
+      !product?.images ||
+      !Array.isArray(product.images) ||
+      product.images.length === 0
+    ) {
+      return fallbackImage;
     }
 
-    // Handle case where image is a direct path string
-    if (typeof product.image === "string") {
-      return product.image.startsWith("http")
-        ? product.image
-        : `http://127.0.0.1:8000${product.image}`;
-    }
+    const mainImage =
+      product.images.find((img) => img.is_main)?.url || product.images[0].url;
 
-    return fallbackImage;
+    if (!mainImage) {
+      return fallbackImage;
+    }
+    return mainImage.startsWith("http")
+      ? mainImage
+      : `http://127.0.0.1:8000/${mainImage}`;
   };
 
   return (
@@ -51,10 +39,11 @@ function Order({ orderInfo }) {
           className="w-full h-full object-cover"
           onError={(e) => {
             e.target.src = fallbackImage;
+            e.target.className = "w-full h-full object-contain";
           }}
         />
       </div>
-      <div className="flex-1">
+      <div className="flex-1 py-2.5">
         <p className="text-xs mb-1 text-lightblack">
           {displayItem?.sub_category?.name}
         </p>

@@ -360,12 +360,17 @@ function Registeration() {
   }
   return (
     <>
-      <div className="px-6 lg:px-12 py-8 flex flex-col items-center justify-center">
-        <h1 className="text-3xl xs:text-4xl font-medium mb-2">
-          choose your plan
-        </h1>
-        <p className="text-lightblack mb-4 xs:mb-8 text-sm">flexible billing</p>
-        <div className="flex flex-wrap justify-center items-center gap-4 mb-6 sm:mb-12">
+      <div className="w-full lg:w-5/6 px-6 lg:pl-12 py-4">
+        <div className="mb-6">
+          <h2 className="text-2xl sm:text-3xl mb-2">join us as a startup</h2>
+          <p className="text-xs text-lightgray">
+            create an account to start showcasing your products and services to
+            a wider audience.
+          </p>
+        </div>
+        <h3 className="text-xl xs:text-2xl">choose your plan</h3>
+        <p className="text-xs text-lightgray">flexible billing</p>
+        <div className="flex flex-wrap items-center gap-4 my-6 sm:my-8">
           <span
             className={`${
               billingCycle === "quarterly" ? "text-black" : "text-lightblack"
@@ -399,7 +404,7 @@ function Registeration() {
             20% off
           </span>
         </div>
-        <div className="flex flex-col lg:flex-row gap-8 w-full xl:max-w-6xl">
+        <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1 space-y-4">
             {packages.map((pkg) => (
               <button
@@ -496,15 +501,7 @@ function Registeration() {
             </div>
           </div>
         </div>
-
-        <div className="w-full px-6 lg:pl-12 py-8 space-y-8">
-          <div>
-            <h2 className="text-2xl sm:text-3xl mb-2">join us as a startup</h2>
-            <p className="text-xs text-slate-500">
-              create an account to start showcasing your products and services
-              to a wider audience.
-            </p>
-          </div>
+        <div className="py-8 space-y-8">
           <form className="space-y-4" onSubmit={formik.handleSubmit} noValidate>
             <div className="flex flex-col gap-2">
               <label htmlFor="name" className="text-lg">

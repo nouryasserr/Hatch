@@ -17,7 +17,6 @@ function ProductsSlider({ productsData }) {
     productsPerPage = 2;
   }
 
-  // Limit total products to 5 slides worth of products
   const maxProducts = productsPerPage * 5;
 
   const limitedProducts = useMemo(() => {
@@ -43,12 +42,12 @@ function ProductsSlider({ productsData }) {
 
   return (
     <>
-      <div className="flex justify-center">
+      <div>
         {!productsData ? (
           <Loader />
         ) : (
           <div
-            className={`grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 sm:gap-8 overflow-x-hidden md:justify-between`}
+            className={`grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 overflow-x-hidden gap-4`}
           >
             {Array.isArray(displayedProducts) &&
               displayedProducts.map((product) => (
@@ -58,7 +57,7 @@ function ProductsSlider({ productsData }) {
         )}
       </div>
       {totalPages > 1 && (
-        <div className="mx-6 lg:mx-12 mt-8 md:mt-16 flex items-center justify-end gap-4 text-sm lg:text-xl">
+        <div className="mt-8 md:mt-12 flex items-center justify-end gap-4 text-sm lg:text-xl">
           <i
             onClick={handlePrev}
             className={`fa-solid fa-arrow-left border border-black py-1.5 px-6 rounded-full ${

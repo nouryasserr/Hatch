@@ -85,12 +85,12 @@ function AllUsers() {
               </span>
             </div>
             {users &&
-              users.map((user) => (
+              users.map((user, index) => (
                 <div
                   key={user.id}
                   className="min-w-[600px] grid grid-cols-9 items-center gap-4 mt-3"
                 >
-                  <span className="text-sm whitespace-nowrap">{user.id}</span>
+                  <span className="text-sm whitespace-nowrap">{index + 1}</span>
                   <span className="col-span-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                     {user.name}
                   </span>

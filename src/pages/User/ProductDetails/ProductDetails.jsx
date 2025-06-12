@@ -7,6 +7,8 @@ import ReactImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { UserContext } from "../../../context/User.context";
 import { WishlistContext } from "../../../context/Wishlist.context";
+import { UserProfileContext } from "../../../context/UserProfile.context";
+import { CartContext } from "../../../context/Cart.context";
 import toast from "react-hot-toast";
 import WriteReview from "../../../components/WriteReview/WriteReview";
 
@@ -15,6 +17,7 @@ function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useContext(UserContext);
+  const { userProfile } = useContext(UserProfileContext);
   const { addToWishlist, removeFromWishlist, isInWishlist } =
     useContext(WishlistContext);
   const [productDetails, setProductDetails] = useState(null);
@@ -32,6 +35,12 @@ function ProductDetails() {
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
+  const hasPlacedOrder =
+    token &&
+    userProfile?.orders?.some((order) =>
+      order.order_items?.some((item) => item.product.id === parseInt(id))
+    );
+
   const fetchProductDetails = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -93,18 +102,29 @@ function ProductDetails() {
     try {
       setIsLoadingReviews(true);
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/user/products/${id}/reviews`
+        `http://127.0.0.1:8000/api/user/products/${id}/reviews`,
+        token
+          ? {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          : {}
       );
       if (response.data.success) {
         setReviews(response.data.data);
       }
     } catch (error) {
       console.error("Error fetching reviews:", error);
-      toast.error("Failed to load reviews");
+      if (error.response?.status !== 401) {
+        toast.error("Failed to load reviews");
+      }
+      setReviews([]);
     } finally {
       setIsLoadingReviews(false);
     }
-  }, [id]);
+  }, [id, token]);
 
   useEffect(() => {
     fetchReviews();
@@ -176,13 +196,6 @@ function ProductDetails() {
       setIsAddingToCart(false);
     }
   };
-  const handleQuantityChange = (newQuantity) => {
-    if (newQuantity < 1) return;
-    setSelectedOptions((prev) => ({
-      ...prev,
-      quantity: newQuantity,
-    }));
-  };
   const handleWishlistToggle = () => {
     if (!token) {
       toast.error("Please login first");
@@ -215,10 +228,25 @@ function ProductDetails() {
       }
     } catch (error) {
       console.error("Error sharing:", error);
-      // If clipboard write fails, show error
       toast.error("Failed to share. Please try again.");
     }
   };
+  const handleSizeSelect = (sizeId) => {
+    console.log("Selecting size:", sizeId);
+    setSelectedOptions((prev) => ({
+      ...prev,
+      sizeId,
+    }));
+  };
+
+  const handleColorSelect = (colorId) => {
+    console.log("Selecting color:", colorId);
+    setSelectedOptions((prev) => ({
+      ...prev,
+      colorId,
+    }));
+  };
+
   if (isLoading) {
     return <Loader />;
   }
@@ -227,7 +255,7 @@ function ProductDetails() {
   }
   return (
     <>
-      <div className="px-6 lg:px-12 py-4 sm:py-12 flex flex-col lg:flex-row justify-between gap-2">
+      <div className="px-6 lg:px-12 py-4 sm:py-8 flex flex-col lg:flex-row gap-8">
         <div className="w-full lg:w-2/5">
           <ReactImageGallery
             showFullscreenButton={false}
@@ -236,10 +264,11 @@ function ProductDetails() {
             items={(productDetails?.images || []).map((image) => ({
               original: `http://127.0.0.1:8000/${image.url}`,
               thumbnail: `http://127.0.0.1:8000/${image.url}`,
+              originalClass: "h-96 object-cover",
             }))}
           />
         </div>
-        <div className="w-full lg:w-3/5 py-4">
+        <div className="w-full">
           <div className="flex justify-between">
             <p className="text-sm text-lightblack">
               {productDetails.sub_category.category.name}
@@ -259,22 +288,14 @@ function ProductDetails() {
               </span>
             )}
           </h5>
-          {selectedOptions.availableSizes.length > 0 && (
-            <div className="mb-4">
-              <label className="text-sm font-medium mb-2 block">
-                Select Size
-              </label>
+          <div className="flex gap-8 my-4">
+            <div>
+              <p className="mb-1">size</p>
               <div className="flex gap-4 flex-wrap">
                 {selectedOptions.availableSizes.map((size) => (
                   <button
                     key={size.id}
-                    onClick={() => {
-                      console.log("Selecting size:", size);
-                      setSelectedOptions((prev) => ({
-                        ...prev,
-                        sizeId: size.id,
-                      }));
-                    }}
+                    onClick={() => handleSizeSelect(size.id)}
                     className={`py-2 px-4 border rounded-md transition-colors ${
                       selectedOptions.sizeId === size.id
                         ? "border-black bg-black text-white"
@@ -286,23 +307,13 @@ function ProductDetails() {
                 ))}
               </div>
             </div>
-          )}
-          {selectedOptions.availableColors.length > 0 && (
-            <div className="mb-4">
-              <label className="text-sm font-medium mb-2 block">
-                Select Color
-              </label>
+            <div>
+              <p className="mb-1">color</p>
               <div className="flex gap-4 flex-wrap">
                 {selectedOptions.availableColors.map((color) => (
                   <button
                     key={color.id}
-                    onClick={() => {
-                      console.log("Selecting color:", color);
-                      setSelectedOptions((prev) => ({
-                        ...prev,
-                        colorId: color.id,
-                      }));
-                    }}
+                    onClick={() => handleColorSelect(color.id)}
                     className={`px-4 py-2 rounded-md border-2 transition-all ${
                       selectedOptions.colorId === color.id
                         ? "border-black bg-black text-white"
@@ -314,13 +325,17 @@ function ProductDetails() {
                 ))}
               </div>
             </div>
-          )}
+          </div>
+
           <div className="mb-6">
             <label className="text-sm font-medium mb-2 block">Quantity</label>
             <div className="flex items-center gap-4">
               <button
                 onClick={() =>
-                  handleQuantityChange(selectedOptions.quantity - 1)
+                  setSelectedOptions((prev) => ({
+                    ...prev,
+                    quantity: Math.max(1, prev.quantity - 1),
+                  }))
                 }
                 disabled={selectedOptions.quantity <= 1}
                 className={`border-2 ${
@@ -335,7 +350,10 @@ function ProductDetails() {
               <span className="text-sm">{selectedOptions.quantity}</span>
               <button
                 onClick={() =>
-                  handleQuantityChange(selectedOptions.quantity + 1)
+                  setSelectedOptions((prev) => ({
+                    ...prev,
+                    quantity: prev.quantity + 1,
+                  }))
                 }
                 className="border-2 border-blackmuted p-2 rounded-sm"
                 aria-label="Increase quantity"
@@ -400,32 +418,19 @@ function ProductDetails() {
                 </button>
               </div>
               {isShippingOpen && (
-                <div className="mt-4 space-y-4 text-sm text-gray-600">
+                <div className="my-2 text-sm text-lightblack">
                   <div>
-                    <h4 className="font-medium mb-2">Shipping Information:</h4>
                     <ul className="list-disc pl-4 space-y-2">
                       <li>Delivery within 3-7 business days</li>
-                      <li>Free shipping for orders above 1000 EGP</li>
+                      <li>Free shipping for orders above 3000 EGP</li>
                       <li>Standard shipping fee: 50 EGP</li>
-                      <li>
-                        Express shipping available (additional fees apply)
-                      </li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-2">Returns Policy:</h4>
-                    <ul className="list-disc pl-4 space-y-2">
-                      <li>14-day return policy</li>
-                      <li>Item must be unused and in original packaging</li>
-                      <li>Free returns for defective items</li>
-                      <li>Contact customer service to initiate a return</li>
                     </ul>
                   </div>
                 </div>
               )}
             </div>
           </div>
-          <div className="mt-6">
+          <div className="mt-4">
             <button
               onClick={handleAddToCart}
               disabled={
@@ -462,9 +467,15 @@ function ProductDetails() {
                 navigate("/Auth/Signin");
                 return;
               }
+              if (!hasPlacedOrder) {
+                toast.error("You can only review products you have purchased");
+                return;
+              }
               setShowWriteReview(true);
             }}
-            className="border border-lightblack bg-black text-white py-1 px-4 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out"
+            className={`border border-lightblack bg-black text-white py-1 px-4 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out ${
+              !hasPlacedOrder ? "hidden" : ""
+            }`}
           >
             write review
           </button>

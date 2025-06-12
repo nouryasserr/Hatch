@@ -125,6 +125,14 @@ function AddProduct2() {
       formData.append("sub_category_id", values.sub_category_id);
       formData.append("has_sizes", values.has_sizes ? "1" : "0");
 
+      if (
+        values.discount_percentage !== "" &&
+        values.discount_percentage !== null &&
+        values.discount_percentage !== undefined
+      ) {
+        formData.append("discount_percentage", values.discount_percentage);
+      }
+
       if (values.has_sizes) {
         values.colors.forEach((color, colorIndex) => {
           formData.append(`colors[${colorIndex}][name]`, color.name);

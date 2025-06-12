@@ -308,7 +308,7 @@ function ViewUser() {
                   className="min-w-[600px] grid grid-cols-7 items-center gap-4 mt-3"
                 >
                   <span className="text-sm whitespace-nowrap">{order.id}</span>
-                  <span className="text-sm whitespace-nowrap">
+                  <span className="text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                     {item.product.name}
                   </span>
                   <span className="text-sm whitespace-nowrap">
