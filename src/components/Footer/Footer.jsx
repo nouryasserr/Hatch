@@ -21,6 +21,15 @@ function Footer() {
               <ul className="space-y-6 grow">
                 <li>
                   <NavLink
+                    to="/"
+                    className={"flex items-center justify-between"}
+                  >
+                    home
+                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
                     to="/User/FreshDrops"
                     className={"flex items-center justify-between"}
                   >
@@ -37,6 +46,8 @@ function Footer() {
                     <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
+              </ul>
+              <ul className="space-y-6 grow">
                 <li>
                   <NavLink
                     to="/User/Categories"
@@ -46,23 +57,12 @@ function Footer() {
                     <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
-              </ul>
-              <ul className="space-y-6 grow">
                 <li>
                   <NavLink
                     to="/User/About"
                     className={"flex items-center justify-between"}
                   >
                     about us
-                    <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/User/Contact"
-                    className={"flex items-center justify-between"}
-                  >
-                    contact us
                     <i className="fa-solid fa-arrow-right origin-center -rotate-45 hover:rotate-0 transition duration-300 ease-in-out delay-150"></i>
                   </NavLink>
                 </li>
