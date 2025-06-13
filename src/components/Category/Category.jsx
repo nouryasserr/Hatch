@@ -23,7 +23,10 @@ function Category({ subcategory, index }) {
           }}
         />
         <p className="mt-2">{(index + 1).toString().padStart(2, "0")}</p>
-        <h6>{subcategory.name}</h6>
+        <h6>
+          {subcategory.name} -{" "}
+          <span className="text-sm">{subcategory.category.name}</span>
+        </h6>
       </div>
     </>
   );

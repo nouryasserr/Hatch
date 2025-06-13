@@ -401,7 +401,6 @@ function ProductDetails() {
                 </div>
               )}
             </div>
-
             <div>
               <div
                 className="flex justify-between items-center cursor-pointer"
