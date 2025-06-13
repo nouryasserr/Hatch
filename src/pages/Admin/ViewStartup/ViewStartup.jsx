@@ -521,13 +521,13 @@ function ViewStartup() {
               <>
                 <button
                   onClick={handleAcceptUpdateRequest}
-                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+                  className="text-sm px-4 py-1.5 rounded-sm border border-lightblack hover:bg-green-500 hover:text-white transition duration-300"
                 >
                   Approve Update
                 </button>
                 <button
                   onClick={handleRejectUpdateRequest}
-                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  className="text-sm px-4 py-1.5 rounded-sm border border-lightblack hover:bg-secondary hover:text-white transition duration-300"
                 >
                   Reject Update
                 </button>
@@ -538,18 +538,18 @@ function ViewStartup() {
               <>
                 <button
                   onClick={handleBlockUnblock}
-                  className={`px-4 py-2 ${
+                  className={`text-sm px-4 py-1.5 rounded-sm border border-lightblack hover:text-white transition duration-300 ${
                     startupData.status === "blocked"
-                      ? "bg-yellow-500"
-                      : "bg-primary"
-                  } text-white rounded-sm`}
+                      ? "hover:bg-blue-500"
+                      : "hover:bg-secondary"
+                  }`}
                 >
                   {startupData.status === "blocked" ? "Unblock" : "Block"}{" "}
                   Startup
                 </button>
                 <button
                   onClick={handleDelete}
-                  className="px-4 py-2 bg-secondary text-white rounded-sm"
+                  className="text-sm px-4 py-1.5 rounded-sm border border-lightblack hover:bg-secondary hover:text-white transition duration-300"
                 >
                   Delete Startup
                 </button>

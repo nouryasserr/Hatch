@@ -19,27 +19,20 @@ function WishlistProduct({ wishlistItem }) {
 
     const mainImage = images.find((img) => img.is_main) || images[0];
     const imageUrl = mainImage.url;
-
-    // If the URL already contains the full path, return it as is
     if (imageUrl.startsWith("http")) {
       return imageUrl;
     }
-
-    // Otherwise, prepend the base URL
     return `http://127.0.0.1:8000/${imageUrl}`;
   };
 
   return (
-    <div className="border-t border-slate-300 py-6">
+    <div className="border-t border-lightgray py-6">
       <div className="flex flex-col sm:flex-row gap-4">
-        <Link
-          to={`/User/ProductDetails/${product.id}`}
-          className="w-full sm:w-1/4"
-        >
+        <Link to={`/User/ProductDetails/${product.id}`} className="">
           <img
             src={getImageUrl(product.images)}
             alt={product.name}
-            className="w-full h-48 sm:h-32 object-cover rounded"
+            className="h-48 sm:h-32 w-48 sm:w-32 object-cover rounded"
             onError={(e) => {
               e.target.src = "https://placehold.co/300x350?text=Product+Image";
             }}

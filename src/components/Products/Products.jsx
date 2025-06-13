@@ -24,7 +24,7 @@ function Products({ productsData }) {
 
   return (
     <>
-      <div className="flex justify-center">
+      <div>
         {productsArray.length === 0 ? (
           <Loader />
         ) : (

@@ -168,7 +168,7 @@ function Signin() {
           </button>
           <button
             type="submit"
-            className="bg-primary border border-lightblack text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-transparent hover:text-black transition-all duration-200 ease-in-out"
+            className="bg-black border border-lightblack text-white rounded-full px-2 py-2 pb-2.5 w-full hover:bg-transparent hover:text-black transition-all duration-200 ease-in-out"
           >
             login
           </button>
