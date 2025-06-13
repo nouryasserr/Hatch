@@ -143,14 +143,12 @@ function AllCategories() {
             {categories.length === 0 ? (
               <p className="text-sm mt-4">No categories found.</p>
             ) : (
-              categories.map((category) => (
+              categories.map((category, index) => (
                 <div
                   key={category.id}
                   className="min-w-[600px] grid grid-cols-5 items-center gap-4 mt-3"
                 >
-                  <span className="text-sm whitespace-nowrap">
-                    {category.id}
-                  </span>
+                  <span className="text-sm whitespace-nowrap">{index + 1}</span>
                   <span className="col-span-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                     {category.name}
                   </span>
@@ -193,7 +191,7 @@ function AllCategories() {
           <div>
             <div className="min-w-[600px] grid grid-cols-8 items-center gap-4">
               <span className="text-sm whitespace-nowrap text-lightblack">
-                category id
+                subcategory id
               </span>
               <span className="col-span-2 text-sm whitespace-nowrap text-lightblack">
                 subcategory name
@@ -208,14 +206,12 @@ function AllCategories() {
             {subcategories.length === 0 ? (
               <p className="text-sm mt-4">No subcategories found.</p>
             ) : (
-              subcategories.map((subcategory) => (
+              subcategories.map((subcategory, index) => (
                 <div
                   key={subcategory.id}
                   className="min-w-[600px] grid grid-cols-8 items-center gap-4 mt-3"
                 >
-                  <span className="text-sm whitespace-nowrap">
-                    {subcategory.category_id}
-                  </span>
+                  <span className="text-sm whitespace-nowrap">{index + 1}</span>
                   <span className="col-span-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                     {subcategory.name}
                   </span>

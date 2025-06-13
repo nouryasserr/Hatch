@@ -235,7 +235,7 @@ function AllFactories() {
                 No factories found
               </div>
             ) : (
-              factories.map((factory) => (
+              factories.map((factory, index) => (
                 <div
                   key={factory.id}
                   className="min-w-[600px] grid grid-cols-7 items-center gap-4 mt-3"
@@ -244,7 +244,7 @@ function AllFactories() {
                     to={`/Admin/FactoryDetails/${factory.id}`}
                     className="text-sm whitespace-nowrap"
                   >
-                    {factory.id}
+                    {index + 1}
                   </Link>
                   <span className="col-span-2 text-sm whitespace-nowrap overflow-hidden text-ellipsis">
                     {factory.name}
@@ -273,7 +273,7 @@ function AllFactories() {
                       className={`text-sm whitespace-nowrap ${
                         factory.status === "BLOCKED"
                           ? "bg-green-500 hover:text-black"
-                          : "bg-orange-500 hover:text-black"
+                          : "bg-blue-500 hover:text-black"
                       } text-white rounded-sm py-1 px-4 border border-lightblack hover:bg-transparent transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed`}
                     >
                       {blockLoading === factory.id
