@@ -111,8 +111,8 @@ function UserAccount() {
         </div>
         {displayedOrders.length > 0 ? (
           <div className="space-y-6">
-            {displayedOrders.map((order) => (
-              <Order key={order.id} orderInfo={order} />
+            {displayedOrders.map((order, index) => (
+              <Order key={order.id} orderInfo={order} orderNumber={index + 1} />
             ))}
           </div>
         ) : (

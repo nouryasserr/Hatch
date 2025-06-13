@@ -1,4 +1,4 @@
-function Order({ orderInfo }) {
+function Order({ orderInfo, orderNumber }) {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -7,7 +7,6 @@ function Order({ orderInfo }) {
     });
   };
 
-  const displayItem = orderInfo.order_items[0]?.product;
   const fallbackImage = "https://placehold.co/300x350?text=Product+Image";
 
   const getImageUrl = (product) => {
@@ -31,29 +30,45 @@ function Order({ orderInfo }) {
   };
 
   return (
-    <div className="flex items-start gap-4">
-      <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded">
-        <img
-          src={getImageUrl(displayItem)}
-          alt={displayItem?.name || "Product Image"}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.target.src = fallbackImage;
-            e.target.className = "w-full h-full object-contain";
-          }}
-        />
+    <div className="border rounded-lg p-4">
+      <div className="flex justify-between items-center mb-4">
+        <p className="text-sm text-lightblack">
+          Order #{orderNumber} - {formatDate(orderInfo.created_at)}
+        </p>
+        <p className="text-sm font-medium">
+          Total: {Number(orderInfo.total_price).toFixed(2)} EGP
+        </p>
       </div>
-      <div className="flex-1 py-2.5">
-        <p className="text-xs mb-1 text-lightblack">
-          {displayItem?.sub_category?.name}
-        </p>
-        <h5 className="text-lg mb-2">{displayItem?.name}</h5>
-        <h5 className="text-lg mb-2">
-          {Number(orderInfo.total_price).toFixed(2)} EGP
-        </h5>
-        <p className="text-xs text-lightblack">
-          delivered {formatDate(orderInfo.created_at)}
-        </p>
+      <div className="space-y-4">
+        {orderInfo.order_items.map((item) => (
+          <div key={item.id} className="flex items-start gap-4">
+            <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 overflow-hidden rounded">
+              <img
+                src={getImageUrl(item.product)}
+                alt={item.product?.name || "Product Image"}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = fallbackImage;
+                  e.target.className = "w-full h-full object-contain";
+                }}
+              />
+            </div>
+            <div className="flex-1 py-2.5">
+              <p className="text-xs mb-1 text-lightblack">
+                {item.product?.sub_category?.name}
+              </p>
+              <h5 className="text-lg mb-2">{item.product?.name}</h5>
+              <div className="flex justify-between items-center">
+                <p className="text-sm">
+                  {Number(item.price).toFixed(2)} EGP x {item.quantity}
+                </p>
+                <p className="text-sm font-medium">
+                  {Number(item.price * item.quantity).toFixed(2)} EGP
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
