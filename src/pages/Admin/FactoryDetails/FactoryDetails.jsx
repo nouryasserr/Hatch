@@ -50,17 +50,19 @@ function FactoryDetails() {
     async function fetchFactoryResponses() {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/admin/responses/${id}`,
+          `http://127.0.0.1:8000/api/admin/responses`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
+            params: {
+              factory_id: id,
+            },
           }
         );
 
         if (response.data.success) {
-          // If the response is a single object, wrap it in an array
           const responsesData = Array.isArray(response.data.data)
             ? response.data.data
             : [response.data.data];
@@ -68,6 +70,9 @@ function FactoryDetails() {
         }
       } catch (err) {
         console.error("Error fetching responses:", err);
+        setError(
+          err.response?.data?.message || "Failed to fetch factory responses"
+        );
       }
     }
 

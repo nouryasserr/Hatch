@@ -125,9 +125,7 @@ function FactoryProfile() {
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
         <div className="flex gap-4 flex-wrap justify-between items-center">
           <div>
-            <h2 className="text-2xl xs:text-3xl mb-0.5">
-              factory # {profile.name}
-            </h2>
+            <h2 className="text-2xl xs:text-3xl mb-0.5">{profile.name}</h2>
             <p className="text-lightgray text-xs xs:text-sm">
               view complete information about your factory
             </p>
@@ -151,7 +149,7 @@ function FactoryProfile() {
           <form onSubmit={handleUpdate} className="mt-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
-                <h3 className="text-2xl mb-4">Basic Information</h3>
+                <h3 className="text-2xl mb-4">basic Information</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm mb-1">Name</label>
@@ -196,7 +194,7 @@ function FactoryProfile() {
                 </div>
               </div>
               <div>
-                <h3 className="text-2xl mb-4">Payment Information</h3>
+                <h3 className="text-2xl mb-4">payment Information</h3>
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm mb-1">Payment Method</label>
@@ -236,7 +234,7 @@ function FactoryProfile() {
           <div className="flex flex-col lg:flex-row gap-8 mt-8">
             <div className="lg:w-1/2">
               <div className="mb-4 xs:mb-0">
-                <h3 className="text-2xl mb-0.5">Basic Information</h3>
+                <h3 className="text-2xl mb-0.5">basic Information</h3>
                 <p className="text-lightgray text-xs xs:text-sm">
                   general profile and contact data
                 </p>
