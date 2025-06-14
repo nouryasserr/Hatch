@@ -150,7 +150,7 @@ function Factories() {
         </div>
         <div className="overflow-x-auto mt-4">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 mb-4">
+            <div className="min-w-[600px] grid grid-cols-4 items-center gap-4 border-b space-y-4 py-2">
               <span className="text-sm whitespace-nowrap text-lightblack">
                 request id
               </span>
@@ -167,13 +167,13 @@ function Factories() {
             {responses.map((response) => (
               <div
                 key={response.request.id}
-                className="min-w-[600px] flex justify-between items-center gap-4 mb-4"
+                className="min-w-[600px] grid grid-cols-4 items-center gap-4 border-b space-y-4 py-2"
               >
                 <p className="text-sm">request #{response.request_id}</p>
                 <p className="text-sm">{response.factory.name}</p>
                 <p className="text-sm">{response.price} EGP</p>
                 <p
-                  className={`text-sm py-1 px-2 ${
+                  className={`w-fit text-sm py-1 px-2 ${
                     response.status === "PENDING"
                       ? "bg-yellow-500"
                       : response.status === "APPROVED"
