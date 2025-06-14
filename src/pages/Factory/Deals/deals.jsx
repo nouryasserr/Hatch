@@ -90,7 +90,7 @@ function Deals() {
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
         <div>
-          <h2 className="text-3xl mb-0.5">factory deals</h2>
+          <h2 className="text-3xl mb-0.5">accepted deals</h2>
           <p className="text-lightblack text-sm">
             deals this factory has with startups
           </p>
@@ -101,7 +101,7 @@ function Deals() {
           <div className="flex flex-wrap gap-8 mt-8">
             {deals.map((deal) => (
               <div key={deal.id} className="w-full lg:w-[calc(50%-1rem)]">
-                <div className="mb-4 xs:mb-0 flex justify-between items-center">
+                <div className="mb-4 xs:mb-0 flex flex-wrap gap-2 justify-between items-center">
                   <div>
                     <h2 className="text-3xl mb-0.5">
                       Request #{deal.request.id}
@@ -113,7 +113,7 @@ function Deals() {
                   <button
                     onClick={() => !deal.is_done && handleMarkAsDone(deal.id)}
                     disabled={deal.is_done || markingDone === deal.id}
-                    className={`px-4 py-2 text-white rounded transition-colors ${
+                    className={`w-full xs:w-auto px-4 py-2 text-white rounded transition-colors ${
                       deal.is_done
                         ? "bg-green-500 cursor-not-allowed"
                         : markingDone === deal.id
@@ -125,14 +125,14 @@ function Deals() {
                       ? "Completed"
                       : markingDone === deal.id
                       ? "Marking as Done..."
-                      : "Mark as Done"}
+                      : "Done"}
                   </button>
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <div className="w-1/2 space-y-2">
-                    <p className="text-sm xs:text-base">total price</p>
+                  <div className="w-1/2 space-y-4">
                     <p className="text-sm xs:text-base">deposit amount</p>
                     <p className="text-sm xs:text-base">final payment</p>
+                    <p className="text-sm xs:text-base">total price</p>
                     <p className="text-sm xs:text-base">deal date</p>
                     <p className="text-sm xs:text-base">delivery date</p>
                     <p className="text-sm xs:text-base">description</p>
@@ -140,38 +140,38 @@ function Deals() {
                       <p className="text-sm xs:text-base">request image</p>
                     )}
                   </div>
-                  <div className="w-1/2 space-y-2">
+                  <div className="w-1/2 space-y-4">
+                    <p
+                      className={`text-sm xs:text-base ${
+                        deal.is_deposit_paid
+                          ? "text-green-500"
+                          : "text-secondary"
+                      }`}
+                    >
+                      {deal.deposit_amount} EGP
+                    </p>
+                    <p
+                      className={`text-sm xs:text-base ${
+                        deal.is_final_paid ? "text-green-500" : "text-secondary"
+                      }`}
+                    >
+                      {deal.final_payment_amount} EGP
+                    </p>
                     <p className="text-sm xs:text-base">{deal.price} EGP</p>
-                    <p
-                      className={`text-sm xs:text-base ${
-                        deal.is_deposit_paid ? "text-green-500" : "text-red-500"
-                      }`}
-                    >
-                      {deal.deposit_amount} EGP{" "}
-                      {deal.is_deposit_paid ? "(Paid)" : "(Not Paid)"}
-                    </p>
-                    <p
-                      className={`text-sm xs:text-base ${
-                        deal.is_final_paid ? "text-green-500" : "text-red-500"
-                      }`}
-                    >
-                      {deal.final_payment_amount} EGP{" "}
-                      {deal.is_final_paid ? "(Paid)" : "(Not Paid)"}
-                    </p>
-                    <p className="text-sm xs:text-base">
+                    <p className="text-sm xs:text-base line-clamp-1 overflow-hidden text-ellepsis">
                       {formatDate(deal.deal_date)}
                     </p>
-                    <p className="text-sm xs:text-base">
+                    <p className="text-sm xs:text-base line-clamp-1 overflow-hidden text-ellepsis">
                       {formatDate(deal.request.delivery_date)}
                     </p>
-                    <p className="text-sm xs:text-base">
+                    <p className="text-sm xs:text-base line-clamp-1 overflow-hidden text-ellepsis">
                       {deal.request.description}
                     </p>
                     {deal.request.image && (
                       <img
                         src={`http://127.0.0.1:8000/${deal.request.image}`}
                         alt="Request Attachment"
-                        className="max-w-xs rounded-lg mt-2"
+                        className="w-24 h-24 rounded-sm mt-2"
                       />
                     )}
                   </div>
