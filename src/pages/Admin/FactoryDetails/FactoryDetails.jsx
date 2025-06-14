@@ -202,7 +202,6 @@ function FactoryDetails() {
               <div className="flex gap-2 mt-4">
                 <div className="w-1/2 space-y-4">
                   <p className="text-sm xs:text-base">price offer:</p>
-                  <p className="text-sm xs:text-base">request description:</p>
                   <p className="text-sm xs:text-base text-nowrap overflow-hidden text-ellipsis">
                     delivery date:
                   </p>
@@ -212,9 +211,6 @@ function FactoryDetails() {
                 </div>
                 <div className="w-1/2 space-y-4">
                   <p className="text-sm xs:text-base">{response.price} egp</p>
-                  <p className="text-sm xs:text-base overflow-hidden text-ellipsis">
-                    {response.request?.description || "N/A"}
-                  </p>
                   <p className="text-nowrap text-xs xs:text-base">
                     {response.request?.delivery_date
                       ? new Date(
@@ -226,7 +222,7 @@ function FactoryDetails() {
                     {new Date(response.created_at).toLocaleDateString()}
                   </p>
                   <p className="text-sm xs:text-base">{response.status}</p>
-                  <p className="text-sm xs:text-base text-nowrap overflow-hidden text-ellipsis line-clamp-3">
+                  <p className="text-sm xs:text-base overflow-hidden text-ellipsis line-clamp-3">
                     {response.description}
                   </p>
                 </div>

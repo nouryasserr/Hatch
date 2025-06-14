@@ -119,7 +119,8 @@ function FactoryResponse() {
                 </div>
                 <div className="flex gap-2 mt-4">
                   <div className="w-1/2 space-y-4">
-                    <p className="text-sm xs:text-base">offer price</p>
+                    <p className="text-sm xs:text-base">price offer:</p>
+                    <p className="text-sm xs:text-base">delivery date:</p>
                     <p className="text-sm xs:text-base">sent at</p>
                     <p className="text-sm xs:text-base">status</p>
                     <p className="text-sm xs:text-base">message</p>
@@ -127,6 +128,9 @@ function FactoryResponse() {
                   <div className="w-1/2 space-y-4">
                     <p className="text-sm xs:text-base">
                       {response.price} EGP/unit
+                    </p>
+                    <p className="text-sm xs:text-base">
+                      {response.estimated_delivery_time}
                     </p>
                     <p className="text-sm xs:text-base">
                       {formatDate(response.created_at)}
