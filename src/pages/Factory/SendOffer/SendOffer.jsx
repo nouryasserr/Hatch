@@ -15,6 +15,12 @@ function SendOffer() {
       .required("Description is required")
       .min(3, "Description must be at least 3 characters"),
     price: Yup.string().required("Price is required"),
+    estimated_delivery_time: Yup.string()
+      .required("Delivery date is required")
+      .matches(
+        /^\d{4}-\d{2}-\d{2}$/,
+        "Delivery date must be in format YYYY-MM-DD"
+      ),
     image: Yup.mixed().required("Image is required"),
   });
 
@@ -24,6 +30,10 @@ function SendOffer() {
       const formData = new FormData();
       formData.append("description", values.description);
       formData.append("price", values.price);
+      formData.append(
+        "estimated_delivery_time",
+        values.estimated_delivery_time
+      );
       formData.append("image", values.image);
 
       const response = await axios.post(
@@ -56,6 +66,7 @@ function SendOffer() {
     initialValues: {
       description: "",
       price: "",
+      estimated_delivery_time: "",
       image: null,
     },
     validationSchema: validate,
@@ -131,6 +142,37 @@ function SendOffer() {
                 {formik.errors.price}
               </p>
             )}
+          </div>
+          <div className="mb-4">
+            <label
+              htmlFor="estimated_delivery_time"
+              className="flex items-start gap-2 mb-2"
+            >
+              <span className="text-lg">delivery date</span>
+              <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+            </label>
+            <input
+              type="date"
+              autoComplete="on"
+              placeholder="2025-07-09"
+              id="estimated_delivery_time"
+              name="estimated_delivery_time"
+              className={`border ${
+                formik.touched.estimated_delivery_time &&
+                formik.errors.estimated_delivery_time
+                  ? "border-secondary"
+                  : "border-blackmuted"
+              } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.estimated_delivery_time}
+            />
+            {formik.touched.estimated_delivery_time &&
+              formik.errors.estimated_delivery_time && (
+                <p className="text-secondary text-xs mt-1">
+                  {formik.errors.estimated_delivery_time}
+                </p>
+              )}
           </div>
           <div className="mb-4">
             <label htmlFor="image" className="flex items-start gap-2 mb-2">
