@@ -118,21 +118,15 @@ function FactoryResponse() {
                   </button>
                 </div>
                 <div className="flex gap-2 mt-4">
-                  <div className="w-1/2 space-y-2">
+                  <div className="w-1/2 space-y-4">
                     <p className="text-sm xs:text-base">offer price</p>
-                    <p className="text-sm xs:text-base">message</p>
                     <p className="text-sm xs:text-base">sent at</p>
                     <p className="text-sm xs:text-base">status</p>
-                    {response.image && (
-                      <p className="text-sm xs:text-base">image</p>
-                    )}
+                    <p className="text-sm xs:text-base">message</p>
                   </div>
-                  <div className="w-1/2 space-y-2">
+                  <div className="w-1/2 space-y-4">
                     <p className="text-sm xs:text-base">
                       {response.price} EGP/unit
-                    </p>
-                    <p className="text-sm xs:text-base">
-                      {response.description}
                     </p>
                     <p className="text-sm xs:text-base">
                       {formatDate(response.created_at)}
@@ -140,13 +134,9 @@ function FactoryResponse() {
                     <p className="text-sm xs:text-base">
                       {response.status.toLowerCase()}
                     </p>
-                    {response.image && (
-                      <img
-                        src={`http://127.0.0.1:8000/${response.image}`}
-                        alt="Response Attachment"
-                        className="max-w-xs rounded-lg mt-2"
-                      />
-                    )}
+                    <p className="text-sm xs:text-base">
+                      {response.description}
+                    </p>
                   </div>
                 </div>
               </div>
