@@ -152,7 +152,7 @@ function Factories() {
           <div>
             <div className="min-w-[600px] grid grid-cols-4 items-center gap-4 border-b space-y-4 py-2">
               <span className="text-sm whitespace-nowrap text-lightblack">
-                request id
+                factory id
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
                 factory
@@ -164,13 +164,13 @@ function Factories() {
                 status
               </span>
             </div>
-            {responses.map((response) => (
+            {responses.map((response, idx) => (
               <div
                 key={response.request.id}
                 className="min-w-[600px] grid grid-cols-4 items-center gap-4 border-b space-y-4 py-2"
               >
-                <p className="text-sm">request #{response.request_id}</p>
-                <p className="text-sm">{response.factory.name}</p>
+                <p className="text-sm">{idx + 1}</p>
+                <p className="text-sm">factory #{response.request.id}</p>
                 <p className="text-sm">{response.price} EGP</p>
                 <p
                   className={`w-fit text-sm py-1 px-2 ${

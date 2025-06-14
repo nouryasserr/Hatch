@@ -166,47 +166,69 @@ function RequestDetails() {
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
-        <div className="flex justify-between gap-2 flex-wrap">
-          <div>
-            <h2 className="text-3xl mb-0.5">
-              request #{requestDetails.id} - details page
-            </h2>
-            <p className="text-lightblack text-sm">
-              here you can review your request and track responses from
-              factories
-            </p>
-          </div>
-          <Link className="border border-primary bg-primary text-white p-2 px-4 flex items-center gap-2 h-fit hover:bg-transparent hover:border-black hover:text-black transition duration-300 ease-in-out delay-150">
-            <i className="fa-solid fa-download"></i>
-            <span>Export</span>
-          </Link>
+        <div>
+          <h2 className="text-3xl mb-0.5">
+            request #{requestDetails.id} - details page
+          </h2>
+          <p className="text-lightblack text-sm">
+            here you can review your request and track responses from factories
+          </p>
         </div>
-        <div className="mt-8 lg:w-1/2">
-          <div className="mb-4 xs:mb-0">
-            <h2 className="text-3xl mb-0.5">request info</h2>
-            <p className="text-lightblack text-sm">
-              basic information about your order
-            </p>
-          </div>
-          <div className="flex gap-2 mt-4">
-            <div className="w-1/2 space-y-2">
-              <p className="text-sm xs:text-base">startup name</p>
-              <p className="text-sm xs:text-base">delivery date</p>
-              <p className="text-sm xs:text-base">description</p>
-            </div>
-            <div className="w-1/2 space-y-2">
-              <p className="text-sm xs:text-base">
-                {requestDetails.startup.name}
-              </p>
-              <p className="text-sm xs:text-base">
-                {requestDetails.delivery_date}
-              </p>
-              <p className="text-sm xs:text-base">
-                {requestDetails.description}
-              </p>
+        <div className="flex flex-col lg:flex-row gap-2">
+          <div className="lg:w-1/2">
+            {" "}
+            <div className="mt-8">
+              <div className="mb-4 xs:mb-0">
+                <h2 className="text-3xl mb-0.5">request info</h2>
+                <p className="text-lightblack text-sm">
+                  basic information about your order
+                </p>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <div className="w-1/2 space-y-4">
+                  <p className="text-sm xs:text-base">product name</p>
+                  <p className="text-sm xs:text-base">quantity</p>
+                  <p className="text-sm xs:text-base">delivery date</p>
+                </div>
+                <div className="w-1/2 space-y-4">
+                  <p className="text-sm xs:text-base">{requestDetails.name}</p>
+                  <p className="text-sm xs:text-base">
+                    {requestDetails.quantity}
+                  </p>
+                  <p className="text-sm xs:text-base">
+                    {requestDetails.delivery_date}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
+          <div className="lg:w-1/2">
+            <div className="mt-8">
+              <div className="mb-4 xs:mb-0">
+                <h2 className="text-3xl mb-0.5">additional info</h2>
+                <p className="text-lightblack text-sm">
+                  extra details that help factories understan your product
+                  better
+                </p>
+              </div>
+              <div className="flex gap-2 mt-4">
+                <div className="w-1/2 space-y-8">
+                  <p className="text-sm xs:text-base ">description</p>
+                  <p className="text-sm xs:text-base">notes</p>
+                </div>
+                <div className="w-1/2 space-y-4">
+                  <p className="text-sm xs:text-base line-clamp-3 overfolw-hidden text-eclipse">
+                    {requestDetails.description}
+                  </p>
+                  <p className="text-sm xs:text-base line-clamp-3 overfolw-hidden text-eclipse">
+                    {requestDetails.notes}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div className="flex flex-col lg:flex-row gap-2">
           <div className="lg:w-1/2">
             <div className="mb-4 mt-8 xs:mb-0">
@@ -219,14 +241,12 @@ function RequestDetails() {
               <div className="w-1/2 space-y-2">
                 <p className="text-sm xs:text-base">status</p>
                 <p className="text-sm xs:text-base">sent at</p>
-                <p className="text-sm xs:text-base">additional info</p>
               </div>
               <div className="w-1/2 space-y-2">
                 <p className="text-sm xs:text-base">{requestDetails.status}</p>
                 <p className="text-sm xs:text-base">
                   {formatDate(requestDetails.created_at)}
                 </p>
-                <p className="text-sm xs:text-base">-</p>
               </div>
             </div>
           </div>
@@ -250,7 +270,7 @@ function RequestDetails() {
                 <div key={response.id}>
                   <div className="mb-4 mt-4 xs:mb-0">
                     <h3 className="text-2xl mb-0.5">
-                      factory: {response.factory.name}
+                      factory: # {response.factory.id}
                     </h3>
                     <p className="text-lightblack text-sm">
                       offer received - waiting for your action
