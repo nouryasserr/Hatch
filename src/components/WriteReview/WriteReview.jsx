@@ -49,7 +49,17 @@ export default function WriteReview({ onClose, productId, onReviewAdded }) {
         }
       } catch (error) {
         console.error("Error submitting review:", error);
-        toast.error(error.response?.data?.message || "Failed to submit review");
+        const errorMessage = error.response?.data?.message;
+
+        if (errorMessage === "You haven't purchased this product yet") {
+          toast.error(
+            "You need to purchase this product before writing a review"
+          );
+        } else if (errorMessage === "You have already reviewed this product") {
+          toast.error("You have already written a review for this product");
+        } else {
+          toast.error(errorMessage || "Failed to submit review");
+        }
       }
     },
   });

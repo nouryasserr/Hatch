@@ -110,44 +110,34 @@ function Factories() {
         </div>
         <div className="overflow-x-auto mt-4">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4 mb-4">
+            <div className="min-w-[600px] grid grid-cols-4 items-center gap-4 border-b space-y-4 py-2">
               <span className="text-sm whitespace-nowrap text-lightblack">
-                request id
+                request no
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
-                description
+                product
+              </span>
+              <span className="text-sm whitespace-nowrap text-lightblack">
+                quantity
               </span>
               <span className="text-sm whitespace-nowrap text-lightblack">
                 delivery date
               </span>
-              <span className="text-sm whitespace-nowrap text-lightblack">
-                status
-              </span>
             </div>
-            {requests.map((request) => (
+            {requests.map((request, idx) => (
               <div
                 key={request.id}
-                className="min-w-[600px] flex justify-between items-center gap-4 mb-4"
+                className="min-w-[600px] grid grid-cols-4 items-center gap-4 border-b space-y-4 py-2"
               >
                 <Link
                   to={`/Startup/RequestDetails/${request.id}`}
                   className="text-sm"
                 >
-                  request #{request.id}
+                  {idx + 1}
                 </Link>
-                <p className="text-sm">{request.description}</p>
+                <p className="text-sm">{request.name}</p>
+                <p className="text-sm">{request.quantity}</p>
                 <p className="text-sm">{formatDate(request.delivery_date)}</p>
-                <p
-                  className={`text-sm py-1 px-2 ${
-                    request.status === "PENDING"
-                      ? "bg-yellow-500"
-                      : request.status === "APPROVED"
-                      ? "bg-green-500"
-                      : "bg-secondary"
-                  } text-white`}
-                >
-                  {request.status}
-                </p>
               </div>
             ))}
           </div>

@@ -16,52 +16,66 @@ function Overview() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(true);
-        const [ordersResponse, productsResponse] = await Promise.all([
-          axios.get("http://127.0.0.1:8000/api/startup/orders", {
+        const [productsRes, ordersRes] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/startup/products", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          axios.get("http://127.0.0.1:8000/api/startup/products", {
+          axios.get("http://127.0.0.1:8000/api/startup/orders", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
         ]);
 
-        setOrders(ordersResponse.data.data || []);
-        setProducts(productsResponse.data.data || []);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError(error.message);
+        if (productsRes.data.success) {
+          setProducts(productsRes.data.data);
+        }
+        if (ordersRes.data.success) {
+          const uniqueOrders = ordersRes.data.data.reduce((acc, item) => {
+            if (!acc.find((order) => order.id === item.order_id)) {
+              acc.push({
+                id: item.order_id,
+                user: item.order.user,
+                total_price: item.order.total_price,
+                status: item.order.status,
+                created_at: item.order.created_at,
+              });
+            }
+            return acc;
+          }, []);
+          setOrders(uniqueOrders);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
         setLoading(false);
       }
     };
 
-    if (token) {
-      fetchData();
-    }
+    fetchData();
   }, [token]);
 
   if (loading) return <Loader />;
   if (error)
-    return <div className="text-center text-red-500">Error: {error}</div>;
+    return <div className="text-center text-secondary">Error: {error}</div>;
   const displayProducts = products.slice(0, 4);
   const totalRevenue = orders.reduce(
-    (sum, order) => sum + parseFloat(order.price || 0),
+    (sum, order) => sum + parseFloat(order.total_price || 0),
     0
   );
 
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
-        <div>
-          <h1 className="text-2xl xs:text-4xl">dashboard overview</h1>
-          <p className="text-lightblack pt-0.5 text-sm xs:text-base">
-            hello, brand name
-          </p>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl xs:text-4xl">dashboard overview</h1>
+            <p className="text-lightblack pt-0.5 text-sm xs:text-base">
+              hello, {products[0]?.startup?.name || "Startup"}
+            </p>
+          </div>
         </div>
         <div className="flex gap-8 md:gap-4 items-center flex-wrap mt-6">
           <div className="grow space-y-2 md:space-y-6">
@@ -149,14 +163,15 @@ function Overview() {
                 status
               </span>
             </div>
-            {orders.slice(0, 4).map((orderItem) => (
+            {orders.slice(0, 4).map((order, index) => (
               <StartupOrder
-                key={orderItem.id}
-                id={`order #${orderItem.id}`}
-                customer={orderItem.order?.user?.name || "N/A"}
-                amount={`${orderItem.price || 0} EGP`}
-                date={new Date(orderItem.created_at).toLocaleDateString()}
-                status={orderItem.order?.status || "N/A"}
+                key={order.id}
+                id={`order #${index + 1}`}
+                customer={order.user?.name || "N/A"}
+                amount={`${order.total_price || 0} EGP`}
+                date={new Date(order.created_at).toLocaleDateString()}
+                status={order.status || "N/A"}
+                orderId={order.id}
               />
             ))}
           </div>

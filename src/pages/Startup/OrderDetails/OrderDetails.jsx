@@ -65,7 +65,6 @@ function OrderDetails() {
     );
   }
 
-  // Format date to a readable string
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleString("en-US", {
@@ -81,19 +80,13 @@ function OrderDetails() {
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
-        <div className="flex justify-between gap-2 flex-wrap">
-          <div>
-            <h2 className="text-3xl mb-0.5">
-              order #{orderDetails.order_id || id} - details page
-            </h2>
-            <p className="text-lightblack text-sm">
-              this page shows full details of the selected order
-            </p>
-          </div>
-          <Link className="border border-primary bg-primary text-white p-2 px-4 flex items-center gap-2 h-fit hover:bg-transparent hover:border-black hover:text-black transition duration-300 ease-in-out delay-150">
-            <i className="fa-solid fa-download"></i>
-            <span>Export</span>
-          </Link>
+        <div>
+          <h2 className="text-3xl mb-0.5">
+            order #{orderDetails.order_id || id} - details page
+          </h2>
+          <p className="text-lightblack text-sm">
+            this page shows full details of the selected order
+          </p>
         </div>
         <div className="flex flex-col lg:flex-row gap-8 mt-8">
           <div className="lg:w-1/2">
@@ -169,7 +162,7 @@ function OrderDetails() {
         </div>
         <div className="overflow-x-auto">
           <div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4">
+            <div className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2">
               <span className="text-sm whitespace-nowrap text-lightblack">
                 product
               </span>
@@ -186,7 +179,7 @@ function OrderDetails() {
                 subtotal
               </span>
             </div>
-            <div className="min-w-[600px] flex justify-between items-center gap-4">
+            <div className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2">
               <span className="text-sm whitespace-nowrap">
                 {orderDetails.product?.name || "N/A"}
               </span>

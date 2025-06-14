@@ -15,7 +15,7 @@ export default function Login() {
   const validate = object({
     phone: string()
       .required("phone is required")
-      .matches(/^\d{10}$/, "phone must be a 10-digit number"),
+      .matches(/^\d{11}$/, "phone must be a 11-digit number"),
     password: string()
       .required("password is required")
       .min(8, "password must be at least 8 characters")

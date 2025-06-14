@@ -11,6 +11,13 @@ function Request() {
   const { token } = useContext(StartupContext);
 
   const validate = Yup.object({
+    name: Yup.string()
+      .required("Name is required")
+      .min(2, "Name must be at least 2 characters"),
+    quantity: Yup.number()
+      .required("Quantity is required")
+      .min(1, "Quantity must be at least 1"),
+    notes: Yup.string(),
     description: Yup.string()
       .required("Description is required")
       .min(3, "Description must be at least 3 characters"),
@@ -27,6 +34,9 @@ function Request() {
     const loadingToastId = toast.loading("Creating request...");
     try {
       const formData = new FormData();
+      formData.append("name", values.name);
+      formData.append("quantity", values.quantity);
+      formData.append("notes", values.notes);
       formData.append("description", values.description);
       formData.append("delivery_date", values.delivery_date);
       formData.append("image", values.image);
@@ -60,6 +70,9 @@ function Request() {
 
   const formik = useFormik({
     initialValues: {
+      name: "",
+      quantity: "",
+      notes: "",
       description: "",
       delivery_date: "",
       image: null,
@@ -85,6 +98,83 @@ function Request() {
           </p>
         </div>
         <form onSubmit={formik.handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="name" className="flex items-start gap-2 mb-2">
+              <span className="text-lg">name</span>
+              <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+            </label>
+            <input
+              type="text"
+              autoComplete="on"
+              placeholder="enter name"
+              name="name"
+              id="name"
+              className={`border ${
+                formik.touched.name && formik.errors.name
+                  ? "border-secondary"
+                  : "border-blackmuted"
+              } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.name}
+            />
+            {formik.touched.name && formik.errors.name && (
+              <p className="text-secondary text-xs mt-1">
+                {formik.errors.name}
+              </p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="quantity" className="flex items-start gap-2 mb-2">
+              <span className="text-lg">quantity</span>
+              <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
+            </label>
+            <input
+              type="number"
+              autoComplete="on"
+              placeholder="enter quantity"
+              name="quantity"
+              id="quantity"
+              className={`border ${
+                formik.touched.quantity && formik.errors.quantity
+                  ? "border-secondary"
+                  : "border-blackmuted"
+              } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.quantity}
+            />
+            {formik.touched.quantity && formik.errors.quantity && (
+              <p className="text-secondary text-xs mt-1">
+                {formik.errors.quantity}
+              </p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label htmlFor="notes" className="flex items-start gap-2 mb-2">
+              <span className="text-lg">notes</span>
+            </label>
+            <input
+              type="text"
+              autoComplete="on"
+              placeholder="enter notes (optional)"
+              name="notes"
+              id="notes"
+              className={`border ${
+                formik.touched.notes && formik.errors.notes
+                  ? "border-secondary"
+                  : "border-blackmuted"
+              } px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full`}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.notes}
+            />
+            {formik.touched.notes && formik.errors.notes && (
+              <p className="text-secondary text-xs mt-1">
+                {formik.errors.notes}
+              </p>
+            )}
+          </div>
           <div className="mb-4">
             <label
               htmlFor="description"

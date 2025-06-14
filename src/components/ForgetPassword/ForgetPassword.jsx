@@ -2,10 +2,12 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import ResetOtp from "../ResetOtp/ResetOtp";
 
 function ForgetPassword({ onClose }) {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showOtp, setShowOtp] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ function ForgetPassword({ onClose }) {
 
       if (response.data.success) {
         toast.success(response.data.message);
-        onClose();
+        setShowOtp(true);
       } else {
         toast.error("Failed to send reset code");
       }
@@ -40,6 +42,10 @@ function ForgetPassword({ onClose }) {
       setIsLoading(false);
     }
   };
+
+  if (showOtp) {
+    return <ResetOtp onClose={onClose} email={email} />;
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-blackmuted bg-opacity-70">

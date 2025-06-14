@@ -558,23 +558,25 @@ function Home() {
           </h3>
         </div>
         <div className="flex flex-col md:flex-row gap-8 md:gap-0 justify-between mt-6 sm:mt-16">
-          <h1 className="text-4xl md:text-8xl md:w-1/5">why htach?</h1>
+          <h1 className="text-4xl md:text-8xl md:w-1/5">why hatch?</h1>
           <div className="w-full md:w-1/4 flex flex-col gap-8">
             <i className="fa-solid fa-arrow-right origin-center -rotate-45 text-5xl self-end w-fit hidden md:block"></i>
             <div className="mb-8">
               <h4 className="text-xl mb-4">01</h4>
-              <h4 className="text-xl mb-4">INCLUSIVE COLLABORATION</h4>
+              <h4 className="text-xl mb-4">
+                built for brands that start small
+              </h4>
               <p className="text-lightblack text-sm">
-                Beyond photography, we empower diverse creatives , including
-                under privileged talents.
+                we know what it's like to build from scratch. hatch gives you
+                the tools to grow without the noise.
               </p>
             </div>
             <div>
               <h4 className="text-xl mb-4">02</h4>
-              <h4 className="text-xl mb-4">UNIQUE & CINEMATIC CONCEPT</h4>
+              <h4 className="text-xl mb-4">production made possible</h4>
               <p className="text-lightblack text-sm">
-                Every shot tells a story, crafted with cinematic lighting &
-                composition.
+                from idea to factory floor, we help startups turn bold concepts
+                into real products. simply and smartly.
               </p>
             </div>
             <i className="fa-solid fa-arrow-right origin-center rotate-45 text-5xl self-end w-fit hidden md:block"></i>

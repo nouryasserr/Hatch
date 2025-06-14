@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-function StartupOrder({ id, customer, amount, date, status }) {
+function StartupOrder({ id, customer, amount, date, status, orderId }) {
   const getStatusStyle = (status) => {
     switch (status?.toUpperCase()) {
       case "PENDING":
@@ -13,7 +13,6 @@ function StartupOrder({ id, customer, amount, date, status }) {
         return "bg-lightblack";
     }
   };
-  const orderId = id.split("#")[1];
 
   return (
     <>

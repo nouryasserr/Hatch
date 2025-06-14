@@ -73,16 +73,6 @@ function AddProduct2() {
       .min(0, "Stock cannot be negative"),
     sub_category_id: Yup.number().required("Category is required"),
     has_sizes: Yup.boolean(),
-    colors: Yup.array().when("has_sizes", {
-      is: true,
-      then: () =>
-        Yup.array().of(
-          Yup.object().shape({
-            name: Yup.string().required("Color is required"),
-          })
-        ),
-      otherwise: () => Yup.array(),
-    }),
     sizes: Yup.array().when("has_sizes", {
       is: true,
       then: () =>
@@ -111,8 +101,7 @@ function AddProduct2() {
       stock: "",
       sub_category_id: "",
       has_sizes: false,
-      colors: [{ name: "" }],
-      sizes: [{ color_index: 0, size_id: "", price: "", stock: "" }],
+      sizes: [{ size_id: "", price: "", stock: "" }],
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -134,15 +123,7 @@ function AddProduct2() {
       }
 
       if (values.has_sizes) {
-        values.colors.forEach((color, colorIndex) => {
-          formData.append(`colors[${colorIndex}][name]`, color.name);
-        });
-
         values.sizes.forEach((size, sizeIndex) => {
-          formData.append(
-            `sizes[${sizeIndex}][color_index]`,
-            size.color_index.toString()
-          );
           formData.append(`sizes[${sizeIndex}][size_id]`, size.size_id);
           formData.append(`sizes[${sizeIndex}][price]`, size.price);
           formData.append(`sizes[${sizeIndex}][stock]`, size.stock);
@@ -180,27 +161,16 @@ function AddProduct2() {
   });
 
   const addSizeGroup = () => {
-    const newColorIndex = formik.values.colors.length;
-    formik.setFieldValue("colors", [...formik.values.colors, { name: "" }]);
     formik.setFieldValue("sizes", [
       ...formik.values.sizes,
-      { color_index: newColorIndex, size_id: "", price: "", stock: "" },
+      { size_id: "", price: "", stock: "" },
     ]);
   };
 
   const removeSizeGroup = (index) => {
     if (index === 0) return;
-    const newColors = formik.values.colors.filter((_, i) => i !== index);
-    const newSizes = formik.values.sizes.filter(
-      (size) => size.color_index !== index
-    );
-    const updatedSizes = newSizes.map((size) => ({
-      ...size,
-      color_index:
-        size.color_index > index ? size.color_index - 1 : size.color_index,
-    }));
-    formik.setFieldValue("colors", newColors);
-    formik.setFieldValue("sizes", updatedSizes);
+    const newSizes = formik.values.sizes.filter((_, i) => i !== index);
+    formik.setFieldValue("sizes", newSizes);
   };
 
   const handleFileChange = (e, index = null) => {
@@ -347,12 +317,12 @@ function AddProduct2() {
               </div>
 
               <div className="mb-2">
-                <h4 className="text-xl mb-0.5">have sizes and colors?</h4>
+                <h4 className="text-xl mb-0.5">have sizes?</h4>
               </div>
               <div
                 className="flex gap-16 mb-8 text-lg"
                 role="radiogroup"
-                aria-label="Product has sizes and colors"
+                aria-label="Product has sizes"
               >
                 <div className="flex items-center gap-2">
                   <input
@@ -363,7 +333,6 @@ function AddProduct2() {
                     checked={formik.values.has_sizes === true}
                     onChange={() => {
                       formik.setFieldValue("has_sizes", true);
-                      formik.setFieldValue("colors[0].name", "");
                       formik.setFieldValue("sizes[0].size_id", "");
                       formik.setFieldValue("sizes[0].price", "");
                       formik.setFieldValue("sizes[0].stock", "");
@@ -466,19 +435,19 @@ function AddProduct2() {
 
                 {formik.values.has_sizes && (
                   <>
-                    {formik.values.colors.map((color, colorIndex) => (
+                    {formik.values.sizes.map((size, index) => (
                       <div
-                        key={colorIndex}
+                        key={index}
                         className="mb-8 p-4 border border-gray-200 rounded"
                       >
                         <div className="flex justify-between items-center mb-4">
                           <h4 className="text-lg font-medium">
-                            Size Group {colorIndex + 1}
+                            Size Group {index + 1}
                           </h4>
-                          {colorIndex > 0 && (
+                          {index > 0 && (
                             <button
                               type="button"
-                              onClick={() => removeSizeGroup(colorIndex)}
+                              onClick={() => removeSizeGroup(index)}
                               className="text-red-500 hover:text-red-700"
                             >
                               <i className="fa-solid fa-trash"></i>
@@ -488,58 +457,32 @@ function AddProduct2() {
                         <div className="flex flex-col sm:flex-row gap-4 mb-4">
                           <div className="w-full">
                             <label
-                              htmlFor={`product-size-${colorIndex}`}
+                              htmlFor={`product-size-${index}`}
                               className="flex items-start gap-2 mb-2"
                             >
                               <span className="text-lg">size</span>
                               <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
                             </label>
                             <select
-                              id={`product-size-${colorIndex}`}
-                              name={`sizes[${colorIndex}].size_id`}
+                              id={`product-size-${index}`}
+                              name={`sizes[${index}].size_id`}
                               autoComplete="off"
-                              value={formik.values.sizes[colorIndex].size_id}
+                              value={formik.values.sizes[index].size_id}
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               className="border border-blackmuted px-2 py-1.5 pb-2 focus:outline-none focus:border-2 w-full"
                             >
                               <option value="">Select size</option>
-                              {availableSizes.map((size) => (
-                                <option key={size.id} value={size.id}>
-                                  {size.size}
+                              {availableSizes.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                  {s.size}
                                 </option>
                               ))}
                             </select>
-                            {formik.touched.sizes?.[colorIndex]?.size_id &&
-                              formik.errors.sizes?.[colorIndex]?.size_id && (
+                            {formik.touched.sizes?.[index]?.size_id &&
+                              formik.errors.sizes?.[index]?.size_id && (
                                 <div className="text-red-500 text-sm">
-                                  {formik.errors.sizes[colorIndex].size_id}
-                                </div>
-                              )}
-                          </div>
-                          <div className="w-full">
-                            <label
-                              htmlFor={`product-color-${colorIndex}`}
-                              className="flex items-start gap-2 mb-2"
-                            >
-                              <span className="text-lg">color</span>
-                              <i className="fa-solid fa-asterisk text-secondary text-xs"></i>
-                            </label>
-                            <input
-                              type="text"
-                              id={`product-color-${colorIndex}`}
-                              name={`colors[${colorIndex}].name`}
-                              autoComplete="off"
-                              value={formik.values.colors[colorIndex].name}
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                              className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
-                              placeholder="enter color name"
-                            />
-                            {formik.touched.colors?.[colorIndex]?.name &&
-                              formik.errors.colors?.[colorIndex]?.name && (
-                                <div className="text-red-500 text-sm">
-                                  {formik.errors.colors[colorIndex].name}
+                                  {formik.errors.sizes[index].size_id}
                                 </div>
                               )}
                           </div>
@@ -548,7 +491,7 @@ function AddProduct2() {
                         <div className="flex flex-col sm:flex-row gap-4 mb-4">
                           <div className="w-full">
                             <label
-                              htmlFor={`variant-price-${colorIndex}`}
+                              htmlFor={`variant-price-${index}`}
                               className="flex items-start gap-2 mb-2"
                             >
                               <span className="text-lg">variant price</span>
@@ -556,25 +499,25 @@ function AddProduct2() {
                             </label>
                             <input
                               type="number"
-                              id={`variant-price-${colorIndex}`}
-                              name={`sizes[${colorIndex}].price`}
+                              id={`variant-price-${index}`}
+                              name={`sizes[${index}].price`}
                               autoComplete="off"
-                              value={formik.values.sizes[colorIndex].price}
+                              value={formik.values.sizes[index].price}
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
                               placeholder="enter variant price"
                             />
-                            {formik.touched.sizes?.[colorIndex]?.price &&
-                              formik.errors.sizes?.[colorIndex]?.price && (
+                            {formik.touched.sizes?.[index]?.price &&
+                              formik.errors.sizes?.[index]?.price && (
                                 <div className="text-red-500 text-sm">
-                                  {formik.errors.sizes[colorIndex].price}
+                                  {formik.errors.sizes[index].price}
                                 </div>
                               )}
                           </div>
                           <div className="w-full">
                             <label
-                              htmlFor={`variant-stock-${colorIndex}`}
+                              htmlFor={`variant-stock-${index}`}
                               className="flex items-start gap-2 mb-2"
                             >
                               <span className="text-lg">variant stock</span>
@@ -582,19 +525,19 @@ function AddProduct2() {
                             </label>
                             <input
                               type="number"
-                              id={`variant-stock-${colorIndex}`}
-                              name={`sizes[${colorIndex}].stock`}
+                              id={`variant-stock-${index}`}
+                              name={`sizes[${index}].stock`}
                               autoComplete="off"
-                              value={formik.values.sizes[colorIndex].stock}
+                              value={formik.values.sizes[index].stock}
                               onChange={formik.handleChange}
                               onBlur={formik.handleBlur}
                               className="border border-blackmuted px-2 py-1.5 pb-2 placeholder:text-xs placeholder:font-light focus:outline-none focus:border-2 w-full"
                               placeholder="enter variant stock"
                             />
-                            {formik.touched.sizes?.[colorIndex]?.stock &&
-                              formik.errors.sizes?.[colorIndex]?.stock && (
+                            {formik.touched.sizes?.[index]?.stock &&
+                              formik.errors.sizes?.[index]?.stock && (
                                 <div className="text-red-500 text-sm">
-                                  {formik.errors.sizes[colorIndex].stock}
+                                  {formik.errors.sizes[index].stock}
                                 </div>
                               )}
                           </div>

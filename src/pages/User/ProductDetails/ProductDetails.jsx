@@ -288,44 +288,48 @@ function ProductDetails() {
               </span>
             )}
           </h5>
-          <div className="flex gap-8 my-4">
-            <div>
-              <p className="mb-1">size</p>
-              <div className="flex gap-4 flex-wrap">
-                {selectedOptions.availableSizes.map((size) => (
-                  <button
-                    key={size.id}
-                    onClick={() => handleSizeSelect(size.id)}
-                    className={`py-2 px-4 border rounded-md transition-colors ${
-                      selectedOptions.sizeId === size.id
-                        ? "border-black bg-black text-white"
-                        : "border-gray-300 hover:border-black"
-                    }`}
-                  >
-                    {size.name}
-                  </button>
-                ))}
+          {selectedOptions.availableSizes.length > 0 && (
+            <div className="flex gap-8 my-4">
+              <div>
+                <p className="mb-1">size</p>
+                <div className="flex gap-4 flex-wrap">
+                  {selectedOptions.availableSizes.map((size) => (
+                    <button
+                      key={size.id}
+                      onClick={() => handleSizeSelect(size.id)}
+                      className={`py-2 px-4 border rounded-md transition-colors ${
+                        selectedOptions.sizeId === size.id
+                          ? "border-black bg-black text-white"
+                          : "border-gray-300 hover:border-black"
+                      }`}
+                    >
+                      {size.name}
+                    </button>
+                  ))}
+                </div>
               </div>
+              {selectedOptions.availableColors.length > 0 && (
+                <div>
+                  <p className="mb-1">color</p>
+                  <div className="flex gap-4 flex-wrap">
+                    {selectedOptions.availableColors.map((color) => (
+                      <button
+                        key={color.id}
+                        onClick={() => handleColorSelect(color.id)}
+                        className={`px-4 py-2 rounded-md border-2 transition-all ${
+                          selectedOptions.colorId === color.id
+                            ? "border-black bg-black text-white"
+                            : "border-gray-300 hover:border-black"
+                        }`}
+                      >
+                        {color.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-            <div>
-              <p className="mb-1">color</p>
-              <div className="flex gap-4 flex-wrap">
-                {selectedOptions.availableColors.map((color) => (
-                  <button
-                    key={color.id}
-                    onClick={() => handleColorSelect(color.id)}
-                    className={`px-4 py-2 rounded-md border-2 transition-all ${
-                      selectedOptions.colorId === color.id
-                        ? "border-black bg-black text-white"
-                        : "border-gray-300 hover:border-black"
-                    }`}
-                  >
-                    {color.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+          )}
 
           <div className="mb-6">
             <label className="text-sm font-medium mb-2 block">Quantity</label>
@@ -466,15 +470,9 @@ function ProductDetails() {
                 navigate("/Auth/Signin");
                 return;
               }
-              if (!hasPlacedOrder) {
-                toast.error("You can only review products you have purchased");
-                return;
-              }
               setShowWriteReview(true);
             }}
-            className={`border border-lightblack bg-black text-white py-1 px-4 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out ${
-              !hasPlacedOrder ? "hidden" : ""
-            }`}
+            className="border border-lightblack bg-black text-white py-1 px-4 rounded-full hover:bg-transparent hover:text-black transition duration-300 ease-in-out"
           >
             write review
           </button>
@@ -491,16 +489,21 @@ function ProductDetails() {
         ) : (
           <div className="space-y-6 mt-6">
             {reviews.map((review) => (
-              <div key={review.id}>
-                <div className="flex items-center justify-between gap-2">
+              <div key={review.id} className="border-b pb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <i className="fa-solid fa-user text-gray-500"></i>
+                  </div>
                   <div>
-                    <h6 className="font-medium">{review.user.name}</h6>
-                    <div className="flex gap-1">
-                      {[...Array(5)].map((_, index) => (
+                    <p className="font-medium">
+                      {review.user?.name || "Anonymous User"}
+                    </p>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
                         <i
-                          key={index}
-                          className={`fa-solid fa-star ${
-                            index < review.rating
+                          key={i}
+                          className={`fa-solid fa-star text-sm ${
+                            i < review.rating
                               ? "text-yellow-500"
                               : "text-gray-300"
                           }`}
@@ -508,11 +511,8 @@ function ProductDetails() {
                       ))}
                     </div>
                   </div>
-                  <span className="text-lightgray text-sm">
-                    {review.time_ago}
-                  </span>
                 </div>
-                <p className="mt-2 pb-4 border-b">{review.comments}</p>
+                <p className="text-gray-600">{review.comments}</p>
               </div>
             ))}
           </div>

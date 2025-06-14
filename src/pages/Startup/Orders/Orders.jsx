@@ -9,32 +9,39 @@ function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [newOrdersCount, setNewOrdersCount] = useState(0);
   const { token } = useContext(StartupContext);
   useEffect(() => {
-    const fetchOrders = async () => {
+    const fetchOrdersAndCount = async () => {
       if (!token) {
         setLoading(false);
         return;
       }
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/startup/orders",
-          {
+        const [ordersRes, countRes] = await Promise.all([
+          axios.get("http://127.0.0.1:8000/api/startup/orders", {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-          }
-        );
-        setOrders(response.data.data || []);
+          }),
+          axios.get("http://127.0.0.1:8000/api/startup/orders/count/new", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }),
+        ]);
+        setOrders(ordersRes.data.data || []);
+        setNewOrdersCount(countRes.data.data?.new_orders_count || 0);
       } catch (error) {
-        console.error("Error fetching orders:", error);
+        console.error("Error fetching orders or count:", error);
         setError(error.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchOrders();
+    fetchOrdersAndCount();
   }, [token]);
 
   if (loading) {
@@ -54,90 +61,35 @@ function Orders() {
   const pendingOrders = orders.filter(
     (order) => order.order?.status === "PENDING"
   );
+  const historyOrders = orders.filter(
+    (order) => order.order?.status !== "PENDING"
+  );
 
   return (
     <>
       <div className="w-full lg:w-5/6 float-end px-8 py-6">
-        <div className="flex justify-between gap-2 flex-wrap">
-          <div>
-            <h2 className="text-3xl mb-0.5">orders</h2>
-            <p className="text-lightblack text-sm">
-              track and manage your orders easily
-            </p>
-          </div>
-          <Link className="border border-black p-2 px-4 flex items-center gap-2 h-fit hover:bg-black hover:text-white transition duration-300 ease-in-out delay-150">
-            <i className="fa-solid fa-download"></i>
-            <span>Export</span>
-          </Link>
+        <div>
+          <h1 className="text-3xl xs:text-4xl mb-0.5">orders</h1>
+          <p className="text-lightgray text-sm">
+            track and manage your orders easily
+          </p>
         </div>
-        <div className="mb-4 mt-8 xs:mb-0">
+        <div className="mb-4 mt-4 xs:mb-0">
           <div className="flex gap-2 items-center">
             <h2 className="text-3xl mb-0.5">new orders</h2>
             <span className="bg-primary text-sm font-extralight text-white rounded-full py-0.5 px-4">
-              {pendingOrders.length}
+              {newOrdersCount}
             </span>
           </div>
-          <NavLink className={"text-lightblack"}>
-            you have {pendingOrders.length} new orders ready to review
-          </NavLink>
-        </div>
-        <div className="overflow-x-auto mt-4">
-          <div>
-            <div className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2">
-              <span className="text-sm whitespace-nowrap text-lightblack">
-                order id
-              </span>
-              <span className="text-sm whitespace-nowrap text-lightblack">
-                customer
-              </span>
-              <span className="text-sm whitespace-nowrap text-lightblack">
-                amount
-              </span>
-              <span className="text-sm whitespace-nowrap text-lightblack">
-                order date
-              </span>
-              <span className="text-sm whitespace-nowrap text-lightblack">
-                status
-              </span>
-            </div>
-            {orders.map((orderItem) => (
-              <div
-                key={orderItem.id}
-                className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2"
-              >
-                <Link
-                  to={`/Startup/OrderDetails/${orderItem.id}`}
-                  className="text-sm"
-                >
-                  order #{orderItem.id}
-                </Link>
-                <p className="text-sm">
-                  {orderItem.order?.user?.name || "N/A"}
-                </p>
-                <p className="text-sm">{orderItem.price || 0} EGP</p>
-                <p className="text-sm">
-                  {new Date(orderItem.created_at).toLocaleDateString()}
-                </p>
-                <p
-                  className={`w-fit text-sm py-1 px-2 ${
-                    orderItem.order?.status === "PENDING"
-                      ? "bg-yellow-500"
-                      : orderItem.order?.status === "APPROVED"
-                      ? "bg-green-500"
-                      : "bg-secondary"
-                  } text-white`}
-                >
-                  {orderItem.order?.status || "N/A"}
-                </p>
-              </div>
-            ))}
-          </div>
+          <p className="text-lightgray text-sm">
+            you have {newOrdersCount} new orders ready to review
+          </p>
         </div>
         <div className="mb-4 mt-8 xs:mb-0">
           <h2 className="text-3xl mb-0.5">orders history</h2>
-          <NavLink className={"text-lightblack"}>
+          <p className="text-lightgray text-sm">
             your completed and cancelled orders
-          </NavLink>
+          </p>
         </div>
         <div className="overflow-x-auto mt-4">
           <div>
@@ -158,7 +110,7 @@ function Orders() {
                 status
               </span>
             </div>
-            {orders.map((orderItem) => (
+            {pendingOrders.map((orderItem, idx) => (
               <div
                 key={orderItem.id}
                 className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2"
@@ -167,7 +119,7 @@ function Orders() {
                   to={`/Startup/OrderDetails/${orderItem.id}`}
                   className="text-sm"
                 >
-                  order #{orderItem.id}
+                  {idx + 1}
                 </Link>
                 <p className="text-sm">
                   {orderItem.order?.user?.name || "N/A"}
@@ -190,6 +142,37 @@ function Orders() {
               </div>
             ))}
           </div>
+        </div>
+        <div>
+          {historyOrders.map((orderItem) => (
+            <div
+              key={orderItem.id}
+              className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2"
+            >
+              <Link
+                to={`/Startup/OrderDetails/${orderItem.id}`}
+                className="text-sm"
+              >
+                order #{orderItem.id}
+              </Link>
+              <p className="text-sm">{orderItem.order?.user?.name || "N/A"}</p>
+              <p className="text-sm">{orderItem.price || 0} EGP</p>
+              <p className="text-sm">
+                {new Date(orderItem.created_at).toLocaleDateString()}
+              </p>
+              <p
+                className={`w-fit text-sm py-1 px-2 ${
+                  orderItem.order?.status === "PENDING"
+                    ? "bg-yellow-500"
+                    : orderItem.order?.status === "APPROVED"
+                    ? "bg-green-500"
+                    : "bg-secondary"
+                } text-white`}
+              >
+                {orderItem.order?.status || "N/A"}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </>
