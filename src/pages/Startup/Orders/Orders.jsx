@@ -32,7 +32,16 @@ function Orders() {
             },
           }),
         ]);
-        setOrders(ordersRes.data.data || []);
+
+        // Group orders by order_id
+        const groupedOrders = ordersRes.data.data.reduce((acc, item) => {
+          if (!acc.find((order) => order.order_id === item.order_id)) {
+            acc.push(item);
+          }
+          return acc;
+        }, []);
+
+        setOrders(groupedOrders);
         setNewOrdersCount(countRes.data.data?.new_orders_count || 0);
       } catch (error) {
         console.error("Error fetching orders or count:", error);
@@ -124,7 +133,9 @@ function Orders() {
                 <p className="text-sm">
                   {orderItem.order?.user?.name || "N/A"}
                 </p>
-                <p className="text-sm">{orderItem.price || 0} EGP</p>
+                <p className="text-sm">
+                  {orderItem.order?.total_price || 0} EGP
+                </p>
                 <p className="text-sm">
                   {new Date(orderItem.created_at).toLocaleDateString()}
                 </p>
@@ -156,7 +167,7 @@ function Orders() {
                 order #{orderItem.id}
               </Link>
               <p className="text-sm">{orderItem.order?.user?.name || "N/A"}</p>
-              <p className="text-sm">{orderItem.price || 0} EGP</p>
+              <p className="text-sm">{orderItem.order?.total_price || 0} EGP</p>
               <p className="text-sm">
                 {new Date(orderItem.created_at).toLocaleDateString()}
               </p>

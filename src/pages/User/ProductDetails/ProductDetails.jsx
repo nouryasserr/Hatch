@@ -7,8 +7,6 @@ import ReactImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { UserContext } from "../../../context/User.context";
 import { WishlistContext } from "../../../context/Wishlist.context";
-import { UserProfileContext } from "../../../context/UserProfile.context";
-import { CartContext } from "../../../context/Cart.context";
 import toast from "react-hot-toast";
 import WriteReview from "../../../components/WriteReview/WriteReview";
 
@@ -17,7 +15,6 @@ function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { token } = useContext(UserContext);
-  const { userProfile } = useContext(UserProfileContext);
   const { addToWishlist, removeFromWishlist, isInWishlist } =
     useContext(WishlistContext);
   const [productDetails, setProductDetails] = useState(null);
@@ -35,20 +32,12 @@ function ProductDetails() {
   const [isShippingOpen, setIsShippingOpen] = useState(false);
   const [reviews, setReviews] = useState([]);
   const [isLoadingReviews, setIsLoadingReviews] = useState(true);
-  const hasPlacedOrder =
-    token &&
-    userProfile?.orders?.some((order) =>
-      order.order_items?.some((item) => item.product.id === parseInt(id))
-    );
-
   const fetchProductDetails = useCallback(async () => {
     try {
       setIsLoading(true);
       const { data } = await axios.get(
         `http://127.0.0.1:8000/api/general/products/${id}`
       );
-      console.log("Product Details:", data.data);
-      console.log("Sizes:", data.data.sizes);
       setProductDetails(data.data);
       if (data.data.sizes && data.data.sizes.length > 0) {
         const sizes = data.data.sizes;
