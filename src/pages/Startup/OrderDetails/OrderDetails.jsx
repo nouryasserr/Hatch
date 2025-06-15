@@ -31,7 +31,6 @@ function OrderDetails() {
         );
         setOrderDetails(response.data.data);
       } catch (error) {
-        console.error("Error fetching order details:", error);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -181,21 +180,21 @@ function OrderDetails() {
             </div>
             <div className="min-w-[600px] grid grid-cols-5 items-center gap-4 border-b space-y-4 py-2">
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.product?.name || "N/A"}
+                {orderDetails?.product?.name || "N/A"}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.quantity
+                {orderDetails?.quantity
                   ? `${orderDetails.quantity} item`
                   : "N/A"}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.order?.status || "N/A"}
+                {orderDetails?.order?.status || "N/A"}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.price ? `${orderDetails.price} EGP` : "N/A"}
+                {orderDetails?.price ? `${orderDetails.price} EGP` : "N/A"}
               </span>
               <span className="text-sm whitespace-nowrap">
-                {orderDetails.price && orderDetails.quantity
+                {orderDetails?.price && orderDetails?.quantity
                   ? `${Number(orderDetails.price) * orderDetails.quantity} EGP`
                   : "N/A"}
               </span>
